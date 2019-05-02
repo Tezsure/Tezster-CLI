@@ -1,0 +1,1 @@
+./tezos/src/bin_node/tezos-sandboxed-node.sh 1
