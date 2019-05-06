@@ -6,8 +6,8 @@
 function main {
     sudo apt-get -y update 
     sudo apt-get -y upgrade
-    installOpamIfNotFound
     installDependencies
+    installOpamIfNotFound
     setUpTezosRepoandBuildTezosNode
 }
 
@@ -50,6 +50,8 @@ function setUpTezosRepoandBuildTezosNode {
 }
 
 function installDependencies {
+    findDependencyAndInstallIfNotFound make
+    findDependencyAndInstallIfNotFound unzip
     findDependencyAndInstallIfNotFound libev-dev
     findDependencyAndInstallIfNotFound libgmp-dev
     findDependencyAndInstallIfNotFound m4
