@@ -58,6 +58,7 @@ function installDependencies {
     findDependencyAndInstallIfNotFound pkg-config
     findDependencyAndInstallIfNotFound libhidapi-dev
     findDependencyAndInstallIfNotFound build-essential
+    findDependencyAndInstallIfNotFound nohup
 }
 
 main
