@@ -46,7 +46,14 @@ function setUpTezosRepoandBuildTezosNode {
     yes | make build-deps
     eval $(opam env)
     yes | make
-    echo 'build is successful...'
+
+    BUILD_FILE="./_build/default/src/bin_node/main.exe"
+    if [ -f "$BUILD_FILE" ]; then
+        echo 'build is successful...'
+    else 
+        echo 'build is not successful, pleaese try again....'
+    fi
+    
 }
 
 function installDependencies {
