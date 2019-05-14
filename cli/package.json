@@ -1,0 +1,17 @@
+{
+  "name": "tezster",
+  "version": "0.0.1",
+  "description": "A personal development blockchain based on Javascript that lives entirely on your local machine.",
+  "main": "tezster.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "tezster": "./tezster.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^2.20.0"
+  }
+}
