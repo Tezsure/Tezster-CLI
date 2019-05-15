@@ -1,11 +1,10 @@
-
-
-
-
+#!/bin/bash
+source ./env.sh
 
 function main {
     sudo apt-get -y update 
     sudo apt-get -y upgrade
+    cleanup
     installDependencies
     installOpamIfNotFound
     setUpTezosRepoandBuildTezosNode
@@ -35,10 +34,6 @@ function installOpamIfNotFound {
 
 function setUpTezosRepoandBuildTezosNode {
     findDependencyAndInstallIfNotFound git
-    DIRECTORY="./tezos"
-    if [ -d "$DIRECTORY" ]; then
-        rm -rf ./tezos
-    fi
 
     echo 'getting tezos repo...'
     git clone -b alphanet https://gitlab.com/tezos/tezos.git
@@ -49,6 +44,7 @@ function setUpTezosRepoandBuildTezosNode {
 
     BUILD_FILE="./_build/default/src/bin_node/main.exe"
     if [ -f "$BUILD_FILE" ]; then
+        touch ".$SETUP_SUCCESS_FILE"
         echo 'build is successful...'
     else 
         echo 'build is not successful, pleaese try again....'
@@ -66,6 +62,20 @@ function installDependencies {
     findDependencyAndInstallIfNotFound libhidapi-dev
     findDependencyAndInstallIfNotFound build-essential
     findDependencyAndInstallIfNotFound nohup
+}
+
+function cleanup {
+    if [ -f "$SETUP_SUCCESS_FILE" ]; then
+        rm $SETUP_SUCCESS_FILE
+    fi
+
+    if [ -f "$RUN_NODE_SUCCESS_FILE" ]; then
+        rm $RUN_NODE_SUCCESS_FILE
+    fi 
+
+    if [ -d "$TEZOS_REPO_DIRECTORY" ]; then
+        rm -rf $TEZOS_REPO_DIRECTORY
+    fi
 }
 
 main
