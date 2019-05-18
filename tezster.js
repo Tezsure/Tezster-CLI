@@ -10,7 +10,7 @@ program
     console.log('setting up tezos node, this could take a while....');
     const { exec } = require('child_process');
 
-    exec('./setup.sh',{cwd : './script'}, (err, stdout, stderr) => {
+    exec('./setup.sh > setup.log',{cwd : './script'}, (err, stdout, stderr) => {
         if (err) {
             console.error(`exec error: ${err}`);
             return;
@@ -21,12 +21,12 @@ program
 });
 
 program
-.command('start-node')
+.command('start-nodes')
 .action(function() {
     console.log('starting the nodes.....');
     const { exec } = require('child_process');
 
-    exec('./start_nodes.sh',{cwd : './script'}, (err, stdout, stderr) => {
+    exec('./start_nodes.sh > start_nodes.log',{cwd : './script'}, (err, stdout, stderr) => {
         if (err) {
             console.error(`exec error: ${err}`);
             return;
@@ -37,12 +37,12 @@ program
 });
 
 program
-.command('stop-node')
+.command('stop-nodes')
 .action(function() {
     console.log('stopping the nodes....');
     const { exec } = require('child_process');
 
-    exec('./stop_nodes.sh',{cwd : './script'}, (err, stdout, stderr) => {
+    exec('./stop_nodes.sh > stop_nodes.log',{cwd : './script'}, (err, stdout, stderr) => {
         if (err) {
             console.error(`exec error: ${err}`);
             return;
