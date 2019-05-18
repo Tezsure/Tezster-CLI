@@ -1,7 +1,7 @@
-
+#!/bin/bash
 function main {
-    	 ./start_nodes.sh
-       	source  ./start_network.sh
+    ./start_nodes.sh
+    source ./start_network.sh
 }
 
 main

@@ -62,6 +62,7 @@ function installDependencies {
     findDependencyAndInstallIfNotFound libhidapi-dev
     findDependencyAndInstallIfNotFound build-essential
     findDependencyAndInstallIfNotFound nohup
+    findDependencyAndInstallIfNotFound lsof
 }
 
 function cleanup {

@@ -9,9 +9,16 @@
   "bin": {
     "tezster": "./tezster.js"
   },
+  "keywords": [
+    "tezster",
+    "tezos",
+    "tezsure"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "commander": "^2.20.0"
+    "commander": "^2.20.0",
+    "node-cmd": "^3.0.0",
+    "shell-source": "^1.1.0"
   }
 }
