@@ -1,4 +1,4 @@
-
+#!/bin/bash
 function stopnode {
     PORT=$1
 	PID=$(lsof -ti:$PORT)
@@ -13,7 +13,7 @@ function stopnode {
 
 function main {
 	stopnode 18731
-		stopnode 18732
+	stopnode 18732
 }
 
 main
