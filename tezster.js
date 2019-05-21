@@ -20,7 +20,7 @@ validCommands = [
   'listIdentities',
   'listAccounts',
   'listContracts',
-  'getBalance',
+  'balance',
   'setDelegate',
   'transfer',
   'typecheckCode',
@@ -51,20 +51,19 @@ if (validCommands.indexOf(command) < 0 ) {
     var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
     eztz.library.sodium = _sodium;
     
+    // Load config
     var jsonfile = require('jsonfile');
     var confFile = './config.json';
     var config = {};
     jsonfile.readFile(confFile, function(err, obj) {
       if (err){
-        //outputInfo('No config file found, making new one...');
-
-        jsonfile.writeFile(confFile, defaultConfig);
+       jsonfile.writeFile(confFile, defaultConfig);
       } else {
         config = obj;
       }
       // Load node
       if (config.provider) eztz.node.setProvider(config.provider);
-
+    });
 program
 .version('0.0.1', '-v, --version')
 .command('setup')
@@ -116,7 +115,7 @@ program
 
 program
 .command('getBalance')
-.action(function(){
+.action(()=>function(){
     if (args.length < 1) return console.log("Incorrect usage - eztz balance $tz1");
           var pkh = args[0], f;
           if (f = findKeyObj(config.identities, pkh)) {
@@ -132,28 +131,16 @@ program
             return console,log(e);
           });
 });
-
-
-program
-.command('newIdentity')
-.action(function(){
-  if (args.length < 1) return console.log("Please enter name for the new identity");
-  if (findKeyObj(config.identities, args[0])) return console.log("That identity name is already in use");
-  var keys = eztz.crypto.generateKeysNoSeed();
-  keys.label = args[0];
-  jsonfile.writeFile(confFile, config);
-  return console.log("New identity created " + keys.pkh);
-});
 program.parse(process.argv);
 
 
 //Helper Functions
-function findKeyObj(list, t){
-  for (var i = 0; i < list.length; i++){
-    if (list[i].pkh == t || list[i].label == t) return list[i];
+  function findKeyObj(list, t){
+    for (var i = 0; i < list.length; i++){
+      if (list[i].pkh == t || list[i].label == t) return list[i];
+    }
+    return false;
   }
-  return false;
-}
   function formatTez(a){
     return formatMoney(a)+"tz";
   }
