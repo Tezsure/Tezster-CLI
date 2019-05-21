@@ -114,7 +114,7 @@ program
 });
 
 program
-.command(getBalance)
+.command('getBalance')
 .action(()=>function(){
     if (args.length < 1) return console.log("Incorrect usage - eztz balance $tz1");
           var pkh = args[0], f;
@@ -132,11 +132,6 @@ program
           });
 });
 program.parse(process.argv);
-
-
-
-      
-
 
 
 //Helper Functions
