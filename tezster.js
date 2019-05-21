@@ -44,8 +44,8 @@ const eztzF = require("./cli/eztz.cli.js");
 const eztz=eztzF.eztz;
 const getBalance = eztzF.getBalance;
 var command = process.argv[2], args = process.argv.slice(3);
-console.log(command);
-console.log(args);
+//console.log(command);
+//console.log(args);
 if (process.argv.length <= 2){
     console.error("Please enter a command!" + process.argv[2]);
     process.exit();
@@ -54,7 +54,7 @@ if (validCommands.indexOf(command) < 0 ) {
     console.error("Invalid command" + process.argv[2]);
     process.exit();
 }
-await _sodium.ready;
+//await _sodium.ready;
     var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
     eztz.library.sodium = _sodium;
     
