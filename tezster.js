@@ -20,7 +20,7 @@ validCommands = [
   'listIdentities',
   'listAccounts',
   'listContracts',
-  'balance',
+  'getBalance',
   'setDelegate',
   'transfer',
   'typecheckCode',
