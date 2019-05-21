@@ -115,7 +115,7 @@ program
 
 program
 .command('getBalance')
-.action(()=>function(){
+.action(function(){
     if (args.length < 1) return console.log("Incorrect usage - eztz balance $tz1");
           var pkh = args[0], f;
           if (f = findKeyObj(config.identities, pkh)) {
