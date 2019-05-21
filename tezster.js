@@ -55,17 +55,20 @@ eztz.library.sodium = _sodium;
 var jsonfile = require('jsonfile');
 var confFile = './config.json';
 var config = {};
+console.log("begining");
     jsonfile.readFile(confFile, function(err, obj) {
     if (err){
+      console.log("error to fetch");
       jsonfile.writeFile(confFile, defaultConfig);
     } else {
+      console.log("object data");
       config = obj;
       }
 // Load node
     if (config.provider) eztz.node.setProvider(config.provider);
     });
 
-
+  console.log("end data " + config.identities.length);
 program
 .version('0.0.1', '-v, --version')
 .command('setup')
