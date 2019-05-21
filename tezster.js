@@ -135,7 +135,8 @@ program
 program
 .command('listIdentities')
 .action(function(){
-  for(var i = 0; i < config.identities.length; i++){
+  //for(var i = 0; i < config.identities.length; i++){
+     for(var i in config.identities){
        console.log(config.identities[i].label + " - " + config.identities[i].pkh);
     });
 
@@ -144,7 +145,8 @@ program.parse(process.argv);
 
 //Helper Functions
   function findKeyObj(list, t){
-    for (var i = 0; i < list.length; i++){
+    //for (var i = 0; i < list.length; i++){
+      for(var i in list){
       if (list[i].pkh == t || list[i].label == t) return list[i];
     }
     return false;
