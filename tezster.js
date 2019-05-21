@@ -131,6 +131,14 @@ program
             return console,log(e);
           });
 });
+
+program
+.command('listIdentities')
+.action(function(){
+  for(var i = 0; i < config.identities.length; i++){
+       console.log(config.identities[i].label + " - " + config.identities[i].pkh);
+    });
+
 program.parse(process.argv);
 
 
