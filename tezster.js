@@ -59,6 +59,7 @@ if (validCommands.indexOf(command) < 0 ) {
       if (err){
        jsonfile.writeFile(confFile, defaultConfig);
       } else {
+        console.log(obj);
         config = obj;
       }
       // Load node
