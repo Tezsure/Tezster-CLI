@@ -63,7 +63,7 @@ if (validCommands.indexOf(command) < 0 ) {
       }
       // Load node
       if (config.provider) eztz.node.setProvider(config.provider);
-      
+    });
 program
 .version('0.0.1', '-v, --version')
 .command('setup')
