@@ -47,7 +47,7 @@ if (validCommands.indexOf(command) < 0 ) {
     console.error("Invalid command");
     process.exit();
 }
-//await _sodium.ready;
+await _sodium.ready;
     var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
     eztz.library.sodium = _sodium;
     
@@ -57,10 +57,13 @@ if (validCommands.indexOf(command) < 0 ) {
     var config = {};
     jsonfile.readFile(confFile, function(err, obj) {
       if (err){
+        console.log("error");
        jsonfile.writeFile(confFile, defaultConfig);
       } else {
+        console.log("voila");
         config = obj;
       }
+      console.log(config);
       // Load node
       if (config.provider) eztz.node.setProvider(config.provider);
     });
@@ -137,13 +140,23 @@ program
 .command('newIdentity')
 .action(function(){
   if (args.length < 1) return console.log("Please enter name for the new identity");
-  console.log(config.identities['sk']);
+
   if (findKeyObj(config.identities, args[0])) return console.log("That identity name is already in use");
   var keys = eztz.crypto.generateKeysNoSeed();
   keys.label = args[0];
   jsonfile.writeFile(confFile, config);
   return console.log("New identity created " + keys.pkh);
 });
+
+program
+.command('listIdentities')
+.action(function(){
+  for(var i = 0; i < config.identities.length; i++){
+    console.log(config.identities[i].label + " - " + config.identities[i].pkh);
+  }
+});
+
+
 program.parse(process.argv);
 
 
