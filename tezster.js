@@ -57,10 +57,9 @@ if (validCommands.indexOf(command) < 0 ) {
     jsonfile.readFile(confFile, function(err, obj) {
       if (err){
         //outputInfo('No config file found, making new one...');
-        console.log("error");
+
         jsonfile.writeFile(confFile, defaultConfig);
       } else {
-        console.log(" data "+obj);
         config = obj;
       }
       // Load node
@@ -151,7 +150,6 @@ program.parse(process.argv);
 //Helper Functions
 function findKeyObj(list, t){
   for (var i = 0; i < list.length; i++){
-    console.log(list[i] + " t is " + t);
     if (list[i].pkh == t || list[i].label == t) return list[i];
   }
   return false;
