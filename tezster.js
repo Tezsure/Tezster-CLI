@@ -53,7 +53,7 @@ if (validCommands.indexOf(command) < 0 ) {
     
     // Load config
     var jsonfile = require('jsonfile');
-    var confFile = 'config.json';
+    var confFile = './config.json';
     var config = {};
     jsonfile.readFile(confFile, function(err, obj) {
       if (err){
@@ -150,6 +150,7 @@ program.parse(process.argv);
 //Helper Functions
 function findKeyObj(list, t){
   for (var i = 0; i < list.length; i++){
+    console.log(list[i] + " t is " + t);
     if (list[i].pkh == t || list[i].label == t) return list[i];
   }
   return false;
