@@ -64,7 +64,7 @@ if (validCommands.indexOf(command) < 0 ) {
       // Load node
       if (config.provider) eztz.node.setProvider(config.provider);
     });
-    console.log(config);
+    
 program
 .version('0.0.1', '-v, --version')
 .command('setup')
@@ -148,12 +148,12 @@ program.parse(process.argv);
 
 
 //Helper Functions
-  function findKeyObj(list, t){
-    for (var i = 0; i < list.length; i++){
-      if (list[i].pkh == t || list[i].label == t) return list[i];
-    }
-    return false;
+function findKeyObj(list, t){
+  for (var i = 0; i < list.length; i++){
+    if (list[i].pkh == t || list[i].label == t) return list[i];
   }
+  return false;
+}
   function formatTez(a){
     return formatMoney(a)+"tz";
   }
