@@ -53,7 +53,7 @@ if (validCommands.indexOf(command) < 0 ) {
     
     // Load config
     var jsonfile = require('jsonfile');
-    var confFile = './config.json';
+    var confFile = 'config.json';
     var config = {};
     jsonfile.readFile(confFile, function(err, obj) {
       if (err){
