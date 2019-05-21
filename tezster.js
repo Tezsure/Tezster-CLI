@@ -39,8 +39,8 @@ const getBalance = eztzF.getBalance;
 var command = process.argv[2], args = process.argv.slice(3);
 //console.log(command);
 //console.log(args);
-if (process.argv.length <= 2){
-    console.error("Please enter a command!" + process.argv[2]);
+if (process.argv[2].length <= 2){
+    console.error("Please enter a command!");
     process.exit();
 }
 if (validCommands.indexOf(command) < 0 ) {
