@@ -20,7 +20,7 @@ validCommands = [
   'listIdentities',
   'listAccounts',
   'listContracts',
-  'getBalance',
+  'balance',
   'setDelegate',
   'transfer',
   'typecheckCode',
@@ -37,8 +37,7 @@ const eztzF = require("./cli/eztz.cli.js");
 const eztz=eztzF.eztz;
 const getBalance = eztzF.getBalance;
 var command = process.argv[2], args = process.argv.slice(3);
-//console.log(command);
-//console.log(args);
+
 if (process.argv[2].length <= 2){
     console.error("Please enter a command!");
     process.exit();
@@ -48,26 +47,25 @@ if (validCommands.indexOf(command) < 0 ) {
     process.exit();
 }
 //await _sodium.ready;
-    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-    eztz.library.sodium = _sodium;
-
-
-    // Load config
-    var jsonfile = require('jsonfile');
-    var confFile = './config.json';
-    var config = {};
-    console.log("fisrt " + config);
-    jsonfile.readFile(confFile, function(err, obj) {
-      if (err){
-        //outputInfo('No config file found, making new one...');
-        jsonfile.writeFile(confFile, defaultConfig);
-      } else {
-        config = obj;
-      }
-      // Load node
-      if (config.provider) eztz.node.setProvider(config.provider);
+var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+eztz.library.sodium = _sodium;
     
-   
+
+// Load config
+var jsonfile = require('jsonfile');
+var confFile = './config.json';
+var config = {};
+    jsonfile.readFile(confFile, function(err, obj) {
+    if (err){
+      jsonfile.writeFile(confFile, defaultConfig);
+    } else {
+      config = obj;
+      }
+// Load node
+    if (config.provider) eztz.node.setProvider(config.provider);
+    });
+
+
 program
 .version('0.0.1', '-v, --version')
 .command('setup')
@@ -149,14 +147,15 @@ program
   return console.log("New identity created " + keys.pkh);
 });
 
+
+//******* list of identities */
 program
 .command('listIdentities')
 .action(function(){
   for(var i = 0; i < config.identities.length; i++){
-    console.log(config.identities[i].label + " - " + config.identities[i].pkh);
-  }
+       console.log(config.identities[i].label + " - " + config.identities[i].pkh);
+      }
 });
-
 
 program.parse(process.argv);
 
