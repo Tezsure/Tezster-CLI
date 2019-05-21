@@ -44,7 +44,7 @@ if (process.argv.length <= 2){
     process.exit();
 }
 if (validCommands.indexOf(command) < 0 ) {
-    console.error("Invalid command" + process.argv[2]);
+    console.error("Invalid command");
     process.exit();
 }
 //await _sodium.ready;
