@@ -47,26 +47,27 @@ if (validCommands.indexOf(command) < 0 ) {
     console.error("Invalid command");
     process.exit();
 }
-await _sodium.ready;
+//await _sodium.ready;
     var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
     eztz.library.sodium = _sodium;
-    
+
+
     // Load config
     var jsonfile = require('jsonfile');
     var confFile = './config.json';
     var config = {};
+    console.log("fisrt " + config);
     jsonfile.readFile(confFile, function(err, obj) {
       if (err){
-        console.log("error");
-       jsonfile.writeFile(confFile, defaultConfig);
+        //outputInfo('No config file found, making new one...');
+        jsonfile.writeFile(confFile, defaultConfig);
       } else {
-        console.log("voila");
         config = obj;
       }
-      console.log(config);
       // Load node
       if (config.provider) eztz.node.setProvider(config.provider);
-    });
+    
+   
 program
 .version('0.0.1', '-v, --version')
 .command('setup')
