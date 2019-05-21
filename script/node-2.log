@@ -1,0 +1,30 @@
+Warning: cannot resolve "bootalpha.tzbeta.net"
+
+Warning: cannot resolve "boot.tzalpha.net"
+
+Generating a new identity... (level: 0.00)        |.....|       
+Stored the new identity (idrcNPx6ZCEzK6YUs3UmeL2H2Bvg5G) into '/tmp/tezos-node.njf89G1c/identity.json'.
+May 16 09:40:19 - node.main: Starting the Tezos node...
+May 16 09:40:19 - node.main: No local peer discovery.
+May 16 09:40:19 - node.main: Peer's global id: idrcNPx6ZCEzK6YUs3UmeL2H2Bvg5G
+May 16 09:40:19 - node.worker: bootstrapping chain...
+May 16 09:40:19 - validator.block: Worker started
+May 16 09:40:19 - validation_process.sequential: Intialized
+May 16 09:40:19 - node.validator: activate chain NetXgtSLGNJvNye
+May 16 09:40:19 - validator.chain(1): Worker started for NetXgtSLGNJvN
+May 16 09:40:19 - p2p.maintenance: Too few connections (0)
+May 16 09:40:19 - node.chain_validator: no prevalidator filter found for protocol 'Ps6mwMrF2ER2'
+May 16 09:40:19 - prevalidator.NetXgtSLGNJvN.Ps6mwMrF2ER2(1): Worker started for NetXgtSLGNJvN.Ps6mwMrF2ER2
+May 16 09:40:19 - node.main: Starting a RPC server listening on ::ffff:127.0.0.1:18732.
+May 16 09:40:19 - node.main: The Tezos node is now running!
+May 16 09:40:19 - validator.peer(1): Worker started for NetXgtSLGNJvN:idsCetVP8uqS
+May 16 09:54:11 - validator.block: Block BL2SUNsNAgGvaJM5wtDHPBbrgVAQRXiAfeYgKsvv3fjeQMsFh5L successfully validated
+May 16 09:54:11 - validator.block: Pushed: 2019-05-16T04:24:10Z, Treated: 2019-05-16T04:24:10Z, Completed: 2019-05-16T04:24:11Z
+May 16 09:54:11 - prevalidator.NetXgtSLGNJvN.PsddFKi32cMJ(1): Worker started for NetXgtSLGNJvN.PsddFKi32cMJ
+May 16 09:54:11 - prevalidator.NetXgtSLGNJvN.Ps6mwMrF2ER2(1): Worker terminated [NetXgtSLGNJvN.Ps6mwMrF2ER2] 
+May 16 09:54:11 - validator.chain(1): Update current head to BL2SUNsNAgGvaJM5wtDHPBbrgVAQRXiAfeYgKsvv3fjeQMsFh5L (fitness 00::0000000000000001), same branch
+May 16 09:54:11 - validator.chain(1): Pushed: 2019-05-16T04:24:11Z, Treated: 2019-05-16T04:24:11Z, Completed: 2019-05-16T04:24:11Z
+May 16 11:50:48 - validator.peer(1): Worker terminated [NetXgtSLGNJvN:idsCetVP8uqS] 
+./tezos/src/bin_node/tezos-sandboxed-node.sh: line 221:  2083 Killed                  $node run --data-dir "$node_dir" "${peers[@]}" "$sandbox_param" "$@"
+Cleaning up...
+./tezos/src/bin_node/tezos-sandboxed-node.sh: line 188: kill: (2083) - No such process
