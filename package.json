@@ -21,6 +21,7 @@
     "bs58check": "^2.1.2",
     "commander": "^2.20.0",
     "crypto": "^1.0.1",
+    "fs": "^0.0.1-security",
     "get-random-values": "^1.2.0",
     "jsonfile": "^5.0.0",
     "libsodium-wrappers": "^0.7.4",

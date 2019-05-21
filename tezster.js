@@ -33,7 +33,7 @@ validCommands = [
   'provider',
 ];
 const program = require('commander');
-const eztzF = require("./eztz.cli.js");
+const eztzF = require("./cli/eztz.cli.js");
 const eztz=eztzF.eztz;
 const getBalance = eztzF.getBalance;
 var command = process.argv[2], args = process.argv.slice(3);
@@ -46,29 +46,26 @@ if (validCommands.indexOf(command) < 0 ) {
     console.error("Invalid command");
     process.exit();
 }
-//await _sodium.ready;
+ _sodium.ready;
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 eztz.library.sodium = _sodium;
     
 
-// Load config
-var jsonfile = require('jsonfile');
+/////////
+const jsonfile = require('jsonfile');
 var confFile = './config.json';
-var config = {};
-console.log("begining");
-    jsonfile.readFile(confFile, function(err, obj) {
-    if (err){
-      console.log("error to fetch");
-      jsonfile.writeFile(confFile, defaultConfig);
-    } else {
-      console.log("object data");
-      config = obj;
-      }
-// Load node
-    if (config.provider) eztz.node.setProvider(config.provider);
-    });
+var config={};
+jsonfile.readFile(confFile, function(err, obj) {
+  if (err){
+    console.log('No config file found, making new one...');
+    jsonfile.writeFile(confFile, defaultConfig);
+  } else {
+    config = obj;
+  }
+  //Load node
+  if (config.provider) eztz.node.setProvider(config.provider);
+});
 
-  console.log("end data " + config.identities.length);
 program
 .version('0.0.1', '-v, --version')
 .command('setup')
@@ -155,7 +152,8 @@ program
 program
 .command('listIdentities')
 .action(function(){
-  for(var i = 0; i < config.identities.length; i++){
+  //for(var i = 0; i < config.identities.length; i++){
+    for (var i in config.identities){
        console.log(config.identities[i].label + " - " + config.identities[i].pkh);
   } 
 });
@@ -165,7 +163,8 @@ program.parse(process.argv);
 
 //Helper Functions
   function findKeyObj(list, t){
-    for (var i = 0; i < list.length; i++){
+    //for (var i = 0; i < list.length; i++){
+      for(var i in list){
       if (list[i].pkh == t || list[i].label == t) return list[i];
     }
     return false;
