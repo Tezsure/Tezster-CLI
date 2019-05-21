@@ -132,6 +132,18 @@ program
             return console,log(e);
           });
 });
+
+
+program
+.command('newIdentity')
+.action(function(){
+  if (args.length < 1) return console.log("Please enter name for the new identity");
+  if (findKeyObj(config.identities, args[0])) return console.log("That identity name is already in use");
+  var keys = eztz.crypto.generateKeysNoSeed();
+  keys.label = args[0];
+  jsonfile.writeFile(confFile, config);
+  return console.log("New identity created " + keys.pkh);
+});
 program.parse(process.argv);
 
 
