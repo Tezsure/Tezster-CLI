@@ -10,10 +10,10 @@ function main {
     if [ -f "$SETUP_SUCCESS_FILE" ]; then
         nohup ./tezos/src/bin_node/tezos-sandboxed-node.sh 1 > $NODE_18731_LOG 2>&1 &
         nohup ./tezos/src/bin_node/tezos-sandboxed-node.sh 2 > $NODE_18732_LOG 2>&1 &
-        touch $RUN_NODE_SUCCESS_FILE &
+        touch $RUN_NODE_SUCCESS_FILE & echo "Started nodes successfully..."
         disown
     else 
-        echo 'setup is not successful, please try running it again....'
+        echo 'setup is not successful, please try running "tezster setup" again....'
     fi
 }
 
