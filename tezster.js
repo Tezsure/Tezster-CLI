@@ -35,7 +35,7 @@ validCommands = [
 const program = require('commander');
 const eztzF = require("./cli/eztz.cli.js");
 const eztz=eztzF.eztz;
-const getBalance = eztzF.getBalance;
+const balance = eztzF.getBalance;
 var command = process.argv[2], args = process.argv.slice(3);
 
 if (process.argv[2].length <= 2){
@@ -51,20 +51,12 @@ var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 eztz.library.sodium = _sodium;
     
 
-/////////
+// load config
 const jsonfile = require('jsonfile');
 var confFile = './config.json';
-var config={};
-jsonfile.readFile(confFile, function(err, obj) {
-  if (err){
-    console.log('No config file found, making new one...');
-    jsonfile.writeFile(confFile, defaultConfig);
-  } else {
-    config = obj;
-  }
-  //Load node
+var config=jsonfile.readFileSync(confFile);
   if (config.provider) eztz.node.setProvider(config.provider);
-});
+
 
 program
 .version('0.0.1', '-v, --version')
@@ -116,7 +108,7 @@ program
 });
 
 program
-.command('getBalance')
+.command('balance')
 .action(function(){
     if (args.length < 1) return console.log("Incorrect usage - eztz balance $tz1");
           var pkh = args[0], f;
@@ -127,13 +119,12 @@ program
           } else if (f = findKeyObj(config.contracts, pkh)) {
             pkh = f.pkh;
           }
-          getBalance(pkh).then(function(r){
+          balance(pkh).then(function(r){
             return console.log(formatTez(r/100));
           }).catch(function(e){
             return console,log(e);
           });
 });
-
 
 //****** for new Identity creation **************/
 program
@@ -153,12 +144,10 @@ program
 program
 .command('listIdentities')
 .action(function(){
-  //for(var i = 0; i < config.identities.length; i++){
     for (var i in config.identities){
        console.log(config.identities[i].label + " - " + config.identities[i].pkh);
   } 
 });
-
 program.parse(process.argv);
 
 
