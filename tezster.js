@@ -134,6 +134,7 @@ program
           });
 });
 
+<<<<<<< HEAD
 //****** for new Identity creation **************/
 program
 .command('newIdentity')
@@ -157,6 +158,14 @@ program
        console.log(config.identities[i].label + " - " + config.identities[i].pkh);
   } 
 });
+=======
+program
+.command('listIdentities')
+.action(function(){
+  for(var i = 0; i < config.identities.length; i++){
+       console.log(config.identities[i].label + " - " + config.identities[i].pkh);
+    });
+>>>>>>> 46b97837186185d888a92ea986a3cb04c730dfee
 
 program.parse(process.argv);
 
