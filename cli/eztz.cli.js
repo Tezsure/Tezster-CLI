@@ -664,6 +664,5 @@ eztz = {
 
 module.exports = {
   defaultProvider,
-  eztz: eztz,
-  getBalance:eztz.rpc.getBalance
+  eztz: eztz
 };

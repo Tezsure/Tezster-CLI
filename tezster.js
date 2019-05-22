@@ -1,62 +1,7 @@
 #!/usr/bin/env node
 'use strict';
-//Load sodium CLI wrappers
-const _sodium = require('libsodium-wrappers'),
-defaultConfig = {
-  provider : "",
-  identities : [],
-  accounts : [],
-  contracts : [],
-  programs : [],
-},
-validCommands = [
-  'man',
-  'help',
-  'clearData',
-  'newIdentity',
-  'newAccount',
-  'freeAccount',
-  'newContract',
-  'listIdentities',
-  'listAccounts',
-  'listContracts',
-  'balance',
-  'setDelegate',
-  'transfer',
-  'typecheckCode',
-  'typecheckData',
-  'runCode',
-  'contract',
-  'storage',
-  'head',
-  'rpc',
-  'provider',
-];
+
 const program = require('commander');
-const eztzF = require("./cli/eztz.cli.js");
-const eztz=eztzF.eztz;
-const balance = eztzF.getBalance;
-var command = process.argv[2], args = process.argv.slice(3);
-
-if (process.argv[2].length <= 2){
-    console.error("Please enter a command!");
-    process.exit();
-}
-if (validCommands.indexOf(command) < 0 ) {
-    console.error("Invalid command");
-    process.exit();
-}
- _sodium.ready;
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-eztz.library.sodium = _sodium;
-    
-
-// load config
-const jsonfile = require('jsonfile');
-var confFile = './config.json';
-var config=jsonfile.readFileSync(confFile);
-  if (config.provider) eztz.node.setProvider(config.provider);
-
 
 program
 .version('0.0.1', '-v, --version')
@@ -107,9 +52,14 @@ program
     });
 });
 
+
+//*******for check the balance check */
 program
 .command('balance')
 .action(function(){
+  const requiredModule=require('./requiredModule');
+  const eztz=requiredModule.eztz;
+  const config=requiredModule.config;  
     if (args.length < 1) return console.log("Incorrect usage - eztz balance $tz1");
           var pkh = args[0], f;
           if (f = findKeyObj(config.identities, pkh)) {
@@ -119,23 +69,25 @@ program
           } else if (f = findKeyObj(config.contracts, pkh)) {
             pkh = f.pkh;
           }
-          balance(pkh).then(function(r){
+          eztz.eztz.rpc.getBalance(pkh).then(function(r){
             return console.log(formatTez(r/100));
           }).catch(function(e){
             return console,log(e);
           });
 });
 
-//****** for new Identity creation **************/
+//****** for new Identity creation */
 program
 .command('newIdentity')
 .action(function(){
+  const requiredModule=require('./requiredModule');
+  const eztz=requiredModule.eztz;
   if (args.length < 1) return console.log("Please enter name for the new identity");
 
-  if (findKeyObj(config.identities, args[0])) return console.log("That identity name is already in use");
+  if (findKeyObj(requiredModule.config.identities, args[0])) return console.log("That identity name is already in use");
   var keys = eztz.crypto.generateKeysNoSeed();
   keys.label = args[0];
-  jsonfile.writeFile(confFile, config);
+  //jsonfile.writeFile(confFile, config);
   return console.log("New identity created " + keys.pkh);
 });
 
@@ -144,16 +96,27 @@ program
 program
 .command('listIdentities')
 .action(function(){
-    for (var i in config.identities){
-       console.log(config.identities[i].label + " - " + config.identities[i].pkh);
+    const requiredModule=require('./requiredModule');
+    for (var i in requiredModule.config.identities){
+       console.log(requiredModule.config.identities[i].label + " - " + requiredModule.config.identities[i].pkh);
   } 
 });
+
+const validCommands=require('./requiredModule').validCommands;
+var command = process.argv[2], args = process.argv.slice(3);
+if (process.argv[2].length <= 2){
+  console.error("Please enter a command!");
+  process.exit();
+}
+if (validCommands.indexOf(command) < 0 ) {
+  console.error("Invalid command");
+  process.exit();
+}
 program.parse(process.argv);
 
 
 //Helper Functions
   function findKeyObj(list, t){
-    //for (var i = 0; i < list.length; i++){
       for(var i in list){
       if (list[i].pkh == t || list[i].label == t) return list[i];
     }
