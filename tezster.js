@@ -162,7 +162,8 @@ program
 program
 .command('listIdentities')
 .action(function(){
-  for(var i = 0; i < config.identities.length; i++){
+  //for(var i = 0; i < config.identities.length; i++){
+     for(var i in config.identities){
        console.log(config.identities[i].label + " - " + config.identities[i].pkh);
     });
 >>>>>>> 46b97837186185d888a92ea986a3cb04c730dfee
