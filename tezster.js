@@ -81,7 +81,7 @@ program
 .command('newIdentity')
 .action(function(){
   const requiredModule=require('./requiredModule');
-  const eztz=requiredModule.eztz;
+  const eztz=requiredModule.eztz;  
   if (args.length < 1) return console.log("Please enter name for the new identity");
 
   if (findKeyObj(requiredModule.config.identities, args[0])) return console.log("That identity name is already in use");

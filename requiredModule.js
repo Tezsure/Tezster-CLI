@@ -35,8 +35,13 @@ validCommands = [
 const jsonfile = require('jsonfile');
 var confFile = './config.json';
 var config=jsonfile.readFileSync(confFile);
-  if (config.provider) eztz.node.setProvider(config.provider);
 var eztz = require('./cli/eztz.cli.js').eztz;
+(async() => {
+    await _sodium.ready;
+    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+    eztz.library.sodium = _sodium;
+    if (config.provider) eztz.node.setProvider(config.provider);
+})
 
   module.exports={
       config:config,
