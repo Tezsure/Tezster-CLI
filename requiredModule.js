@@ -47,5 +47,8 @@ var eztz = require('./cli/eztz.cli.js').eztz;
       config:config,
       eztz:eztz,
       validCommands:validCommands,
-      defaultConfig:defaultConfig    
+      defaultConfig:defaultConfig,
+      confFile:confFile,
+      jsonfile:jsonfile
+
     };
