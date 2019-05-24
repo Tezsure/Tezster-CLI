@@ -9,7 +9,10 @@ program
 .action(function() {
     console.log('setting up tezos node, this could take a while....');
     const { exec } = require('child_process');
+    const fs = require("fs");
     let workingDir = __dirname + '/script';
+    let setup_successfile_dir = workingDir + '/setup.successful';
+
     exec('./setup.sh > setup.log',{cwd : workingDir}, (err, stdout, stderr) => {
         if (err) {
             console.error(`tezster setup error: ${err}`);
@@ -17,6 +20,11 @@ program
         }
 
         console.log(`${stdout}`);
+        if (fs.existsSync(setup_successfile_dir)) {
+            console.log('Setup has been completed successfully');
+        } else {
+            console.log('setup is not successful, please try running "tezster setup" again....');
+        }
     });
 });
 
@@ -33,6 +41,13 @@ program
         }
 
         console.log(`${stdout}`);
+        console.log(`Now you can use below addresses: 
+    tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx
+    tz1gjaF81ZRRvdzjobyfVNsAeSC6PScjfQwN
+    tz1faswCTDciRzE4oJ9jn2Vm2dvjeyA9fUzU
+    tz1b7tUupMgCNw2cCLpKTkSD1NZzB5TkP2sv
+    tz1ddb9NMYHZi5UzPdzTZMYQQZoMub195zgv
+    tz1TGu6TN5GSez2ndXXeDX6LgUDvLzPLqgYV`);
     });
 });
 
