@@ -7,7 +7,10 @@ Tezster comes in an npm package with a set of easy commands to kickstart the dev
 
 ### Prerequisites
 
-Coming soon.
+Latest version of Debian or Ubuntu. Windows users can run debian or ubuntu on
+
+1. Virtual  machine (eg.- VirtualBox)
+2. VM instance on cloud (eg.- Google cloud platform or AWS)
 
 ### Installing
 
@@ -29,7 +32,7 @@ Once it's done, you will get appropriate message. You need to run setup only onc
 tezster start-nodes
 ```
 It will activate Tezos alpha and will give you list of addresses it created. Now you will have two nodes running successfully on port 18731 and 18732. To see the nodes running 
-run as the root (super user)
+run following command as the root (super user)
 
 ```
 lsof -i :18731
