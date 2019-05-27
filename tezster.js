@@ -68,4 +68,20 @@ program
     });
 });
 
+//*******for check the balance check */
+program
+.command('get-balance')
+.action(async function(){
+    var args = process.argv.slice(3);
+    const tezsterManager = require('./tezster-manager');
+    if (args.length < 1) {
+        console.log(tezsterManager.outputInfo("Incorrect usage of get-balance command \n Correct usage: - tezster get-balance account/contract"));
+        return;
+    }
+    await tezsterManager.loadTezsterConfig();
+    tezsterManager.getBalance(args[0]).then((result) => {
+        console.log(result);
+    });
+});
+
 program.parse(process.argv);
