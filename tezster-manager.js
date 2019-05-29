@@ -1,50 +1,24 @@
 'use strict';
-const defaultConfig = {
-  provider : "",
-  identities : [],
-  accounts : [],
-  contracts : [],
-  programs : [],
-},
-cliColors = {
-    red : '31m',
-    yellow : '33m',
-    cyan : '36m',
-    white : '37m',
-    green : '32m',
-  },
-validCommands = [
-  'man',
-  'help',
-  'clearData',
-  'newIdentity',
-  'newAccount',
-  'freeAccount',
-  'newContract',
-  'listIdentities',
-  'listAccounts',
-  'listContracts',
-  'balance',
-  'setDelegate',
-  'transfer',
-  'typecheckCode',
-  'typecheckData',
-  'runCode',
-  'contract',
-  'storage',
-  'head',
-  'rpc',
-  'provider',
-],
-confFile = __dirname + '/config.json';
+const cliColors = {
+        red : '31m',
+        yellow : '33m',
+        cyan : '36m',
+        white : '37m',
+        green : '32m',
+    },
+    confFile = __dirname + '/config.json',
+    jsonfile = require('jsonfile'); 
+
 var eztz = {}, 
-config = {};
+    config = jsonfile.readFileSync(confFile);
 
 async function loadTezsterConfig() {
     eztz = require('./lib/eztz.cli.js').eztz;
     const jsonfile = require('jsonfile');
     config=jsonfile.readFileSync(confFile);
-    if (config.provider) eztz.node.setProvider(config.provider);  
+    if (config.provider) {
+        eztz.node.setProvider(config.provider);
+    }  
     const _sodium = require('libsodium-wrappers');
     await _sodium.ready;
     eztz.library.sodium = _sodium;
@@ -80,6 +54,21 @@ function getBalance(account) {
     });
 }
 
+function getProvider(){    
+    if (config.provider){
+        return outputInfo(config.provider);
+    }else{
+        return outputInfo("No provider is set");
+    } 
+}
+
+function setProvider(args){    
+    config.provider = args[0];
+    jsonfile.writeFile(confFile, config);
+    return outputInfo("Provider updated to " + config.provider);
+}
+
+
 function findKeyObj(list, t){
     for (var i = 0; i < list.length; i++){
       if (list[i].pkh == t || list[i].label == t) return list[i];
@@ -103,6 +92,10 @@ module.exports= {
     loadTezsterConfig: loadTezsterConfig,
     getBalance: getBalance,
     outputInfo: outputInfo,
+    outputError: outputError,
     config: config,
-    eztz: eztz
+    eztz: eztz,
+    getProvider: getProvider,
+    setProvider: setProvider,
+    transferAmount: transferAmount
 };

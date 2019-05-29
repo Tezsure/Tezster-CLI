@@ -84,4 +84,53 @@ program
     });
 });
 
+//******* To get the list accounts */
+program
+.command('list-accounts')
+.action(async function(){    
+    const tezsterManager = require('./tezster-manager');    
+    await tezsterManager.loadTezsterConfig();
+    const config = tezsterManager.config;
+    for(var i in config.accounts){
+        console.log(config.accounts[i].label + " - " + config.accounts[i].pkh + " (" + config.accounts[i].identity + ")");
+    }
+});
+
+//******* TO get the list Contracts */
+program
+.command('list-contracts')
+.action(async function(){     
+    const tezsterManager = require('./tezster-manager');       
+    await tezsterManager.loadTezsterConfig();    
+    const config = tezsterManager.config;        
+    for(var i in config.contracts){
+        console.log(config.contracts[i].label + " - " + config.contracts[i].pkh + " (" + config.contracts[i].identity + ")");        
+        
+    }
+});
+
+//******* To get the Provider */
+program
+.command('get-provider')
+.action(async function(){        
+    const tezsterManager = require('./tezster-manager');    
+    await tezsterManager.loadTezsterConfig(); 
+    console.log(tezsterManager.getProvider());
+});
+
+
+//******* To set the Provider */
+program
+.command('set-provider')
+.action(async function(){  
+    var args = process.argv.slice(3);  
+    const tezsterManager = require('./tezster-manager');  
+    if (args.length < 1){ 
+    console.log(tezsterManager.outputError("Incorrect usage - tezster set-provider http://{ip}:{port}"));
+     return;
+    }
+    await tezsterManager.loadTezsterConfig(); 
+    console.log(tezsterManager.setConfProvider(args));
+});
+
 program.parse(process.argv);
