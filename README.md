@@ -48,7 +48,7 @@ tezster stop-nodes
 Coming soon.
 
 ```
-Keep developing
+keep developing
 ```
-
+![image](image.png)
 
