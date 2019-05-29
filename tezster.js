@@ -4,7 +4,7 @@
 const program = require('commander');
 
 program
-.version('0.0.4', '-v, --version')
+.version('0.0.5', '-v, --version')
 .command('setup')
 .action(function() {
     console.log('setting up tezos node, this could take a while....');
@@ -41,14 +41,6 @@ program
         }
 
         console.log(`${stdout}`);
-        console.log(`Now you can use below addresses: 
-    tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx
-    tz1gjaF81ZRRvdzjobyfVNsAeSC6PScjfQwN
-    tz1faswCTDciRzE4oJ9jn2Vm2dvjeyA9fUzU
-    tz1b7tUupMgCNw2cCLpKTkSD1NZzB5TkP2sv
-    tz1ddb9NMYHZi5UzPdzTZMYQQZoMub195zgv
-    tz1TGu6TN5GSez2ndXXeDX6LgUDvLzPLqgYV`);
-    });
 });
 
 program
