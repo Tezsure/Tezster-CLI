@@ -96,6 +96,5 @@ module.exports= {
     config: config,
     eztz: eztz,
     getProvider: getProvider,
-    setProvider: setProvider,
-    transferAmount: transferAmount
+    setProvider: setProvider
 };
