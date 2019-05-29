@@ -1,6 +1,6 @@
 {
-  "name": "tezster",
-  "version": "0.0.1",
+  "name": "tezster-beta",
+  "version": "0.0.4",
   "description": "A personal development blockchain based on Javascript that lives entirely on your local machine.",
   "main": "tezster.js",
   "scripts": {
@@ -18,7 +18,15 @@
   "license": "ISC",
   "dependencies": {
     "commander": "^2.20.0",
+    "bip39": "^3.0.2",
+    "bs58check": "^2.1.2",
+    "crypto": "^1.0.1",
+    "fs": "^0.0.1-security",
+    "get-random-values": "^1.2.0",
+    "jsonfile": "^5.0.0",
+    "libsodium-wrappers": "^0.7.4",
     "node-cmd": "^3.0.0",
-    "shell-source": "^1.1.0"
+    "pbkdf2": "^3.0.17",
+    "xmlhttprequest": "^1.8.0"
   }
 }
