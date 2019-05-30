@@ -84,8 +84,13 @@ program
     const tezsterManager = require('./tezster-manager');    
     await tezsterManager.loadTezsterConfig();
     const config = tezsterManager.config;
+    if(Object.keys(config.accounts).length > 1){
     for(var i in config.accounts){
-        console.log(config.accounts[i].label + " - " + config.accounts[i].pkh + " (" + config.accounts[i].identity + ")");
+        console.log(tezsterManager.output(config.accounts[i].label + " - " + config.accounts[i].pkh + " (" + config.accounts[i].identity + ")"));
+        }
+    }
+    else{    
+        console.log(tezsterManager.outputError("Accounts are not Available !!"));        
     }
 });
 
@@ -95,10 +100,14 @@ program
 .action(async function(){     
     const tezsterManager = require('./tezster-manager');       
     await tezsterManager.loadTezsterConfig();    
-    const config = tezsterManager.config;        
+    const config = tezsterManager.config;
+    if(Object.keys(config.contracts).length > 1){        
     for(var i in config.contracts){
-        console.log(config.contracts[i].label + " - " + config.contracts[i].pkh + " (" + config.contracts[i].identity + ")");        
-        
+        console.log(tezsterManager.output(config.contracts[i].label + " - " + config.contracts[i].pkh + " (" + config.contracts[i].identity + ")"));        
+        }
+    }
+    else{
+        console.log(tezsterManager.outputError("No Contracts are Available !!"));        
     }
 });
 
