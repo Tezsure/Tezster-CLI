@@ -90,7 +90,7 @@ program
         }
     }
     else{    
-        console.log(tezsterManager.outputError("Accounts are not Available !!"));        
+        console.log(tezsterManager.outputError("No Account is available !!"));        
     }
 });
 
