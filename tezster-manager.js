@@ -77,15 +77,15 @@ function findKeyObj(list, t){
 }
 
 function outputError(e){
-    return '\x1b['+cliColors.red+'%s\x1b[0m' + " Error: " + e;
+    return '\x1b['+cliColors.red+'Error :'+e+'\x1b[0m';
 }
 
 function outputInfo(e){
-    return '\x1b['+cliColors.yellow+'%s\x1b[0m'+ e;
+    return '\x1b['+cliColors.yellow+e+'\x1b[0m';
 }
 
 function output(e){
-    return '\x1b['+cliColors.green+'%s\x1b[0m' + e;
+    return '\x1b['+cliColors.green+e+'\x1b[0m';
 }
 
 module.exports= {
@@ -93,6 +93,7 @@ module.exports= {
     getBalance: getBalance,
     outputInfo: outputInfo,
     outputError: outputError,
+    output:output,
     config: config,
     eztz: eztz,
     getProvider: getProvider,

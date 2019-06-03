@@ -84,8 +84,13 @@ program
     const tezsterManager = require('./tezster-manager');    
     await tezsterManager.loadTezsterConfig();
     const config = tezsterManager.config;
-    for(var i in config.accounts){
-        console.log(config.accounts[i].label + " - " + config.accounts[i].pkh + " (" + config.accounts[i].identity + ")");
+    if(Object.keys(config.accounts).length > 0){
+        for(var i in config.accounts){
+            console.log(tezsterManager.output(config.accounts[i].label + " - " + config.accounts[i].pkh + " (" + config.accounts[i].identity + ")"));
+        }
+    }
+    else{    
+        console.log(tezsterManager.outputError("No Account is available !!"));        
     }
 });
 
@@ -95,10 +100,14 @@ program
 .action(async function(){     
     const tezsterManager = require('./tezster-manager');       
     await tezsterManager.loadTezsterConfig();    
-    const config = tezsterManager.config;        
-    for(var i in config.contracts){
-        console.log(config.contracts[i].label + " - " + config.contracts[i].pkh + " (" + config.contracts[i].identity + ")");        
-        
+    const config = tezsterManager.config;
+    if(Object.keys(config.contracts).length > 0){        
+        for(var i in config.contracts){
+            console.log(tezsterManager.output(config.contracts[i].label + " - " + config.contracts[i].pkh + " (" + config.contracts[i].identity + ")"));        
+        }
+    }
+    else{
+        console.log(tezsterManager.outputError("No Contracts are Available !!"));        
     }
 });
 
@@ -119,8 +128,8 @@ program
     var args = process.argv.slice(3);  
     const tezsterManager = require('./tezster-manager');  
     if (args.length < 1){ 
-    console.log(tezsterManager.outputError("Incorrect usage - tezster set-provider http://{ip}:{port}"));
-     return;
+        console.log(tezsterManager.outputError("Incorrect usage - tezster set-provider http://{ip}:{port}"));
+        return;
     }
     await tezsterManager.loadTezsterConfig(); 
     console.log(tezsterManager.setProvider(args));
