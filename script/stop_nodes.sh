@@ -14,6 +14,9 @@ function stopnode {
 function main {
 	stopnode 18731
 	stopnode 18732
+	rm -rf ./tmp/blocks
+	rm -rf ./tmp/nonces
+	rm -rf ./tmp/wallet_lock
 }
 
 main

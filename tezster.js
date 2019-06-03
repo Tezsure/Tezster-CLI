@@ -135,4 +135,43 @@ program
     console.log(tezsterManager.setProvider(args));
 });
 
+//******* To transfer the amount */
+program
+.command('transfer')
+.action(async function(){  
+    var args = process.argv.slice(3);  
+    const tezsterManager = require('./tezster-manager');
+    if (args.length < 2) {
+        console.log(tezsterManager.outputError("Incorrect usage - tezster transfer <amount> <from> <to> <fees>"));
+        return;
+    }
+    await tezsterManager.loadTezsterConfig(); 
+    tezsterManager.transferAmount(args).then((result) => {        
+        console.log(result);
+    });
+});
+
+//******* To transfer the amount */
+program
+.command('bake-for')
+.action(async function(){  
+    var args = process.argv.slice(3);
+    const tezsterManager = require('./tezster-manager');
+    if (args.length < 1) {
+        console.log(tezsterManager.outputError("Incorrect usage - tezster bake-for <identity-label>"));
+        return;
+    }
+    console.log('baking the previous operation.....');
+    const { exec } = require('child_process');
+    let workingDir = __dirname + '/script';
+    exec('./bake_tx.sh ' + args[0],{cwd : workingDir}, (err, stdout, stderr) => {
+        if (err) {
+            console.error(`tezster baking opertaion error: ${err}`);
+            return;
+        }
+
+        console.log(`Baking successful ${stdout}`);
+    });
+});
+
 program.parse(process.argv);
