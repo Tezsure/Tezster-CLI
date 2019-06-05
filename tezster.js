@@ -61,6 +61,22 @@ program
     });
 });
 
+program
+.command('install-liquidity')
+.action(function() {
+    console.log('installing liquidity.....');
+    const { exec } = require('child_process');
+    let workingDir = __dirname + '/script';
+    exec('./install_liquidity.sh',{cwd : workingDir}, (err, stdout, stderr) => {
+        if (err) {
+            console.error(`tezster installing liquidity error: ${err}`);
+            return;
+        }
+
+        console.log(`${stdout}`);
+    });
+});
+
 //*******for check the balance check */
 program
 .command('get-balance')
