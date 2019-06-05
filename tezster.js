@@ -77,6 +77,24 @@ program
     });
 });
 
+program
+.command('fix-liquidity-package')
+.action(function() {
+    console.log('Fixing libsodium package for liquidity.....');
+    const { exec } = require('child_process');
+    let workingDir = __dirname + '/script';
+    exec('./fix_libsodium.sh',{cwd : workingDir}, (err, stdout, stderr) => {
+        if (err) {
+            console.error(`tezster Fixing liquidity package error: ${err}`);
+            return;
+        }
+
+        console.log(`${stdout}`);
+        console.log(`Check version for libsodium-dev, If it's >= 1.0.11, try installing liquidity by running
+        "tezster install-liquidity" again`);
+    });
+});
+
 //*******for check the balance check */
 program
 .command('get-balance')
