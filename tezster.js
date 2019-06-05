@@ -208,4 +208,19 @@ program
     });
 });
 
+//******* To Create an account */
+program
+.command('create-account')
+.action(async function(){  
+    var args = process.argv.slice(3);  
+    const tezsterManager = require('./tezster-manager');
+    if (args.length < 3) return console.log(tezsterManager.outputError("Incorrect usage - tezster create-account <Indentity> <Account Label> <amount> <spendable=true[Optional]> <delegatable=true[Optional]> <delegate[Optional]> <fee=0[Optional]>"));
+    await tezsterManager.loadTezsterConfig(); 
+    tezsterManager.createAccount(args).then((result) => {
+        console.log(result);
+    });
+          
+});
+
+
 program.parse(process.argv);
