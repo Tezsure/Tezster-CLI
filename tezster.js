@@ -222,5 +222,21 @@ program
           
 });
 
+program
+.command('help')
+.action(async function(){
+    const tezsterManager = require('./tezster-manager');
+    console.log(tezsterManager.helpData); //'\x1b[33m%s\x1b[0m',         
+});
+
+
+if (process.argv.length <= 2){
+    console.log('\x1b[31m%s\x1b[0m', "Error: " +"Please enter a command!");
+}
+var commands=process.argv[2];
+const validCommands = ['help','create-account','list-Identities','list-accounts','list-contracts','get-balance','transfer','bake-for','set-provider','get-provider','fix-liquidity-package','install-liquidity','stop-nodes','start-nodes','setup'];
+if (validCommands.indexOf(commands) < 0 && process.argv.length >2 ) {
+    console.log('\x1b[31m%s\x1b[0m', "Error: " + "Invalid command\nPlease run tezster help to get info about commands ");        
+}
 
 program.parse(process.argv);

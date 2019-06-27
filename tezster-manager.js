@@ -7,8 +7,20 @@ const cliColors = {
         green : '32m',
     },
     confFile = __dirname + '/config.json',
-    jsonfile = require('jsonfile'); 
-
+    jsonfile = require('jsonfile');
+var helpData="Usage: tezster [command] [optional parameters].....\n";
+    helpData+="Tezster comes in an npm package with a set of easy commands to kickstart the development or interaction with Tezos. The current beta version will install and start tezos node on your local machine.\n\n";
+    helpData+="Most used commands:\n";
+    helpData+="setup- setting up tezos node\n";
+    helpData+="start-nodes- starting the nodes\n";
+    helpData+="stop-nodes- stopping the nodes\n";
+    helpData+="create-accounts [Indentity][Label][amount]- To create a new accounts.\n";
+    helpData+="get-balance [account/contract(pkh)]- To get the balance of account/contracts\n";
+    helpData+="transfer [amount][from][to][fees]- To transfer the funds b/w accounts\n";
+    helpData+="list-accounts- To fetch all the accounts\n";
+    helpData+="list-contracts- To fetch all the contracts\n";
+    helpData+="set-provider [http://{ip}:{port}]- To change the default provider\n";
+    helpData+="get-provider- To fetch the current provider\n";
 var eztz = {}, 
     config = jsonfile.readFileSync(confFile);
 
@@ -154,5 +166,6 @@ module.exports= {
     getProvider: getProvider,
     setProvider: setProvider,
     transferAmount: transferAmount,
-    createAccount:createAccount
+    createAccount:createAccount,
+    helpData:helpData,
 };
