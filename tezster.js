@@ -95,22 +95,21 @@ program
     });
 });
 
-program
-.command('autocomplete-process')
-.action(function() {
-    console.log('uploading commands for autocomplete.....');
-    const { exec } = require('child_process');
-    let workingDir = __dirname + '/script';
-    exec('./autocomplete.sh',{cwd : workingDir}, (err, stdout, stderr) => {
-        if (err) {
-            console.error(`tezster Fixing commands uploading issue error: ${err}`);
-            return;
-        }
+// program
+// .command('autocomplete-process')
+// .action(function() {    
+//     const { exec } = require('child_process');
+//     let workingDir = __dirname + '/script';
+//     exec('./autocomplete.sh',{cwd : workingDir}, (err, stdout, stderr) => {
+//         if (err) {
+//             console.error(`tezster Fixing commands uploading issue error: ${err}`);
+//             return;
+//         }
 
-        console.log(`${stdout}`);
-        console.log(`now you can use press TAB for autocomplete commands`);
-    });
-});
+//         console.log(`${stdout}`);
+//         console.log(`now you can use press TAB for autocomplete commands`);
+//     });
+// });
 //*******for check the balance check */
 program
 .command('get-balance')
