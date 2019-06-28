@@ -95,6 +95,22 @@ program
     });
 });
 
+program
+.command('autocomplete-process')
+.action(function() {
+    console.log('uploading commands for autocomplete.....');
+    const { exec } = require('child_process');
+    let workingDir = __dirname + '/script';
+    exec('./autocomplete.sh',{cwd : workingDir}, (err, stdout, stderr) => {
+        if (err) {
+            console.error(`tezster Fixing commands uploading issue error: ${err}`);
+            return;
+        }
+
+        console.log(`${stdout}`);
+        console.log(`now you can use press TAB for autocomplete commands`);
+    });
+});
 //*******for check the balance check */
 program
 .command('get-balance')
@@ -234,7 +250,7 @@ if (process.argv.length <= 2){
     console.log('\x1b[31m%s\x1b[0m', "Error: " +"Please enter a command!");
 }
 var commands=process.argv[2];
-const validCommands = ['help','create-account','list-Identities','list-accounts','list-contracts','get-balance','transfer','bake-for','set-provider','get-provider','fix-liquidity-package','install-liquidity','stop-nodes','start-nodes','setup'];
+const validCommands = ['help','create-account','list-Identities','list-accounts','list-contracts','get-balance','transfer','bake-for','set-provider','get-provider','fix-liquidity-package','install-liquidity','stop-nodes','start-nodes','setup','autocomplete-process'];
 if (validCommands.indexOf(commands) < 0 && process.argv.length >2 ) {
     console.log('\x1b[31m%s\x1b[0m', "Error: " + "Invalid command\nPlease run tezster help to get info about commands ");        
 }
