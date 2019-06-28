@@ -1,0 +1,13 @@
+# completion.bash
+
+_tezster() {
+  COMPREPLY=()
+  local word="${COMP_WORDS[COMP_CWORD]}"
+  local completions="$(tezster --help --list-accounts-add --list-contracts --create-account --setup --start-nodes --stop-nodes --get-balance --transfer "$word")"
+	
+  COMPREPLY=( $(compgen -W "$completions" -- "$word") )
+}
+
+complete -o filenames -F _tezster tezster
+
+
