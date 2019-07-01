@@ -4,7 +4,7 @@
 const program = require('commander');
 
 program
-.version('0.1.4', '-v, --version')
+.version('0.1.7', '-v, --version')
 .command('setup')
 .action(function() {
     console.log('setting up tezos node, this could take a while....');
@@ -12,8 +12,17 @@ program
     const fs = require("fs");
     let workingDir = __dirname + '/script';
     let setup_successfile_dir = workingDir + '/setup.successful';
+    const _cliProgress = require('cli-progress');
+    let progress = 1;
+    let progressInterval;
+    const progressbar = new _cliProgress.Bar({
+    format: 'progress [{bar}] {percentage}% | ETA: {eta}s'
+    }, _cliProgress.Presets.shades_classic);
+    progressbar.start(100, progress);
 
     exec('./setup.sh > setup.log',{cwd : workingDir}, (err, stdout, stderr) => {
+        progressbar.update(100);
+        progressbar.stop();
         if (err) {
             console.error(`tezster setup error: ${err}`);
             return;
@@ -26,6 +35,17 @@ program
             console.log('setup is not successful, please try running "tezster setup" again....');
         }
     });
+
+    progressInterval = setInterval(() => {
+    progress = progress + 0.055;
+    if (progressInterval >= 100) {
+        clearInterval(progressInterval);
+        progressbar.update(100);
+        return;
+    }
+    progressbar.update(progress);
+
+    }, 1000);
 });
 
 program
