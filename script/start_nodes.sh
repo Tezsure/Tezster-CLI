@@ -10,9 +10,16 @@ function main {
     if [ -f "$SETUP_SUCCESS_FILE" ]; then
         nohup ./tezos/src/bin_node/tezos-sandboxed-node.sh 1 > $NODE_18731_LOG 2>&1 &
         nohup ./tezos/src/bin_node/tezos-sandboxed-node.sh 2 > $NODE_18732_LOG 2>&1 &
-        touch $RUN_NODE_SUCCESS_FILE 
-        echo "Started nodes successfully..."
         sleep 15
+        PID18731=$(lsof -ti:18731)
+        PID18732=$(lsof -ti:18732)
+        if [[ "$PID18731" =~ ^[0-9]+$ && "$PID18732" =~ ^[0-9]+$ ]] ; then
+            touch $RUN_NODE_SUCCESS_FILE 
+            echo "Started nodes successfully..."
+        else 
+            echo "Failed starting the nodes, please try again after killing any process running at port 18731 & 18732"
+            exit 0
+		fi 
         activateAlpha > $ACTIVATE_ALPHA_LOG 2>&1 
         echo "Activated alpha protocol successfully..."
     else 

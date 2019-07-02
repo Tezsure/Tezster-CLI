@@ -16,11 +16,12 @@ program
     let progress = 1;
     let progressInterval;
     const progressbar = new _cliProgress.Bar({
-    format: 'progress [{bar}] {percentage}% | ETA: {eta}s'
-    }, _cliProgress.Presets.shades_classic);
+                            format: 'progress [{bar}] {percentage}% | ETA: {eta}s'
+                            }, _cliProgress.Presets.shades_classic);
     progressbar.start(100, progress);
 
     exec('./setup.sh > setup.log',{cwd : workingDir}, (err, stdout, stderr) => {
+        clearInterval(progressInterval);
         progressbar.update(100);
         progressbar.stop();
         if (err) {
@@ -37,15 +38,14 @@ program
     });
 
     progressInterval = setInterval(() => {
-    progress = progress + 0.055;
-    if (progressInterval >= 100) {
-        clearInterval(progressInterval);
-        progressbar.update(100);
-        return;
-    }
-    progressbar.update(progress);
-
-    }, 1000);
+        progress = progress + 0.055;
+            if (progressInterval >= 100) {
+                clearInterval(progressInterval);
+                progressbar.update(100);
+                return;
+            }
+            progressbar.update(progress);
+        }, 1000);
 });
 
 program
@@ -54,14 +54,33 @@ program
     console.log('starting the nodes.....');
     const { exec } = require('child_process');
     let workingDir = __dirname + '/script';
+    const _cliProgress = require('cli-progress');
+    let progress = 0;
+    let progressInterval;
+    const progressbar = new _cliProgress.Bar({
+                            format: 'progress [{bar}] {percentage}% | ETA: {eta}s'
+                            }, _cliProgress.Presets.shades_classic);
+    progressbar.start(100, progress);
     exec('./start_nodes.sh',{cwd : workingDir}, (err, stdout, stderr) => {
+        clearInterval(progressInterval);
+        progressbar.update(100);
+        progressbar.stop();
         if (err) {
-            console.error(`tezster starting nodes error: ${err}`);
             return;
         }
 
         console.log(`${stdout}`);
     });
+
+    progressInterval = setInterval(() => {
+        progress = progress + 1.8;
+            if (progressInterval >= 100) {
+                clearInterval(progressInterval);
+                progressbar.update(100);
+                return;
+            }
+            progressbar.update(progress);
+        }, 1000);
 });
 
 program
