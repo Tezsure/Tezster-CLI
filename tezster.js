@@ -4,7 +4,7 @@
 const program = require('commander');
 
 program
-.version('0.1.10', '-v, --version')
+.version('0.1.11', '-v, --version')
 .command('setup')
 .action(function() {
     console.log('setting up tezos node, this could take a while....');
@@ -42,6 +42,8 @@ program
             if (progressInterval >= 100) {
                 clearInterval(progressInterval);
                 progressbar.update(100);
+                progressbar.stop();
+
                 return;
             }
             progressbar.update(progress);
