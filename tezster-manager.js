@@ -95,7 +95,7 @@ function transferAmount(args){
 
     fees = fees || 1400;
 
-    return eztz.rpc.transfer(from, keys, to, amount, 1400).then(function(r){
+    return eztz.rpc.transfer(from, keys, to, amount, 1400, undefined, 10200).then(function(r){
       return output("Transfer complete - operation hash #" + r.hash);
     }).catch(function(e){
       return outputError(e);
