@@ -249,4 +249,44 @@ program
     });
 });
 
+//*******deploy contract written */
+program
+.command('deploy')
+.action(async function(){
+    const fs = require("fs");
+    var args = process.argv.slice(3);
+    const tezsterManager = require('./tezster-manager');
+    if (args.length < 1) {
+        console.log(tezsterManager.outputInfo("Incorrect usage of deploy command \n Correct usage: - tezster deploy contract-label contract-absolute-path init-string"));
+        return;
+    }
+    await tezsterManager.loadTezsterConfig(); 
+    let contractLabel = args[0],
+        contract = fs.readFileSync(args[1], 'utf8'),
+        initValue = args[2] || '""';
+    const { exec } = require('child_process');
+    let workingDir = __dirname + '/script';
+    
+    exec("./deploy_contract.sh" + " " + contractLabel +" '" + contract + "' " + " '" +initValue + "'",{cwd : workingDir}, (err, stdout, stderr) => {
+        if (err) {
+            console.error(`tezster deploy contract error: ${err}`);
+            return;
+        }
+
+        const operationHashFull = /Operation hash is \'[a-zA-Z0-9]*\'/gm;
+        const operationHash = /\'[a-zA-Z0-9]*\'/gm;
+        let operationHashStr = stdout.match(operationHashFull);
+        if (operationHashStr.length) {
+            let opHashes = operationHashStr[0].match(operationHash);
+            if (opHashes.length) {
+                let opHash = opHashes[0];
+                opHash = opHash.slice(1, opHash.length-1);
+                // TODO : contract is being deployed with bootstrap1 always
+                tezsterManager.addContract(contractLabel, opHash, 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx');
+            }
+        }
+        console.log(`${stdout}`);
+    });
+});
+
 program.parse(process.argv);

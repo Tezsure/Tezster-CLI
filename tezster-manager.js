@@ -122,6 +122,28 @@ function output(e){
     return '\x1b['+cliColors.green+e+'\x1b[0m';
 }
 
+function addContract(label, opHash, pkh) {
+  config.contracts.push({
+    label : label,
+    pkh : eztz.contract.hash(opHash, 0),
+    identity : pkh,
+  });
+  jsonfile.writeFile(confFile, config);
+}
+
+function getKeys(account) {
+  let keys,f;
+  if (f = findKeyObj(config.identities, account)) {
+    keys = f;
+  } else if (f = findKeyObj(config.accounts, account)) {
+    keys = findKeyObj(config.identities, f.identity);
+  } else if (f = findKeyObj(config.contracts, account)) {
+    keys = findKeyObj(config.identities, f.identity);
+  }
+
+  return keys;
+}
+
 module.exports= {
     loadTezsterConfig: loadTezsterConfig,
     getBalance: getBalance,
@@ -132,5 +154,6 @@ module.exports= {
     eztz: eztz,
     getProvider: getProvider,
     setProvider: setProvider,
-    transferAmount: transferAmount
+    transferAmount: transferAmount,
+    addContract: addContract
 };
