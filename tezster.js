@@ -256,7 +256,7 @@ program
     const fs = require("fs");
     var args = process.argv.slice(3);
     const tezsterManager = require('./tezster-manager');
-    if (args.length < 1) {
+    if (args.length < 2) {
         console.log(tezsterManager.outputInfo("Incorrect usage of deploy command \n Correct usage: - tezster deploy contract-label contract-absolute-path init-string"));
         return;
     }
@@ -283,6 +283,45 @@ program
                 opHash = opHash.slice(1, opHash.length-1);
                 // TODO : contract is being deployed with bootstrap1 always
                 tezsterManager.addContract(contractLabel, opHash, 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx');
+            }
+        }
+        console.log(`${stdout}`);
+    });
+});
+
+
+program
+.command('call')
+.action(async function(){
+    const fs = require("fs");
+    var args = process.argv.slice(3);
+    const tezsterManager = require('./tezster-manager');
+    if (args.length < 2) {
+        console.log(tezsterManager.outputInfo("Incorrect usage of call command \n Correct usage: - tezster call argument-string"));
+        return;
+    }
+    await tezsterManager.loadTezsterConfig(); 
+    let contractLabel = args[0],
+        argument = args[2] || '""';
+    const { exec } = require('child_process');
+    let workingDir = __dirname + '/script';
+    
+    exec("./call_contract.sh" + " " + contractLabel + " '" + argument + "'",{cwd : workingDir}, (err, stdout, stderr) => {
+        if (err) {
+            console.error(`tezster call contract error: ${err}`);
+            return;
+        }
+
+        const operationHashFull = /Operation hash is \'[a-zA-Z0-9]*\'/gm;
+        const operationHash = /\'[a-zA-Z0-9]*\'/gm;
+        let operationHashStr = stdout.match(operationHashFull);
+        if (operationHashStr.length) {
+            let opHashes = operationHashStr[0].match(operationHash);
+            if (opHashes.length) {
+                let opHash = opHashes[0];
+                opHash = opHash.slice(1, opHash.length-1);
+                // TODO : contract is being called with bootstrap1 always
+                tezsterManager.addTransaction('contract-call', opHash, 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx', contractLabel, 0);
             }
         }
         console.log(`${stdout}`);

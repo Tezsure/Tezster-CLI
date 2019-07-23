@@ -17,6 +17,7 @@ function main {
 	rm -rf ./tmp/blocks
 	rm -rf ./tmp/nonces
 	rm -rf ./tmp/wallet_lock
+	rm -rf ./tmp/contracts
 }
 
 main
