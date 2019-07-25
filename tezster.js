@@ -220,7 +220,8 @@ program
         console.log(tezsterManager.outputError("Incorrect usage - tezster transfer <amount> <from> <to> <fees>"));
         return;
     }
-    await tezsterManager.loadTezsterConfig(); 
+    await tezsterManager.loadTezsterConfig();
+    console.log(`Please run "tezster bake-for <account-name> to bake this operation if operation is successful`);
     tezsterManager.transferAmount(args).then((result) => {        
         console.log(result);
     });
@@ -266,8 +267,9 @@ program
         initValue = args[2] || '""';
     const { exec } = require('child_process');
     let workingDir = __dirname + '/script';
-    
-    exec("./deploy_contract.sh" + " " + contractLabel +" '" + contract + "' " + " '" +initValue + "'",{cwd : workingDir}, (err, stdout, stderr) => {
+
+    console.log(`Please run "tezster bake-for <account-name> to bake this operation`);
+    exec("./deploy_contract.sh" + " " + contractLabel +" '" + contract + "' " + " '\"" +initValue + "\"'",{cwd : workingDir}, (err, stdout, stderr) => {
         if (err) {
             console.error(`tezster deploy contract error: ${err}`);
             return;
@@ -297,16 +299,17 @@ program
     var args = process.argv.slice(3);
     const tezsterManager = require('./tezster-manager');
     if (args.length < 2) {
-        console.log(tezsterManager.outputInfo("Incorrect usage of call command \n Correct usage: - tezster call argument-string"));
+        console.log(tezsterManager.outputInfo("Incorrect usage of call command \n Correct usage: - tezster call contract-name argument-string"));
         return;
     }
     await tezsterManager.loadTezsterConfig(); 
     let contractLabel = args[0],
-        argument = args[2] || '""';
+        argument = args[1] || '""';
     const { exec } = require('child_process');
     let workingDir = __dirname + '/script';
     
-    exec("./call_contract.sh" + " " + contractLabel + " '" + argument + "'",{cwd : workingDir}, (err, stdout, stderr) => {
+    console.log(`Please run "tezster bake-for <account-name> to bake this operation`);
+    exec("./call_contract.sh" + " " + contractLabel + " '\"" + argument + "\"'",{cwd : workingDir}, (err, stdout, stderr) => {
         if (err) {
             console.error(`tezster call contract error: ${err}`);
             return;
@@ -326,6 +329,25 @@ program
         }
         console.log(`${stdout}`);
     });
+    
+});
+
+/* list transactions done on localhost */
+program
+.command('list-transactions')
+.action(async function(){  
+    const tezsterManager = require('./tezster-manager');       
+    await tezsterManager.loadTezsterConfig();    
+    const config = tezsterManager.config;
+
+    console.log(tezsterManager.outputInfo('These transactipns are for the local nodes, for alphanet you can visit https://alphanet.tzscan.io/'))
+    if(Object.keys(config.transactions).length > 0){        
+        for(var i in config.transactions){
+            console.log(tezsterManager.output(JSON.stringify(config.transactions[i])));        
+        }
+    } else{
+        console.log(tezsterManager.outputError("No transactions are Available !!"));        
+    }
 });
 
 program.parse(process.argv);
