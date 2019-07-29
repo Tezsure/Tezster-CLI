@@ -18,6 +18,7 @@ function main {
 	rm -rf ./tmp/nonces
 	rm -rf ./tmp/wallet_lock
 	rm -rf ./tmp/contracts
+	rm -rf ./baking-tx.log
 }
 
 main
