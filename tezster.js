@@ -4,7 +4,7 @@
 const program = require('commander');
 
 program
-.version('0.1.12', '-v, --version')
+.version('0.1.13', '-v, --version')
 .command('setup')
 .action(function() {
     console.log('setting up tezos node, this could take a while....');
