@@ -20,7 +20,8 @@ var helpData="Usage: tezster [command] [optional parameters].....\n" +
              "list-accounts- To fetch all the accounts\n" +
              "list-contracts- To fetch all the contracts\n" + 
              "set-provider [http://{ip}:{port}]- To change the default provider\n" + 
-             "get-provider- To fetch the current provider\n";
+             "get-provider- To fetch the current provider\n" + 
+             "bake-for- To complete transaction run bake-for for account label\n" ;
 var eztz = {}, 
     config = jsonfile.readFileSync(confFile);
 
@@ -80,7 +81,6 @@ function setProvider(args){
     eztz.node.setProvider(config.provider);
     return outputInfo("Provider updated to " + config.provider);
 }
-
 
 function transferAmount(args){    
     var amount = parseFloat(args[0]), from = args[1], to = args[2],
@@ -202,8 +202,8 @@ module.exports= {
     getProvider: getProvider,
     setProvider: setProvider,
     transferAmount: transferAmount,
+    addContract: addContract,
+    addTransaction: addTransaction,
     createAccount:createAccount,
     helpData:helpData,
-    addContract: addContract,
-    addTransaction: addTransaction
 };
