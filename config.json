@@ -57,12 +57,7 @@
         "label": "bootstrap_5",
         "pkh": "tz1ddb9NMYHZi5UzPdzTZMYQQZoMub195zgv",
         "identity": "bootstrap5"
-      },
-      {
-        "label": "main",
-        "pkh": "KT1XDKUXtmNeBbFEF62iigjA8K29xakgL27w",
-        "identity": "tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx"
-      }
+      }      
     ],
     "contracts": [],
     "programs": [],
