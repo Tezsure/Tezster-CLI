@@ -17,9 +17,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "commander": "^2.20.0",
+    "bignumber.js": "^7.2.1",
     "bip39": "^3.0.2",
     "bs58check": "^2.1.2",
+    "buffer": "^5.1.0",
+    "cli-progress": "^2.1.1",
+    "commander": "^2.20.0",
     "crypto": "^1.0.1",
     "fs": "^0.0.1-security",
     "get-random-values": "^1.2.0",

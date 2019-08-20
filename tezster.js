@@ -12,8 +12,18 @@ program
     const fs = require("fs");
     let workingDir = __dirname + '/script';
     let setup_successfile_dir = workingDir + '/setup.successful';
+    const _cliProgress = require('cli-progress');
+    let progress = 1;
+    let progressInterval;
+    const progressbar = new _cliProgress.Bar({
+                            format: 'progress [{bar}] {percentage}% | ETA: {eta}s'
+                            }, _cliProgress.Presets.shades_classic);
+    progressbar.start(100, progress);
 
     exec('./setup.sh > setup.log',{cwd : workingDir}, (err, stdout, stderr) => {
+        clearInterval(progressInterval);
+        progressbar.update(100);
+        progressbar.stop();
         if (err) {
             console.error(`tezster setup error: ${err}`);
             return;
@@ -26,6 +36,18 @@ program
             console.log('setup is not successful, please try running "tezster setup" again....');
         }
     });
+
+    progressInterval = setInterval(() => {
+        progress = progress + 0.055;
+            if (progressInterval >= 100) {
+                clearInterval(progressInterval);
+                progressbar.update(100);
+                progressbar.stop();
+
+                return;
+            }
+            progressbar.update(progress);
+        }, 1000);
 });
 
 program
@@ -34,14 +56,33 @@ program
     console.log('starting the nodes.....');
     const { exec } = require('child_process');
     let workingDir = __dirname + '/script';
+    const _cliProgress = require('cli-progress');
+    let progress = 0;
+    let progressInterval;
+    const progressbar = new _cliProgress.Bar({
+                            format: 'progress [{bar}] {percentage}% | ETA: {eta}s'
+                            }, _cliProgress.Presets.shades_classic);
+    progressbar.start(100, progress);
     exec('./start_nodes.sh',{cwd : workingDir}, (err, stdout, stderr) => {
+        clearInterval(progressInterval);
+        progressbar.update(100);
+        progressbar.stop();
         if (err) {
-            console.error(`tezster starting nodes error: ${err}`);
             return;
         }
 
         console.log(`${stdout}`);
     });
+
+    progressInterval = setInterval(() => {
+        progress = progress + 1.8;
+            if (progressInterval >= 100) {
+                clearInterval(progressInterval);
+                progressbar.update(100);
+                return;
+            }
+            progressbar.update(progress);
+        }, 1000);
 });
 
 program
@@ -58,6 +99,40 @@ program
         }
 
         console.log(`${stdout}`);
+    });
+});
+
+program
+.command('install-liquidity')
+.action(function() {
+    console.log('installing liquidity.....');
+    const { exec } = require('child_process');
+    let workingDir = __dirname + '/script';
+    exec('./install_liquidity.sh',{cwd : workingDir}, (err, stdout, stderr) => {
+        if (err) {
+            console.error(`tezster installing liquidity error: ${err}`);
+            return;
+        }
+
+        console.log(`${stdout}`);
+    });
+});
+
+program
+.command('fix-liquidity-package')
+.action(function() {
+    console.log('Fixing libsodium package for liquidity.....');
+    const { exec } = require('child_process');
+    let workingDir = __dirname + '/script';
+    exec('./fix_libsodium.sh',{cwd : workingDir}, (err, stdout, stderr) => {
+        if (err) {
+            console.error(`tezster Fixing liquidity package error: ${err}`);
+            return;
+        }
+
+        console.log(`${stdout}`);
+        console.log(`Check version for libsodium-dev, If it's >= 1.0.11, try installing liquidity by running
+        "tezster install-liquidity" again`);
     });
 });
 
@@ -133,6 +208,146 @@ program
     }
     await tezsterManager.loadTezsterConfig(); 
     console.log(tezsterManager.setProvider(args));
+});
+
+//******* To transfer the amount */
+program
+.command('transfer')
+.action(async function(){  
+    var args = process.argv.slice(3);  
+    const tezsterManager = require('./tezster-manager');
+    if (args.length < 2) {
+        console.log(tezsterManager.outputError("Incorrect usage - tezster transfer <amount> <from> <to> <fees>"));
+        return;
+    }
+    await tezsterManager.loadTezsterConfig();
+    console.log(`Please run "tezster bake-for <account-name> to bake this operation if operation is successful`);
+    tezsterManager.transferAmount(args).then((result) => {        
+        console.log(result);
+    });
+});
+
+//******* To transfer the amount */
+program
+.command('bake-for')
+.action(async function(){  
+    var args = process.argv.slice(3);
+    const tezsterManager = require('./tezster-manager');
+    if (args.length < 1) {
+        console.log(tezsterManager.outputError("Incorrect usage - tezster bake-for <identity-label>"));
+        return;
+    }
+    console.log('baking the previous operation.....');
+    const { exec } = require('child_process');
+    let workingDir = __dirname + '/script';
+    exec('./bake_tx.sh ' + args[0],{cwd : workingDir}, (err, stdout, stderr) => {
+        if (err) {
+            console.error(`tezster baking opertaion error: ${err}`);
+            return;
+        }
+
+        console.log(`Baking successful ${stdout}`);
+    });
+});
+
+//*******deploy contract written */
+program
+.command('deploy')
+.action(async function(){
+    const fs = require("fs");
+    var args = process.argv.slice(3);
+    const tezsterManager = require('./tezster-manager');
+    if (args.length < 2) {
+        console.log(tezsterManager.outputInfo("Incorrect usage of deploy command \n Correct usage: - tezster deploy contract-label contract-absolute-path init-string"));
+        return;
+    }
+    await tezsterManager.loadTezsterConfig(); 
+    let contractLabel = args[0],
+        contract = fs.readFileSync(args[1], 'utf8'),
+        initValue = args[2] || '""';
+    const { exec } = require('child_process');
+    let workingDir = __dirname + '/script';
+
+    console.log(`Please run "tezster bake-for <account-name> to bake this operation`);
+    exec("./deploy_contract.sh" + " " + contractLabel +" '" + contract + "' " + " '\"" +initValue + "\"'",{cwd : workingDir}, (err, stdout, stderr) => {
+        if (err) {
+            console.error(`tezster deploy contract error: ${err}`);
+            return;
+        }
+
+        const operationHashFull = /Operation hash is \'[a-zA-Z0-9]*\'/gm;
+        const operationHash = /\'[a-zA-Z0-9]*\'/gm;
+        let operationHashStr = stdout.match(operationHashFull);
+        if (operationHashStr.length) {
+            let opHashes = operationHashStr[0].match(operationHash);
+            if (opHashes.length) {
+                let opHash = opHashes[0];
+                opHash = opHash.slice(1, opHash.length-1);
+                // TODO : contract is being deployed with bootstrap1 always
+                tezsterManager.addContract(contractLabel, opHash, 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx');
+            }
+        }
+        console.log(`${stdout}`);
+    });
+});
+
+
+program
+.command('call')
+.action(async function(){
+    const fs = require("fs");
+    var args = process.argv.slice(3);
+    const tezsterManager = require('./tezster-manager');
+    if (args.length < 2) {
+        console.log(tezsterManager.outputInfo("Incorrect usage of call command \n Correct usage: - tezster call contract-name argument-string"));
+        return;
+    }
+    await tezsterManager.loadTezsterConfig(); 
+    let contractLabel = args[0],
+        argument = args[1] || '""';
+    const { exec } = require('child_process');
+    let workingDir = __dirname + '/script';
+    
+    console.log(`Please run "tezster bake-for <account-name> to bake this operation`);
+    exec("./call_contract.sh" + " " + contractLabel + " '\"" + argument + "\"'",{cwd : workingDir}, (err, stdout, stderr) => {
+        if (err) {
+            console.error(`tezster call contract error: ${err}`);
+            return;
+        }
+
+        const operationHashFull = /Operation hash is \'[a-zA-Z0-9]*\'/gm;
+        const operationHash = /\'[a-zA-Z0-9]*\'/gm;
+        let operationHashStr = stdout.match(operationHashFull);
+        if (operationHashStr.length) {
+            let opHashes = operationHashStr[0].match(operationHash);
+            if (opHashes.length) {
+                let opHash = opHashes[0];
+                opHash = opHash.slice(1, opHash.length-1);
+                // TODO : contract is being called with bootstrap1 always
+                tezsterManager.addTransaction('contract-call', opHash, 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx', contractLabel, 0);
+            }
+        }
+        console.log(`${stdout}`);
+    });
+    
+});
+
+/* list transactions done on localhost */
+program
+.command('list-transactions')
+.action(async function(){  
+    const tezsterManager = require('./tezster-manager');       
+    await tezsterManager.loadTezsterConfig();    
+    const config = tezsterManager.config;
+
+    console.log(tezsterManager.outputInfo('These transactipns are for the local nodes, for alphanet you can visit https://alphanet.tzscan.io/'))
+    if(Object.keys(config.transactions).length > 0){        
+        for(var i in config.transactions){
+            console.log(tezsterManager.output(JSON.stringify(config.transactions[i])));        
+        }
+    } else{
+        console.log(tezsterManager.outputError("No transactions are Available !!"));        
+    }
 });
 
 program.parse(process.argv);

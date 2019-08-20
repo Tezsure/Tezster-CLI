@@ -68,6 +68,41 @@ function setProvider(args){
     return outputInfo("Provider updated to " + config.provider);
 }
 
+function transferAmount(args){    
+    var amount = parseFloat(args[0]), from = args[1], to = args[2],
+        fees = args[3], f;   
+    var keys = "main"; 
+    if (f = findKeyObj(config.identities, from)) {
+      keys = f;
+      from = f.pkh;
+    } else if (f = findKeyObj(config.accounts, from)) {
+      keys = findKeyObj(config.identities, f.identity);
+      from = f.pkh;
+    } else if (f = findKeyObj(config.contracts, from)) {
+      keys = findKeyObj(config.identities, f.identity);
+      from = f.pkh;
+    } else {
+      return outputError("No valid identity to send this transaction");
+    }
+    
+    if (f = findKeyObj(config.identities, to)) {
+      to = f.pkh;
+    } else if (f = findKeyObj(config.accounts, to)) {
+      to = f.pkh;
+    } else if (f = findKeyObj(config.contracts, to)) {
+      to = f.pkh;
+    }
+
+    fees = fees || 1400;
+
+    return eztz.rpc.transfer(from, keys, to, amount, 1400, undefined, 10200).then(function(r){
+      addTransaction('transfer', r.hash, from, to, amount);
+      return output("Transfer complete - operation hash #" + r.hash);
+    }).catch(function(e){
+      return outputError(e);
+    });
+
+}
 
 function findKeyObj(list, t){
     for (var i = 0; i < list.length; i++){
@@ -88,6 +123,39 @@ function output(e){
     return '\x1b['+cliColors.green+e+'\x1b[0m';
 }
 
+function addContract(label, opHash, pkh) {
+  config.contracts.push({
+    label : label,
+    pkh : eztz.contract.hash(opHash, 0),
+    identity : pkh,
+  });
+  jsonfile.writeFile(confFile, config);
+}
+
+function addTransaction(operation, opHash, from, to, amount) {
+  config.transactions.push({
+    operation : operation,
+    hash : opHash,
+    from : from,
+    to: to,
+    amount: amount
+  });
+  jsonfile.writeFile(confFile, config);
+}
+
+function getKeys(account) {
+  let keys,f;
+  if (f = findKeyObj(config.identities, account)) {
+    keys = f;
+  } else if (f = findKeyObj(config.accounts, account)) {
+    keys = findKeyObj(config.identities, f.identity);
+  } else if (f = findKeyObj(config.contracts, account)) {
+    keys = findKeyObj(config.identities, f.identity);
+  }
+
+  return keys;
+}
+
 module.exports= {
     loadTezsterConfig: loadTezsterConfig,
     getBalance: getBalance,
@@ -97,5 +165,8 @@ module.exports= {
     config: config,
     eztz: eztz,
     getProvider: getProvider,
-    setProvider: setProvider
+    setProvider: setProvider,
+    transferAmount: transferAmount,
+    addContract: addContract,
+    addTransaction: addTransaction
 };
