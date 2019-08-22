@@ -350,4 +350,35 @@ program
     }
 });
 
+//******* To Create an account */
+program
+.command('create-account')
+.action(async function(){  
+    var args = process.argv.slice(3);  
+    const tezsterManager = require('./tezster-manager');
+    if (args.length < 3) return console.log(tezsterManager.outputError("Incorrect usage - tezster create-account <Indentity> <Account Label> <amount> <spendable=true[Optional]> <delegatable=true[Optional]> <delegate[Optional]> <fee=0[Optional]>"));
+    await tezsterManager.loadTezsterConfig(); 
+    tezsterManager.createAccount(args).then((result) => {
+        console.log(result);
+    });
+          
+});
+
+program
+.command('help')
+.action(async function(){
+    const tezsterManager = require('./tezster-manager');
+    console.log(tezsterManager.helpData); //'\x1b[33m%s\x1b[0m',         
+});
+
+
+if (process.argv.length <= 2){
+    console.log('\x1b[31m%s\x1b[0m', "Error: " +"Please enter a command!");
+}
+var commands=process.argv[2];
+const validCommands = ['list-Identities','list-accounts','list-contracts','get-balance','transfer','bake-for','set-provider','get-provider','fix-liquidity-package','install-liquidity','stop-nodes','start-nodes','setup','call','deploy','help','create-account','list-transactions'];
+if (validCommands.indexOf(commands) < 0 && process.argv.length >2 ) {
+    console.log('\x1b[31m%s\x1b[0m', "Error: " + "Invalid command\nPlease run tezster help to get info about commands ");        
+}
+
 program.parse(process.argv);

@@ -7,8 +7,21 @@ const cliColors = {
         green : '32m',
     },
     confFile = __dirname + '/config.json',
-    jsonfile = require('jsonfile'); 
-
+    jsonfile = require('jsonfile');
+var helpData="Usage: tezster [command] [optional parameters].....\n" +
+             "Tezster comes in an npm package with a set of easy commands to kickstart the development or interaction with Tezos. The current beta version will install and start tezos node on your local machine.\n\n" +
+             "Most used commands:\n" + 
+             "setup- setting up tezos node\n" + 
+             "start-nodes- starting the nodes\n" + 
+             "stop-nodes- stopping the nodes\n" + 
+             "create-account [Indentity][Label][amount]- To create a new account.\n" + 
+             "get-balance [account/contract(pkh)]- To get the balance of account/contracts\n" + 
+             "transfer [amount][from][to][fees]- To transfer the funds b/w accounts\n" + 
+             "list-accounts- To fetch all the accounts\n" +
+             "list-contracts- To fetch all the contracts\n" + 
+             "set-provider [http://{ip}:{port}]- To change the default provider\n" + 
+             "get-provider- To fetch the current provider\n" + 
+             "bake-for- To complete transaction run bake-for for account label\n" ;
 var eztz = {}, 
     config = jsonfile.readFileSync(confFile);
 
@@ -65,6 +78,7 @@ function getProvider(){
 function setProvider(args){    
     config.provider = args[0];
     jsonfile.writeFile(confFile, config);
+    eztz.node.setProvider(config.provider);
     return outputInfo("Provider updated to " + config.provider);
 }
 
@@ -102,6 +116,27 @@ function transferAmount(args){
       return outputError(e);
     });
 
+}
+
+function createAccount(args){
+  var pkh = args[0], f;  
+  if (findKeyObj(config.accounts, args[1])) return console.log(outputError("That account name is already in use"));
+  if (f = findKeyObj(config.identities, pkh)) {
+      return eztz.rpc.account(f, parseFloat(args[2]), true, true,f.pkh, 1400).then(function(r){                  
+              var d=eztz.contract.hash(r.hash, 0);        
+              config.accounts.push({
+                label : args[1],
+                pkh : d,
+                identity : pkh,        
+              });
+              jsonfile.writeFile(confFile, config);
+              return output("New account created " + args[1]);
+          }).catch(function(e){           
+              return outputError(e);
+            });
+  } else {
+      return outputError(pkh + " is not a valid identity");
+  }
 }
 
 function findKeyObj(list, t){
@@ -168,5 +203,7 @@ module.exports= {
     setProvider: setProvider,
     transferAmount: transferAmount,
     addContract: addContract,
-    addTransaction: addTransaction
+    addTransaction: addTransaction,
+    createAccount:createAccount,
+    helpData:helpData,
 };
