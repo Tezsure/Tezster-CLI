@@ -21,7 +21,9 @@ var helpData="Usage: tezster [command] [optional parameters].....\n" +
              "list-contracts- To fetch all the contracts\n" + 
              "set-provider [http://{ip}:{port}]- To change the default provider\n" + 
              "get-provider- To fetch the current provider\n" + 
-             "bake-for- To complete transaction run bake-for for account label\n" ;
+             "bake-for- To complete transaction run bake-for for account label\n" + 
+             "deploy [contract-label] [contract-absolute-path] [init-storage-value] - deploys a smart contract written in Michelson\n" +
+             "call [contract-name/address] [argument-value] - calls a smart contract with give value provided in Michelson format\n";
 var eztz = {}, 
     config = jsonfile.readFileSync(confFile);
 
@@ -161,7 +163,7 @@ function output(e){
 function addContract(label, opHash, pkh) {
   config.contracts.push({
     label : label,
-    pkh : eztz.contract.hash(opHash, 0),
+    pkh : opHash,
     identity : pkh,
   });
   jsonfile.writeFile(confFile, config);
@@ -191,6 +193,70 @@ function getKeys(account) {
   return keys;
 }
 
+async function deployContract(contractLabel, contractPath, initValue) {
+  const fs = require("fs");
+  const conseiljs = require('conseiljs');
+  const tezosNode = config.provider;
+  const keys = getKeys('bootstrap1');
+  const keystore = {
+      publicKey: keys.pk,
+      privateKey: keys.sk,
+      publicKeyHash: keys.pkh,
+      seed: '',
+      storeType: conseiljs.StoreType.Fundraiser
+  };
+  try {
+    const contract = fs.readFileSync(contractPath, 'utf8');
+    const result = await conseiljs.TezosNodeWriter.sendContractOriginationOperation(
+                              tezosNode, keystore, 0, undefined, false,
+                              true, 100000, '', 1000, 100000, 
+                              contract, initValue, conseiljs.TezosParameterFormat.Michelson);
+    let opHash = result.operationGroupID.slice(1,result.operationGroupID.length-2);
+    opHash = eztz.contract.hash(opHash);
+    addContract(contractLabel, opHash , keys.pkh);
+    return output(`contract ${contractLabel} has been deployed at ${opHash}`);
+  } catch(error) {
+    return outputError(error);
+  }
+}
+
+async function invokeContract(contract, argument) {
+  const conseiljs = require('conseiljs');
+  const tezosNode = config.provider;
+  const keys = getKeys('bootstrap1');
+  const keystore = {
+      publicKey: keys.pk,
+      privateKey: keys.sk,
+      publicKeyHash: keys.pkh,
+      seed: '',
+      storeType: conseiljs.StoreType.Fundraiser
+  };
+  let contractAddress = '';
+  let contractObj = findKeyObj(config.contracts, contract);
+  if (contractObj) {
+    contractAddress = contractObj.pkh;
+  }
+  
+  if (!contractAddress) {
+    return outputError(`couldn't find the contract, please make sure contract label or address is correct!`);
+  }
+
+  try {
+    const result = await conseiljs.TezosNodeWriter.sendContractInvocationOperation(
+                                tezosNode, keystore, contractAddress, 0, 100000, '', 1000, 100000, argument, 
+                                conseiljs.TezosParameterFormat.Michelson);
+    if (result.operationGroupID.indexOf('error') >= 0 || result.operationGroupID.indexOf('Error') >= 0) {
+      return outputError(result.operationGroupID);
+    }
+    let opHash = result.operationGroupID.slice(1,result.operationGroupID.length-2);
+    addTransaction('contract-call', opHash, keys.pkh, contractObj.label, 0);
+    return output(`Injected operation with hash ${opHash}`);
+  }
+  catch(error) {
+    return outputError(error);
+  }
+}
+
 module.exports= {
     loadTezsterConfig: loadTezsterConfig,
     getBalance: getBalance,
@@ -206,4 +272,6 @@ module.exports= {
     addTransaction: addTransaction,
     createAccount:createAccount,
     helpData:helpData,
+    deployContract:  deployContract,
+    invokeContract: invokeContract
 };
