@@ -57,6 +57,44 @@ then bake the transaction via,
 
 tezster bake-for bootstrap1
 ```
+To deploy a smart contract, put the michelson code in  a file (eg.- testcontract.tz)
+Code eg.-
+
+```
+parameter string;
+storage string;
+code {CAR; NIL operation; PAIR;};
+
+```
+this stores any string to the storage
+
+then run,
+
+```
+tezster deploy <contract label> <absolute path> <initial storage value>
+
+eg.- tezster deploy simplecontract /home/op/testcontract.tz "\"helloworld\""
+
+```
+if this is successful, you'll receive a contract hash and a message asking you to bake the transaction (assuming you're on local node), then run
+
+```
+sudo tezster bake-for bootstrap1
+
+```
+To call the contract, run
+
+```
+tezster call <contract label> <argument value>
+eg.- tezster call simplecontract "\"goodmorning\""
+
+```
+After calling, again bake the transaction in the same manner
+
+```
+sudo tezster bake-for bootstrap1
+
+```
 
 To see what you can do with tezster, run
 
