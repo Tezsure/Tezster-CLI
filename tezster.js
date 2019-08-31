@@ -4,7 +4,7 @@
 const program = require('commander');
 
 program
-.version('0.1.15', '-v, --version')
+.version('0.1.16', '-v, --version')
 .command('setup')
 .action(function() {
     console.log('setting up tezos node, this could take a while....');
@@ -256,36 +256,50 @@ program
 .action(async function(){
     var args = process.argv.slice(3);
     const tezsterManager = require('./tezster-manager');
-    if (args.length < 2) {
-        console.log(tezsterManager.outputInfo("Incorrect usage of deploy command \n Correct usage: - tezster deploy contract-label contract-absolute-path init-storage-value"));
+    if (args.length < 4) {
+        console.log(tezsterManager.outputInfo("Incorrect usage of deploy command \n Correct usage: - tezster deploy contract-label contract-absolute-path init-storage-value account"));
         return;
     }
     await tezsterManager.loadTezsterConfig(); 
 
-    let result = await tezsterManager.deployContract(args[0], args[1], args[2]);
+    let result = await tezsterManager.deployContract(args[0], args[1], args[2], args[3]);
     console.log(result);
-    if(result.indexOf('has been deployed') !== -1) {
-        console.log(tezsterManager.outputInfo(`Please run "tezster bake-for <account-name> to bake this operation`));
-    }
+    console.log(tezsterManager.outputInfo(`If you're running a local node, Please run "tezster bake-for <account-name> to bake this operation`));
 });
 
-
+//*******calls contract written in Michelson*/
 program
 .command('call')
 .action(async function(){
     var args = process.argv.slice(3);
     const tezsterManager = require('./tezster-manager');
-    if (args.length < 2) {
-        console.log(tezsterManager.outputInfo("Incorrect usage of call command \n Correct usage: - tezster call contract-name argument-value"));
+    if (args.length < 3) {
+        console.log(tezsterManager.outputInfo("Incorrect usage of call command \n Correct usage: - tezster call contract-name argument-value account"));
         return;
     }
     await tezsterManager.loadTezsterConfig(); 
     
-    let result = await tezsterManager.invokeContract(args[0], args[1]);
+    let result = await tezsterManager.invokeContract(args[0], args[1], args[2]);
     console.log(result);
     if(result.indexOf('Injected operation') !== -1) {
         console.log(tezsterManager.outputInfo(`Please run "tezster bake-for <account-name> to bake this operation`));
     }
+});
+
+//*******gets storage for a contract*/
+program
+.command('get-storage')
+.action(async function(){
+    var args = process.argv.slice(3);
+    const tezsterManager = require('./tezster-manager');
+    if (args.length < 1) {
+        console.log(tezsterManager.outputInfo("Incorrect usage of get-storage command \n Correct usage: - tezster get-storage contract-name"));
+        return;
+    }
+    await tezsterManager.loadTezsterConfig(); 
+    
+    let result = await tezsterManager.getStorage(args[0]);
+    console.log(result);
 });
 
 /* list transactions done on localhost */
@@ -332,7 +346,7 @@ if (process.argv.length <= 2){
     console.log('\x1b[31m%s\x1b[0m', "Error: " +"Please enter a command!");
 }
 var commands=process.argv[2];
-const validCommands = ['list-Identities','list-accounts','list-contracts','get-balance','transfer','bake-for','set-provider','get-provider','fix-liquidity-package','install-liquidity','stop-nodes','start-nodes','setup','call','deploy','help','create-account','list-transactions'];
+const validCommands = ['list-Identities','list-accounts','list-contracts','get-balance','transfer','bake-for','set-provider','get-provider','fix-liquidity-package','install-liquidity','stop-nodes','start-nodes','setup','call','deploy','help','create-account','list-transactions', 'get-storage'];
 if (validCommands.indexOf(commands) < 0 && process.argv.length >2 ) {
     console.log('\x1b[31m%s\x1b[0m', "Error: " + "Invalid command\nPlease run tezster help to get info about commands ");        
 }

@@ -22,8 +22,10 @@ var helpData="Usage: tezster [command] [optional parameters].....\n" +
              "set-provider [http://{ip}:{port}]- To change the default provider\n" + 
              "get-provider- To fetch the current provider\n" + 
              "bake-for- To complete transaction run bake-for for account label\n" + 
-             "deploy [contract-label] [contract-absolute-path] [init-storage-value] - deploys a smart contract written in Michelson\n" +
-             "call [contract-name/address] [argument-value] - calls a smart contract with give value provided in Michelson format\n";
+             "deploy [contract-label] [contract-absolute-path] [init-storage-value] [account] - deploys a smart contract written in Michelson\n" +
+             "call [contract-name/address] [argument-value] [account]- calls a smart contract with give value provided in Michelson format\n" +
+             "get-storage [contract-name/address] - returns current storage for given smart contract\n";
+
 var eztz = {}, 
     config = jsonfile.readFileSync(confFile);
 
@@ -193,11 +195,16 @@ function getKeys(account) {
   return keys;
 }
 
-async function deployContract(contractLabel, contractPath, initValue) {
+async function deployContract(contractLabel, contractPath, initValue, account) {
   const fs = require("fs");
   const conseiljs = require('conseiljs');
-  const tezosNode = config.provider;
-  const keys = getKeys('bootstrap1');
+  const tezosNode = config.provider;  
+  
+  const keys = getKeys(account);
+  if(!keys) {
+    return outputError(`Couldn't find keys for given account.
+      Please make sure the account exists and added to tezster. Run 'tezster list-accounts to get all accounts`);
+  }
   const keystore = {
       publicKey: keys.pk,
       privateKey: keys.sk,
@@ -205,25 +212,45 @@ async function deployContract(contractLabel, contractPath, initValue) {
       seed: '',
       storeType: conseiljs.StoreType.Fundraiser
   };
+
+  let contractObj = findKeyObj(config.contracts, contractLabel);
+  if (contractObj) {
+    return outputError(`This contract label is already in use. Please use a different one.`);
+  }
+
   try {
     const contract = fs.readFileSync(contractPath, 'utf8');
     const result = await conseiljs.TezosNodeWriter.sendContractOriginationOperation(
                               tezosNode, keystore, 0, undefined, false,
                               true, 100000, '', 1000, 100000, 
                               contract, initValue, conseiljs.TezosParameterFormat.Michelson);
-    let opHash = result.operationGroupID.slice(1,result.operationGroupID.length-2);
-    opHash = eztz.contract.hash(opHash);
-    addContract(contractLabel, opHash , keys.pkh);
-    return output(`contract ${contractLabel} has been deployed at ${opHash}`);
+    if (result.results) {
+      switch(result.results.contents[0].metadata.operation_result.status) {
+        case 'applied':
+            let opHash = result.operationGroupID.slice(1,result.operationGroupID.length-2);
+            opHash = eztz.contract.hash(opHash);
+            addContract(contractLabel, opHash , keys.pkh);
+            return output(`contract ${contractLabel} has been deployed at ${opHash}`);
+
+        case 'failed':
+        default:
+            return outputError(`Contract deployment has failed : ${JSON.stringify(result.results.contents[0].metadata.operation_result)}`)
+      }
+    }
+    return outputError(`Contract deployment has failed : ${JSON.stringify(result)}`)
   } catch(error) {
     return outputError(error);
   }
 }
 
-async function invokeContract(contract, argument) {
+async function invokeContract(contract, argument, account) {
   const conseiljs = require('conseiljs');
   const tezosNode = config.provider;
-  const keys = getKeys('bootstrap1');
+  const keys = getKeys(account);
+  if(!keys) {
+    return outputError(`Couldn't find keys for given account.
+      Please make sure the account exists and added to tezster. Run 'tezster list-accounts to get all accounts`);
+  }
   const keystore = {
       publicKey: keys.pk,
       privateKey: keys.sk,
@@ -231,6 +258,7 @@ async function invokeContract(contract, argument) {
       seed: '',
       storeType: conseiljs.StoreType.Fundraiser
   };
+
   let contractAddress = '';
   let contractObj = findKeyObj(config.contracts, contract);
   if (contractObj) {
@@ -257,6 +285,26 @@ async function invokeContract(contract, argument) {
   }
 }
 
+async function getStorage(contract) {
+  let contractAddress = '';
+  let contractObj = findKeyObj(config.contracts, contract);
+  if (contractObj) {
+    contractAddress = contractObj.pkh;
+  }
+
+  if (!contractAddress) {
+    return outputError(`couldn't find the contract, please make sure contract label or address is correct!`);
+  }
+
+  try {
+    let storage = await eztz.contract.storage(contractAddress);
+    return output(JSON.stringify(storage));
+  }
+  catch(error) {
+    return outputError(error);
+  }
+}
+
 module.exports= {
     loadTezsterConfig: loadTezsterConfig,
     getBalance: getBalance,
@@ -273,5 +321,6 @@ module.exports= {
     createAccount:createAccount,
     helpData:helpData,
     deployContract:  deployContract,
-    invokeContract: invokeContract
+    invokeContract: invokeContract,
+    getStorage: getStorage
 };
