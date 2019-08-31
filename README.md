@@ -3,7 +3,7 @@ A personal development blockchain based on Javascript that lives entirely on you
 
 ## Getting started
 
-Tezster comes in an npm package with a set of easy commands to kickstart the development or interaction with Tezos. The current beta version will install and start tezos node on your local machine.
+Tezster comes in an npm package with a set of easy commands to kickstart the development or interaction with Tezos. The current version will install and start tezos node on your local machine.
 
 ### Prerequisites
 
@@ -17,7 +17,7 @@ Latest version of Debian or Ubuntu. Windows users can run debian or ubuntu on
 download the npm package
 
 ```
-sudo npm install -g tezster-beta@latest
+sudo npm install -g tezster@latest
 ```
 
 Once it is installed run
