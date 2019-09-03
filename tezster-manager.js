@@ -24,7 +24,8 @@ var helpData="Usage: tezster [command] [optional parameters].....\n" +
              "bake-for- To complete transaction run bake-for for account label\n" + 
              "deploy [contract-label] [contract-absolute-path] [init-storage-value] [account] - deploys a smart contract written in Michelson\n" +
              "call [contract-name/address] [argument-value] [account]- calls a smart contract with give value provided in Michelson format\n" +
-             "get-storage [contract-name/address] - returns current storage for given smart contract\n";
+             "get-storage [contract-name/address] - returns current storage for given smart contract\n" + 
+             "add-alphanet-account <account-label> <absolut-path-to-json-file> - restores alphanet account faucet account from json file";
 
 var eztz = {}, 
     config = jsonfile.readFileSync(confFile);
@@ -171,6 +172,16 @@ function addContract(label, opHash, pkh) {
   jsonfile.writeFile(confFile, config);
 }
 
+function addIdentity(label, sk, pk, pkh) {
+  config.identities.push({
+    sk : sk,
+    pk: pk,
+    pkh : pkh,
+    label : label 
+  });
+  jsonfile.writeFile(confFile, config);
+}
+
 function addTransaction(operation, opHash, from, to, amount) {
   config.transactions.push({
     operation : operation,
@@ -178,6 +189,15 @@ function addTransaction(operation, opHash, from, to, amount) {
     from : from,
     to: to,
     amount: amount
+  });
+  jsonfile.writeFile(confFile, config);
+}
+
+function addAccount(label, pkh, identity) {
+  config.accounts.push({
+    label : label,
+    pkh : pkh,
+    identity : identity
   });
   jsonfile.writeFile(confFile, config);
 }
@@ -237,7 +257,7 @@ async function deployContract(contractLabel, contractPath, initValue, account) {
             return outputError(`Contract deployment has failed : ${JSON.stringify(result.results.contents[0].metadata.operation_result)}`)
       }
     }
-    return outputError(`Contract deployment has failed : ${JSON.stringify(result)}`)
+    return outputError(`Contract deployment has failed : ${JSON.stringify(result)}`);
   } catch(error) {
     return outputError(error);
   }
@@ -273,12 +293,20 @@ async function invokeContract(contract, argument, account) {
     const result = await conseiljs.TezosNodeWriter.sendContractInvocationOperation(
                                 tezosNode, keystore, contractAddress, 0, 100000, '', 1000, 100000, argument, 
                                 conseiljs.TezosParameterFormat.Michelson);
-    if (result.operationGroupID.indexOf('error') >= 0 || result.operationGroupID.indexOf('Error') >= 0) {
-      return outputError(result.operationGroupID);
+    
+    if (result.results) {
+      switch(result.results.contents[0].metadata.operation_result.status) {
+        case 'applied':
+            let opHash = result.operationGroupID.slice(1,result.operationGroupID.length-2);
+            addTransaction('contract-call', opHash, keys.pkh, contractObj.label, 0);
+            return output(`Injected operation with hash ${opHash}`);
+
+        case 'failed':
+        default:
+            return outputError(`Contract calling has failed : ${JSON.stringify(result.results.contents[0].metadata.operation_result)}`)
+      }
     }
-    let opHash = result.operationGroupID.slice(1,result.operationGroupID.length-2);
-    addTransaction('contract-call', opHash, keys.pkh, contractObj.label, 0);
-    return output(`Injected operation with hash ${opHash}`);
+    return outputError(`Contract calling has failed : ${JSON.stringify(result)}`);
   }
   catch(error) {
     return outputError(error);
@@ -305,6 +333,35 @@ async function getStorage(contract) {
   }
 }
 
+function restoreAlphanetAccount(accountLabel, accountFilePath) {
+  const fs = require("fs");
+  try {
+    let accountJSON = fs.readFileSync(accountFilePath, 'utf8');
+    accountJSON = accountJSON && JSON.parse(accountJSON);
+    if(!accountJSON) {
+      return outputError(`error occured while restroing account : empty JSON file`);
+    }
+    let mnemonic = accountJSON.mnemonic;
+    let email = accountJSON.email;
+    let password = accountJSON.password;
+    if (!mnemonic || !email || !password) {
+      return outputError(`error occured while restroing account : invalid JSON file`);
+    }
+    mnemonic = mnemonic.join(' ');
+
+    /* 
+    make sure eztz.cli.js uses 'mnemonicToSeedSync' under 'generateKeys' always.
+    */
+    const alphakeys = eztz.crypto.generateKeys(mnemonic, email+password);
+
+    addIdentity(accountLabel, alphakeys.sk, alphakeys.pk, alphakeys.pkh);
+    addAccount('aplha_'+ accountLabel, alphakeys.pkh, accountLabel);
+    return output(`successfully restored alphanet faucet account: ${accountLabel}-${alphakeys.pkh}`);
+  } catch(error) {
+    return outputError(`occured while restroing account : ${error}`);
+  }
+}
+
 module.exports= {
     loadTezsterConfig: loadTezsterConfig,
     getBalance: getBalance,
@@ -322,5 +379,6 @@ module.exports= {
     helpData:helpData,
     deployContract:  deployContract,
     invokeContract: invokeContract,
-    getStorage: getStorage
+    getStorage: getStorage,
+    restoreAlphanetAccount: restoreAlphanetAccount
 };
