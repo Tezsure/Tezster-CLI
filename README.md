@@ -3,7 +3,7 @@ A personal development blockchain based on Javascript that lives entirely on you
 
 ## Getting started
 
-Tezster comes in an npm package with a set of easy commands to kickstart the development or interaction with Tezos. The current beta version will install and start tezos node on your local machine.
+Tezster comes in an npm package with a set of easy commands to kickstart the development or interaction with Tezos. The current version will install and start tezos node on your local machine.
 
 ### Prerequisites
 
@@ -17,7 +17,7 @@ Latest version of Debian or Ubuntu. Windows users can run debian or ubuntu on
 download the npm package
 
 ```
-sudo npm install -g tezster-beta@latest
+sudo npm install -g tezster@latest
 ```
 
 Once it is installed run
@@ -56,6 +56,44 @@ eg. - tezster transfer 10 boottsrap1 bootstrap2
 then bake the transaction via,
 
 tezster bake-for bootstrap1
+```
+To deploy a smart contract, put the michelson code in  a file (eg.- testcontract.tz)
+Code eg.-
+
+```
+parameter string;
+storage string;
+code {CAR; NIL operation; PAIR;};
+
+```
+this stores any string to the storage
+
+then run,
+
+```
+tezster deploy <contract label> <absolute path> <initial storage value> <account>
+
+eg.- tezster deploy simplecontract /home/op/testcontract.tz "\"helloworld\"" bootstrap1
+
+```
+if this is successful, you'll receive a contract hash and a message asking you to bake the transaction (assuming you're on local node), then run
+
+```
+sudo tezster bake-for bootstrap1
+
+```
+To call the contract, run
+
+```
+tezster call <contract label> <argument value> <account>
+eg.- tezster call simplecontract "\"goodmorning\"" bootstrap1
+
+```
+After calling, again bake the transaction in the same manner
+
+```
+sudo tezster bake-for bootstrap1
+
 ```
 
 To see what you can do with tezster, run
