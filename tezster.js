@@ -318,7 +318,24 @@ program
     console.log(result);
 });
 
-/* list transactions done on localhost */
+/* Restores an alphanet faucet account */
+program
+.command('activate-alphanet-account')
+.action(async function(){
+    var args = process.argv.slice(3);
+    const tezsterManager = require('./tezster-manager');
+    if (args.length < 1) {
+        console.log(tezsterManager.outputInfo("Incorrect usage of activate-alphanet-account command \n Correct usage: - tezster activate-alphanet-account <account-label>"));
+        return;
+    }
+    await tezsterManager.loadTezsterConfig(); 
+    
+    let result = await tezsterManager.activateAlphanetAccount(args[0]);
+    console.log(result);
+    console.log(tezsterManager.outputInfo(`If this account has already been activated, it may throw 'invalid_activation' error. You can visit https://alphanet.tzscan.io/ for more information on this account`));
+});
+
+/* list transactions done with tezster */
 program
 .command('list-transactions')
 .action(async function(){  
@@ -365,7 +382,7 @@ var commands=process.argv[2];
 const validCommands = ['list-Identities','list-accounts','list-contracts','get-balance','transfer',
                         'bake-for','set-provider','get-provider','fix-liquidity-package','install-liquidity',
                         'stop-nodes','start-nodes','setup','call','deploy','help','create-account','list-transactions', 
-                        'get-storage', 'add-alphanet-account'];
+                        'get-storage', 'add-alphanet-account', 'activate-alphanet-account'];
 if (validCommands.indexOf(commands) < 0 && process.argv.length >2 ) {
     console.log('\x1b[31m%s\x1b[0m', "Error: " + "Invalid command\nPlease run tezster help to get info about commands ");        
 }

@@ -25,7 +25,8 @@ var helpData="Usage: tezster [command] [optional parameters].....\n" +
              "deploy [contract-label] [contract-absolute-path] [init-storage-value] [account] - deploys a smart contract written in Michelson\n" +
              "call [contract-name/address] [argument-value] [account]- calls a smart contract with give value provided in Michelson format\n" +
              "get-storage [contract-name/address] - returns current storage for given smart contract\n" + 
-             "add-alphanet-account <account-label> <absolut-path-to-json-file> - restores alphanet account faucet account from json file";
+             "add-alphanet-account <account-label> <absolut-path-to-json-file> - restores an alphanet faucet account from json file\n" +
+             "activate-alphanet-account <account-label> - activates an alphanet faucet account resored using tezster";
 
 var eztz = {}, 
     config = jsonfile.readFileSync(confFile);
@@ -172,12 +173,13 @@ function addContract(label, opHash, pkh) {
   jsonfile.writeFile(confFile, config);
 }
 
-function addIdentity(label, sk, pk, pkh) {
+function addIdentity(label, sk, pk, pkh, secret) {
   config.identities.push({
     sk : sk,
     pk: pk,
     pkh : pkh,
-    label : label 
+    label : label,
+    secret: secret || ''
   });
   jsonfile.writeFile(confFile, config);
 }
@@ -335,30 +337,49 @@ async function getStorage(contract) {
 
 function restoreAlphanetAccount(accountLabel, accountFilePath) {
   const fs = require("fs");
+  const keys = getKeys(accountLabel);
+  if(keys) {
+    return outputError(` Account with this label already exists.`);
+  }
   try {
     let accountJSON = fs.readFileSync(accountFilePath, 'utf8');
     accountJSON = accountJSON && JSON.parse(accountJSON);
     if(!accountJSON) {
-      return outputError(`error occured while restroing account : empty JSON file`);
+      return outputError(` occured while restroing account : empty JSON file`);
     }
     let mnemonic = accountJSON.mnemonic;
     let email = accountJSON.email;
     let password = accountJSON.password;
     if (!mnemonic || !email || !password) {
-      return outputError(`error occured while restroing account : invalid JSON file`);
+      return outputError(` occured while restroing account : invalid JSON file`);
     }
     mnemonic = mnemonic.join(' ');
-
+    
     /* 
     make sure eztz.cli.js uses 'mnemonicToSeedSync' under 'generateKeys' always.
     */
     const alphakeys = eztz.crypto.generateKeys(mnemonic, email+password);
 
-    addIdentity(accountLabel, alphakeys.sk, alphakeys.pk, alphakeys.pkh);
+    addIdentity(accountLabel, alphakeys.sk, alphakeys.pk, alphakeys.pkh, accountJSON.secret);
     addAccount('aplha_'+ accountLabel, alphakeys.pkh, accountLabel);
     return output(`successfully restored alphanet faucet account: ${accountLabel}-${alphakeys.pkh}`);
   } catch(error) {
-    return outputError(`occured while restroing account : ${error}`);
+    return outputError(` occured while restroing account : ${error}`);
+  }
+}
+
+async function activateAlphanetAccount(account) {
+  const keys = getKeys(account);
+  if(!keys || !keys.secret) {
+    return outputError(`Couldn't find keys for given account.
+      Please make sure the account exists and added to tezster.`);
+  }
+
+  try {
+    let activationResult = await eztz.rpc.activate(keys.pkh, keys.secret);
+    return output(`successfully activated alphanet faucet account: ${keys.label} : ${keys.pkh} \n with tx hash: ${activationResult}`);
+  } catch(error) {
+    return outputError(` occured while activating account : ${error}`);
   }
 }
 
@@ -380,5 +401,6 @@ module.exports= {
     deployContract:  deployContract,
     invokeContract: invokeContract,
     getStorage: getStorage,
-    restoreAlphanetAccount: restoreAlphanetAccount
+    restoreAlphanetAccount: restoreAlphanetAccount,
+    activateAlphanetAccount : activateAlphanetAccount
 };
