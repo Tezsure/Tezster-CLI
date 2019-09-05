@@ -110,7 +110,7 @@ After calling, again bake the transaction in the same manner
 sudo tezster bake-for bootstrap1
 
 ```
-To see the cuurent storage in a contract, run
+To see the current storage in a contract, run
 
 ```
 tezster get-storage <contract-label/address>
