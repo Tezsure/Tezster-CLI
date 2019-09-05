@@ -23,6 +23,7 @@
     "buffer": "^5.1.0",
     "cli-progress": "^2.1.1",
     "commander": "^2.20.0",
+    "conseiljs": "^0.2.9",
     "crypto": "^1.0.1",
     "fs": "^0.0.1-security",
     "get-random-values": "^1.2.0",

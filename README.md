@@ -71,9 +71,9 @@ this stores any string to the storage
 then run,
 
 ```
-tezster deploy <contract label> <absolute path> <initial storage value>
+tezster deploy <contract label> <absolute path> <initial storage value> <account>
 
-eg.- tezster deploy simplecontract /home/op/testcontract.tz "\"helloworld\""
+eg.- tezster deploy simplecontract /home/op/testcontract.tz "\"helloworld\"" bootstrap1
 
 ```
 if this is successful, you'll receive a contract hash and a message asking you to bake the transaction (assuming you're on local node), then run
@@ -85,8 +85,8 @@ sudo tezster bake-for bootstrap1
 To call the contract, run
 
 ```
-tezster call <contract label> <argument value>
-eg.- tezster call simplecontract "\"goodmorning\""
+tezster call <contract label> <argument value> <account>
+eg.- tezster call simplecontract "\"goodmorning\"" bootstrap1
 
 ```
 After calling, again bake the transaction in the same manner
