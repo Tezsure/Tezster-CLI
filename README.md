@@ -47,7 +47,22 @@ To see generated accounts, run
 ```
 tezster list-accounts
 ```
-To transfer tezos from account to another, run
+User can also activate and use an alphanet faucet account with tezster to interact with alphanet
+user has to download file from  faucet : https://faucet.tzalpha.net/
+
+```
+add-alphanet-account <account-label> <absolute-path-to-json-file> - restores account from faucet json file
+e.g. tezster add-alphanet-account alpha4 /home/op/Downloads/tz1Umt3KQUwZYyjFjJrRXjp17qosuxAkmf3n.json
+
+```
+Any alphanet faucet account requires activation before first use.
+
+```
+ activate-alphanet-account <account-label>
+e.g. tezster activate-alphanet-account alpha4
+
+```
+To transfer tezos from account to another, run (baking is required only in case of tx happening between localnode accounts)
 
 ```
 tezster transfer <amount> <from> <to> 
@@ -55,7 +70,7 @@ eg. - tezster transfer 10 boottsrap1 bootstrap2
 
 then bake the transaction via,
 
-tezster bake-for bootstrap1
+tezster bake-for bootstrap1 
 ```
 To deploy a smart contract, put the michelson code in  a file (eg.- testcontract.tz)
 Code eg.-
@@ -95,6 +110,16 @@ After calling, again bake the transaction in the same manner
 sudo tezster bake-for bootstrap1
 
 ```
+To see the cuurent storage in a contract, run
+
+```
+tezster get-storage <contract-label/address>
+eg.- tezster get-storage simplecontract
+
+```
+You can call this after each step when you deploy or call contract to see the updated storage.
+if you're on localhost, storage will change only after the deploy/call operation is baked by user manually.
+on alphanet node, user may have to wait before operation is baked and included in a block.
 
 To see what you can do with tezster, run
 
