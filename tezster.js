@@ -227,7 +227,7 @@ program
     });
 });
 
-//******* To bake any operation */
+//******* To transfer the amount */
 program
 .command('bake-for')
 .action(async function(){  
@@ -250,92 +250,89 @@ program
     });
 });
 
-//*******deploy contract written in Michelson*/
+//*******deploy contract written */
 program
 .command('deploy')
 .action(async function(){
-    var args = process.argv.slice(3);
-    const tezsterManager = require('./tezster-manager');
-    if (args.length < 4) {
-        console.log(tezsterManager.outputInfo("Incorrect usage of deploy command \n Correct usage: - tezster deploy contract-label contract-absolute-path init-storage-value account"));
-        return;
-    }
-    await tezsterManager.loadTezsterConfig(); 
-
-    let result = await tezsterManager.deployContract(args[0], args[1], args[2], args[3]);
-    console.log(result);
-    console.log(tezsterManager.outputInfo(`If you're running a local node, Please run "tezster bake-for <account-name> to bake this operation`));
-    console.log(tezsterManager.outputInfo(`If you're using alphanet node, use https://alphanet.tzscan.io to check contract/transactions`));
-});
-
-//*******calls contract written in Michelson*/
-program
-.command('call')
-.action(async function(){
-    var args = process.argv.slice(3);
-    const tezsterManager = require('./tezster-manager');
-    if (args.length < 3) {
-        console.log(tezsterManager.outputInfo("Incorrect usage of call command \n Correct usage: - tezster call contract-name argument-value account"));
-        return;
-    }
-    await tezsterManager.loadTezsterConfig(); 
-    
-    let result = await tezsterManager.invokeContract(args[0], args[1], args[2]);
-    console.log(result);
-    console.log(tezsterManager.outputInfo(`If you're running a local node, Please run "tezster bake-for <account-name> to bake this operation`));
-    console.log(tezsterManager.outputInfo(`If you're using alphanet node, use https://alphanet.tzscan.io to check contract/transactions`));
-});
-
-//*******gets storage for a contract*/
-program
-.command('get-storage')
-.action(async function(){
-    var args = process.argv.slice(3);
-    const tezsterManager = require('./tezster-manager');
-    if (args.length < 1) {
-        console.log(tezsterManager.outputInfo("Incorrect usage of get-storage command \n Correct usage: - tezster get-storage contract-name"));
-        return;
-    }
-    await tezsterManager.loadTezsterConfig(); 
-    
-    let result = await tezsterManager.getStorage(args[0]);
-    console.log(result);
-});
-
-/* Restores an alphanet faucet account */
-program
-.command('add-alphanet-account')
-.action(async function(){
+    const fs = require("fs");
     var args = process.argv.slice(3);
     const tezsterManager = require('./tezster-manager');
     if (args.length < 2) {
-        console.log(tezsterManager.outputInfo("Incorrect usage of add-alphanet-account command \n Correct usage: - tezster add-alphanet-account <account-label> <absolut-path-to-json-file>"));
+        console.log(tezsterManager.outputInfo("Incorrect usage of deploy command \n Correct usage: - tezster deploy contract-label contract-absolute-path init-string"));
         return;
     }
     await tezsterManager.loadTezsterConfig(); 
-    
-    let result = tezsterManager.restoreAlphanetAccount(args[0], args[1]);
-    console.log(result);
+    let contractLabel = args[0],
+        contract = fs.readFileSync(args[1], 'utf8'),
+        initValue = args[2] || '""';
+    const { exec } = require('child_process');
+    let workingDir = __dirname + '/script';
+
+    console.log(`Please run "tezster bake-for <account-name> to bake this operation`);
+    exec("./deploy_contract.sh" + " " + contractLabel +" '" + contract + "' " + " '\"" +initValue + "\"'",{cwd : workingDir}, (err, stdout, stderr) => {
+        if (err) {
+            console.error(`tezster deploy contract error: ${err}`);
+            return;
+        }
+
+        const operationHashFull = /Operation hash is \'[a-zA-Z0-9]*\'/gm;
+        const operationHash = /\'[a-zA-Z0-9]*\'/gm;
+        let operationHashStr = stdout.match(operationHashFull);
+        if (operationHashStr.length) {
+            let opHashes = operationHashStr[0].match(operationHash);
+            if (opHashes.length) {
+                let opHash = opHashes[0];
+                opHash = opHash.slice(1, opHash.length-1);
+                // TODO : contract is being deployed with bootstrap1 always
+                tezsterManager.addContract(contractLabel, opHash, 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx');
+            }
+        }
+        console.log(`${stdout}`);
+    });
 });
 
-/* Restores an alphanet faucet account */
+
 program
-.command('activate-alphanet-account')
+.command('call')
 .action(async function(){
+    const fs = require("fs");
     var args = process.argv.slice(3);
     const tezsterManager = require('./tezster-manager');
-    if (args.length < 1) {
-        console.log(tezsterManager.outputInfo("Incorrect usage of activate-alphanet-account command \n Correct usage: - tezster activate-alphanet-account <account-label>"));
+    if (args.length < 2) {
+        console.log(tezsterManager.outputInfo("Incorrect usage of call command \n Correct usage: - tezster call contract-name argument-string"));
         return;
     }
     await tezsterManager.loadTezsterConfig(); 
+    let contractLabel = args[0],
+        argument = args[1] || '""';
+    const { exec } = require('child_process');
+    let workingDir = __dirname + '/script';
     
-    let result = await tezsterManager.activateAlphanetAccount(args[0]);
-    console.log(result);
-    console.log(tezsterManager.outputInfo(`If this account has already been activated, it may throw 'invalid_activation' error. You can visit https://alphanet.tzscan.io/ for more information on this account`));
+    console.log(`Please run "tezster bake-for <account-name> to bake this operation`);
+    exec("./call_contract.sh" + " " + contractLabel + " '\"" + argument + "\"'",{cwd : workingDir}, (err, stdout, stderr) => {
+        if (err) {
+            console.error(`tezster call contract error: ${err}`);
+            return;
+        }
+
+        const operationHashFull = /Operation hash is \'[a-zA-Z0-9]*\'/gm;
+        const operationHash = /\'[a-zA-Z0-9]*\'/gm;
+        let operationHashStr = stdout.match(operationHashFull);
+        if (operationHashStr.length) {
+            let opHashes = operationHashStr[0].match(operationHash);
+            if (opHashes.length) {
+                let opHash = opHashes[0];
+                opHash = opHash.slice(1, opHash.length-1);
+                // TODO : contract is being called with bootstrap1 always
+                tezsterManager.addTransaction('contract-call', opHash, 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx', contractLabel, 0);
+            }
+        }
+        console.log(`${stdout}`);
+    });
+    
 });
 
-/* list transactions done with tezster */
+/* list transactions done on localhost */
 program
 .command('list-transactions')
 .action(async function(){  
@@ -343,7 +340,7 @@ program
     await tezsterManager.loadTezsterConfig();    
     const config = tezsterManager.config;
 
-    console.log(tezsterManager.outputInfo('For transactions done on alphanet node ,you can visit https://alphanet.tzscan.io/ for more information'))
+    console.log(tezsterManager.outputInfo('These transactipns are for the local nodes, for alphanet you can visit https://alphanet.tzscan.io/'))
     if(Object.keys(config.transactions).length > 0){        
         for(var i in config.transactions){
             console.log(tezsterManager.output(JSON.stringify(config.transactions[i])));        
@@ -379,10 +376,7 @@ if (process.argv.length <= 2){
     console.log('\x1b[31m%s\x1b[0m', "Error: " +"Please enter a command!");
 }
 var commands=process.argv[2];
-const validCommands = ['list-Identities','list-accounts','list-contracts','get-balance','transfer',
-                        'bake-for','set-provider','get-provider','fix-liquidity-package','install-liquidity',
-                        'stop-nodes','start-nodes','setup','call','deploy','help','create-account','list-transactions', 
-                        'get-storage', 'add-alphanet-account', 'activate-alphanet-account'];
+const validCommands = ['list-Identities','list-accounts','list-contracts','get-balance','transfer','bake-for','set-provider','get-provider','fix-liquidity-package','install-liquidity','stop-nodes','start-nodes','setup','call','deploy','help','create-account','list-transactions'];
 if (validCommands.indexOf(commands) < 0 && process.argv.length >2 ) {
     console.log('\x1b[31m%s\x1b[0m', "Error: " + "Invalid command\nPlease run tezster help to get info about commands ");        
 }
