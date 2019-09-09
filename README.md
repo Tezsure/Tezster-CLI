@@ -47,21 +47,7 @@ To see generated accounts, run
 ```
 tezster list-accounts
 ```
-User can also activate and use an alphanet faucet account with tezster to interact with alphanet
-user has to download file from  faucet : https://faucet.tzalpha.net/
 
-```
-add-alphanet-account <account-label> <absolute-path-to-json-file> - restores account from faucet json file
-e.g. tezster add-alphanet-account alpha4 /home/op/Downloads/tz1Umt3KQUwZYyjFjJrRXjp17qosuxAkmf3n.json
-
-```
-Any alphanet faucet account requires activation before first use.
-
-```
- activate-alphanet-account <account-label>
-e.g. tezster activate-alphanet-account alpha4
-
-```
 To transfer tezos from account to another, run (baking is required only in case of tx happening between localnode accounts)
 
 ```
