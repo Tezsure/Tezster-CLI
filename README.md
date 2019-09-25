@@ -66,7 +66,7 @@ To transfer tezos from account to another, run (baking is required only in case 
 
 ```
 tezster transfer <amount> <from> <to> 
-eg. - tezster transfer 10 boottsrap1 bootstrap2
+eg. - tezster transfer 10 bootstrap1 bootstrap2
 
 then bake the transaction via,
 

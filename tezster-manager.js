@@ -31,6 +31,7 @@ var helpData="Usage: tezster [command] [optional parameters].....\n" +
 var eztz = {}, 
     config = jsonfile.readFileSync(confFile);
 
+const ConseilJS = './lib/conseiljs';
 async function loadTezsterConfig() {
     eztz = require('./lib/eztz.cli.js').eztz;
     const jsonfile = require('jsonfile');
@@ -219,7 +220,7 @@ function getKeys(account) {
 
 async function deployContract(contractLabel, contractPath, initValue, account) {
   const fs = require("fs");
-  const conseiljs = require('conseiljs');
+  const conseiljs = require(ConseilJS);
   const tezosNode = config.provider;  
   
   const keys = getKeys(account);
@@ -266,7 +267,7 @@ async function deployContract(contractLabel, contractPath, initValue, account) {
 }
 
 async function invokeContract(contract, argument, account) {
-  const conseiljs = require('conseiljs');
+  const conseiljs = require(ConseilJS);
   const tezosNode = config.provider;
   const keys = getKeys(account);
   if(!keys) {
