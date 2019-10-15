@@ -47,12 +47,26 @@ To see generated accounts, run
 ```
 tezster list-accounts
 ```
+User can also activate and use an alphanet faucet account with tezster to interact with alphanet
+user has to download file from  faucet : https://faucet.tzalpha.net/
 
+```
+add-alphanet-account <account-label> <absolute-path-to-json-file> - restores account from faucet json file
+e.g. tezster add-alphanet-account alpha4 /home/op/Downloads/tz1Umt3KQUwZYyjFjJrRXjp17qosuxAkmf3n.json
+
+```
+Any alphanet faucet account requires activation before first use.
+
+```
+ activate-alphanet-account <account-label>
+e.g. tezster activate-alphanet-account alpha4
+
+```
 To transfer tezos from account to another, run (baking is required only in case of tx happening between localnode accounts)
 
 ```
 tezster transfer <amount> <from> <to> 
-eg. - tezster transfer 10 boottsrap1 bootstrap2
+eg. - tezster transfer 10 bootstrap1 bootstrap2
 
 then bake the transaction via,
 
@@ -72,9 +86,9 @@ this stores any string to the storage
 then run,
 
 ```
-tezster deploy <contract label> <absolute path> <initial storage value>
+tezster deploy <contract label> <absolute path> <initial storage value> <account>
 
-eg.- tezster deploy simplecontract /home/op/testcontract.tz "\"helloworld\""
+eg.- tezster deploy simplecontract /home/op/testcontract.tz "\"helloworld\"" bootstrap1
 
 ```
 if this is successful, you'll receive a contract hash and a message asking you to bake the transaction (assuming you're on local node), then run
@@ -86,8 +100,8 @@ sudo tezster bake-for bootstrap1
 To call the contract, run
 
 ```
-tezster call <contract label> <argument value>
-eg.- tezster call simplecontract "\"goodmorning\""
+tezster call <contract label> <argument value> <account>
+eg.- tezster call simplecontract "\"goodmorning\"" bootstrap1
 
 ```
 After calling, again bake the transaction in the same manner
