@@ -13,13 +13,12 @@ export declare namespace TezosNodeWriter {
     function getQueueStatus(server: string, keyStore: KeyStore, derivationPath?: string): any;
     function appendRevealOperation(server: string, keyStore: KeyStore, accountHash: string, accountOperationIndex: number, operations: TezosP2PMessageTypes.StackableOperation[]): Promise<(TezosP2PMessageTypes.Transaction | TezosP2PMessageTypes.Delegation | TezosP2PMessageTypes.Reveal)[]>;
     function sendTransactionOperation(server: string, keyStore: KeyStore, to: string, amount: number, fee: number, derivationPath?: string): Promise<TezosTypes.OperationResult>;
-    function sendDelegationOperation(server: string, keyStore: KeyStore, delegator: string, delegate: string | undefined, fee?: number, derivationPath?: string): Promise<TezosTypes.OperationResult>;
-    function sendUndelegationOperation(server: string, keyStore: KeyStore, delegator: string, fee?: number, derivationPath?: string): Promise<TezosTypes.OperationResult>;
-    function sendAccountOriginationOperation(server: string, keyStore: KeyStore, amount: number, delegate: string | undefined, spendable: boolean, delegatable: boolean, fee?: number, derivationPath?: string): Promise<TezosTypes.OperationResult>;
-    function sendContractOriginationOperation(server: string, keyStore: KeyStore, amount: number, delegate: string | undefined, spendable: boolean, delegatable: boolean, fee: number, derivationPath: string, storage_limit: number, gas_limit: number, code: string, storage: string, codeFormat?: TezosTypes.TezosParameterFormat): Promise<TezosTypes.OperationResult>;
-    function sendContractInvocationOperation(server: string, keyStore: KeyStore, to: string, amount: number, fee: number, derivationPath: string, storageLimit: number, gasLimit: number, parameters?: string, parameterFormat?: TezosTypes.TezosParameterFormat): Promise<TezosTypes.OperationResult>;
-    function sendContractPing(server: string, keyStore: KeyStore, to: string, fee: number, derivationPath: string, storageLimit: number, gasLimit: number): Promise<TezosTypes.OperationResult>;
+    function sendDelegationOperation(server: string, keyStore: KeyStore, delegate: string | undefined, fee?: number, derivationPath?: string): Promise<TezosTypes.OperationResult>;
+    function sendUndelegationOperation(server: string, keyStore: KeyStore, fee?: number, derivationPath?: string): Promise<TezosTypes.OperationResult>;
+    function sendContractOriginationOperation(server: string, keyStore: KeyStore, amount: number, delegate: string | undefined, fee: number, derivationPath: string, storage_limit: number, gas_limit: number, code: string, storage: string, codeFormat?: TezosTypes.TezosParameterFormat): Promise<TezosTypes.OperationResult>;
+    function sendContractInvocationOperation(server: string, keyStore: KeyStore, to: string, amount: number, fee: number, derivationPath: string, storageLimit: number, gasLimit: number, entrypoint: string | undefined, parameters: string | undefined, parameterFormat?: TezosTypes.TezosParameterFormat): Promise<TezosTypes.OperationResult>;
+    function sendContractPing(server: string, keyStore: KeyStore, to: string, fee: number, derivationPath: string, storageLimit: number, gasLimit: number, entrypoint: string | undefined): Promise<TezosTypes.OperationResult>;
     function sendKeyRevealOperation(server: string, keyStore: KeyStore, fee?: number, derivationPath?: string): Promise<TezosTypes.OperationResult>;
-    function sendIdentityActivationOperation(server: string, keyStore: KeyStore, activationCode: string, derivationPath: string): Promise<TezosTypes.OperationResult>;
+    function sendIdentityActivationOperation(server: string, keyStore: KeyStore, activationCode: string): Promise<TezosTypes.OperationResult>;
     function testOperation(server: string, operations: TezosP2PMessageTypes.Operation[], keyStore: KeyStore, derivationPath?: string, chainid?: string): Promise<number[]>;
 }

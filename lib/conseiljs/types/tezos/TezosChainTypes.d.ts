@@ -41,5 +41,6 @@ export declare enum OperationKindType {
 }
 export declare enum TezosParameterFormat {
     Michelson = "michelson",
-    Micheline = "micheline"
+    Micheline = "micheline",
+    MichelsonLambda = "michelsonlambda"
 }
