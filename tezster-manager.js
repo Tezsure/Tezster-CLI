@@ -244,8 +244,8 @@ async function deployContract(contractLabel, contractPath, initValue, account) {
   try {
     const contract = fs.readFileSync(contractPath, 'utf8');
     const result = await conseiljs.TezosNodeWriter.sendContractOriginationOperation(
-                              tezosNode, keystore, 0, undefined, false,
-                              true, 100000, '', 1000, 100000, 
+                              tezosNode, keystore, 0, undefined,
+                              100000, '', 1000, 100000, 
                               contract, initValue, conseiljs.TezosParameterFormat.Michelson);
     if (result.results) {
       switch(result.results.contents[0].metadata.operation_result.status) {
@@ -294,8 +294,8 @@ async function invokeContract(contract, argument, account) {
 
   try {
     const result = await conseiljs.TezosNodeWriter.sendContractInvocationOperation(
-                                tezosNode, keystore, contractAddress, 0, 100000, '', 1000, 100000, argument, 
-                                conseiljs.TezosParameterFormat.Michelson);
+                                tezosNode, keystore, contractAddress, 0, 100000, '', 1000, 100000, undefined, 
+                                argument, conseiljs.TezosParameterFormat.Michelson);
     
     if (result.results) {
       switch(result.results.contents[0].metadata.operation_result.status) {
