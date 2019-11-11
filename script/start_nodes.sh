@@ -10,10 +10,12 @@ function main {
     if [ -f "$SETUP_SUCCESS_FILE" ]; then
         nohup ./tezos/src/bin_node/tezos-sandboxed-node.sh 1 > $NODE_18731_LOG 2>&1 &
         nohup ./tezos/src/bin_node/tezos-sandboxed-node.sh 2 > $NODE_18732_LOG 2>&1 &
+        nohup ./tezos/src/bin_node/tezos-sandboxed-node.sh 3 > $NODE_18733_LOG 2>&1 &
         sleep 15
         PID18731=$(lsof -ti:18731)
         PID18732=$(lsof -ti:18732)
-        if [[ "$PID18731" =~ ^[0-9]+$ && "$PID18732" =~ ^[0-9]+$ ]] ; then
+        PID18733=$(lsof -ti:18733)
+        if [[ "$PID18731" =~ ^[0-9]+$ && "$PID18732" =~ ^[0-9]+$ && "$PID18733" =~ ^[0-9]+$ ]] ; then
             touch $RUN_NODE_SUCCESS_FILE 
             echo "Started nodes successfully..."
         else 
@@ -29,7 +31,7 @@ function main {
 
 function activateAlpha() {
     ./tezos/src/bin_client/tezos-init-sandboxed-client.sh 1
-    ./tezos/tezos-client -l -base-dir ./tmp -addr localhost -port 18731  -block genesis activate protocol Pt24m4xiPbLDhVgVfABUjirbmda3yohdN82Sp9FeuAXJ4eV9otd with fitness 1 and key activator and parameters ./tezos/sandbox-parameters.json --timestamp $(TZ='AAA+1' date +%FT%TZ)
+    ./tezos/tezos-client -l -base-dir ./tmp -addr localhost -port 18731  -block genesis activate protocol PsBabyM1eUXZseaJdmXFApDSBqj8YBfwELoxZHHW77EMcAbbwAS with fitness 1 and key activator and parameters ./tezos/sandbox-parameters.json --timestamp $(TZ='AAA+1' date +%FT%TZ)
     sleep 15
     ./tezos/tezos-client -l -base-dir ./tmp -addr localhost -port 18731  bake for bootstrap1
 }
