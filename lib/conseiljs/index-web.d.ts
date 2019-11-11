@@ -17,3 +17,4 @@ export * from './types/tezos/TezosP2PMessageTypes';
 export * from './types/tezos/TezosRPCResponseTypes';
 export * from './types/wallet/KeyStore';
 export * from './utils/CryptoUtils';
+export * from './chain/tezos/TezosProtocolHelper';

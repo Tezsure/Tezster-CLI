@@ -24,7 +24,7 @@ export interface Transaction {
     storage_limit: string;
     amount: string;
     destination: string;
-    parameters?: string;
+    parameters?: ContractParameters | string;
 }
 export interface Delegation {
     kind: string;
@@ -51,18 +51,16 @@ export interface Origination {
     counter: string;
     gas_limit: string;
     storage_limit: string;
-    manager_pubkey: string;
+    manager_pubkey?: string;
     balance: string;
     spendable?: boolean;
     delegatable?: boolean;
     delegate?: string;
-    script?: object;
+    script?: any;
 }
-export interface ContractOrigination extends Origination {
-    script: object;
+export interface ContractParameters {
+    entrypoint: string;
+    value: any;
 }
-export interface ContractInvocation extends Transaction {
-    parameters: string;
-}
-export declare type Operation = Activation | Ballot | Transaction | ContractInvocation | Delegation | Reveal | Origination | ContractOrigination;
-export declare type StackableOperation = Transaction | ContractInvocation | Delegation | Origination | ContractOrigination;
+export declare type Operation = Activation | Ballot | Transaction | Delegation | Reveal | Origination;
+export declare type StackableOperation = Transaction | Delegation | Origination;

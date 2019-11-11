@@ -37,7 +37,7 @@ function setUpTezosRepoandBuildTezosNode {
     findDependencyAndInstallIfNotFound git
 
     echo 'getting tezos repo...'
-    git clone -b alphanet https://gitlab.com/tezos/tezos.git
+    git clone -b babylonnet https://gitlab.com/tezos/tezos.git
     cd tezos/
     yes | make build-deps
     eval $(opam env)

@@ -91,7 +91,7 @@ function setProvider(args){
 
 function transferAmount(args){    
     var amount = parseFloat(args[0]), from = args[1], to = args[2],
-        fees = args[3], f;   
+        fees = args[3], f;
     var keys = "main"; 
     if (f = findKeyObj(config.identities, from)) {
       keys = f;
@@ -114,15 +114,15 @@ function transferAmount(args){
       to = f.pkh;
     }
 
-    fees = fees || 1400;
+    fees = fees || 1500;
 
-    return eztz.rpc.transfer(from, keys, to, amount, 1400, undefined, 10200).then(function(r){
+    return eztz.rpc.transfer(from, keys, to, amount, fees, undefined, 10600).then(function(r){
       addTransaction('transfer', r.hash, from, to, amount);
       return output("Transfer complete - operation hash #" + r.hash);
     }).catch(function(e){
       return outputError(e);
     });
-
+    
 }
 
 function createAccount(args){
@@ -244,8 +244,8 @@ async function deployContract(contractLabel, contractPath, initValue, account) {
   try {
     const contract = fs.readFileSync(contractPath, 'utf8');
     const result = await conseiljs.TezosNodeWriter.sendContractOriginationOperation(
-                              tezosNode, keystore, 0, undefined, false,
-                              true, 100000, '', 1000, 100000, 
+                              tezosNode, keystore, 0, undefined,
+                              100000, '', 1000, 100000, 
                               contract, initValue, conseiljs.TezosParameterFormat.Michelson);
     if (result.results) {
       switch(result.results.contents[0].metadata.operation_result.status) {
@@ -294,8 +294,8 @@ async function invokeContract(contract, argument, account) {
 
   try {
     const result = await conseiljs.TezosNodeWriter.sendContractInvocationOperation(
-                                tezosNode, keystore, contractAddress, 0, 100000, '', 1000, 100000, argument, 
-                                conseiljs.TezosParameterFormat.Michelson);
+                                tezosNode, keystore, contractAddress, 0, 100000, '', 1000, 100000, undefined, 
+                                argument, conseiljs.TezosParameterFormat.Michelson);
     
     if (result.results) {
       switch(result.results.contents[0].metadata.operation_result.status) {
