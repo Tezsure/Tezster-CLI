@@ -47,30 +47,46 @@ To see generated accounts, run
 ```
 tezster list-accounts
 ```
-User can also activate and use an alphanet faucet account with tezster to interact with alphanet
+User can also activate and use an babylonnet faucet account with tezster to interact with babylonnet (test network of tezos)
 user has to download file from  faucet : https://faucet.tzalpha.net/
+
 
 ```
 add-alphanet-account <account-label> <absolute-path-to-json-file> - restores account from faucet json file
 e.g. tezster add-alphanet-account alpha4 /home/op/Downloads/tz1Umt3KQUwZYyjFjJrRXjp17qosuxAkmf3n.json
 
 ```
-Any alphanet faucet account requires activation before first use.
+Any faucet account requires activation before first use.
 
 ```
  activate-alphanet-account <account-label>
 e.g. tezster activate-alphanet-account alpha4
 
 ```
+
+After activating faucet you need to change the provider.
+
+to check your current provider run 
+
+```
+tezster get-provider
+
+```
+Change your provider to babylonnet by running
+
+```
+tezster set-provider https://tezos-dev.cryptonomic-infra.tech/
+
+```
 To transfer tezos from account to another, run (baking is required only in case of tx happening between localnode accounts)
 
 ```
-tezster transfer <amount> <from> <to> 
+sudo tezster transfer <amount> <from> <to> 
 eg. - tezster transfer 10 bootstrap1 bootstrap2
 
 then bake the transaction via,
 
-tezster bake-for bootstrap1 
+sudo tezster bake-for bootstrap1 
 ```
 To deploy a smart contract, put the michelson code in  a file (eg.- testcontract.tz)
 Code eg.-
