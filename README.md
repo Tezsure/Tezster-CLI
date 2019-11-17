@@ -1,5 +1,5 @@
 # Tezster
-A personal development blockchain based on Javascript that lives entirely on your local machine. It will come as either a CLI with integrated GUI, has log output, and the ability to run transactions or deploy contracts against the local machine node or state of a live network such as the alphanet, without spending any XTZ.
+A personal development blockchain based on Javascript that lives entirely on your local machine. It will come as either a CLI with integrated GUI, has log output, and the ability to run transactions or deploy contracts against the local machine node or state of a live network such as the babylonnet, without spending any XTZ.
 
 ## Getting started
 
@@ -49,18 +49,32 @@ tezster list-accounts
 ```
 User can also activate and use an babylonnet faucet account with tezster to interact with babylonnet (test network of tezos)
 user has to download file from  faucet : https://faucet.tzalpha.net/
+After downloading from faucet you need to change the provider.
+
+to check your current provider run 
+
+```
+tezster get-provider
+
+```
+Change your provider to babylonnet by running
+
+```
+tezster set-provider https://tezos-dev.cryptonomic-infra.tech/
+
+```
 
 
 ```
-add-alphanet-account <account-label> <absolute-path-to-json-file> - restores account from faucet json file
-e.g. tezster add-alphanet-account alpha4 /home/op/Downloads/tz1Umt3KQUwZYyjFjJrRXjp17qosuxAkmf3n.json
+add-testnet-account <account-label> <absolute-path-to-json-file> - restores account from faucet json file
+e.g. tezster add-testnet-account alpha4 /home/op/Downloads/tz1Umt3KQUwZYyjFjJrRXjp17qosuxAkmf3n.json
 
 ```
-Any faucet account requires activation before first use.
+Any testnet faucet account requires activation before first use.
 
 ```
- activate-alphanet-account <account-label>
-e.g. tezster activate-alphanet-account alpha4
+ activate-testnet-account <account-label>
+e.g. tezster activate-testnet-account alpha4
 
 ```
 
@@ -135,7 +149,7 @@ eg.- tezster get-storage simplecontract
 ```
 You can call this after each step when you deploy or call contract to see the updated storage.
 if you're on localhost, storage will change only after the deploy/call operation is baked by user manually.
-on alphanet node, user may have to wait before operation is baked and included in a block.
+on testnet node, user may have to wait before operation is baked and included in a block.
 
 To see what you can do with tezster, run
 
