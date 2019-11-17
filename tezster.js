@@ -102,40 +102,6 @@ program
     });
 });
 
-program
-.command('install-liquidity')
-.action(function() {
-    console.log('installing liquidity.....');
-    const { exec } = require('child_process');
-    let workingDir = __dirname + '/script';
-    exec('./install_liquidity.sh',{cwd : workingDir}, (err, stdout, stderr) => {
-        if (err) {
-            console.error(`tezster installing liquidity error: ${err}`);
-            return;
-        }
-
-        console.log(`${stdout}`);
-    });
-});
-
-program
-.command('fix-liquidity-package')
-.action(function() {
-    console.log('Fixing libsodium package for liquidity.....');
-    const { exec } = require('child_process');
-    let workingDir = __dirname + '/script';
-    exec('./fix_libsodium.sh',{cwd : workingDir}, (err, stdout, stderr) => {
-        if (err) {
-            console.error(`tezster Fixing liquidity package error: ${err}`);
-            return;
-        }
-
-        console.log(`${stdout}`);
-        console.log(`Check version for libsodium-dev, If it's >= 1.0.11, try installing liquidity by running
-        "tezster install-liquidity" again`);
-    });
-});
-
 //*******for check the balance check */
 program
 .command('get-balance')
@@ -265,7 +231,7 @@ program
     let result = await tezsterManager.deployContract(args[0], args[1], args[2], args[3]);
     console.log(result);
     console.log(tezsterManager.outputInfo(`If you're running a local node, Please run "tezster bake-for <account-name> to bake this operation`));
-    console.log(tezsterManager.outputInfo(`If you're using alphanet node, use https://babylonnet.tzstats.com to check contract/transactions`));
+    console.log(tezsterManager.outputInfo(`If you're using babylonnet node, use https://babylonnet.tzstats.com to check contract/transactions`));
 });
 
 //*******calls contract written in Michelson*/
@@ -283,7 +249,7 @@ program
     let result = await tezsterManager.invokeContract(args[0], args[1], args[2]);
     console.log(result);
     console.log(tezsterManager.outputInfo(`If you're running a local node, Please run "tezster bake-for <account-name> to bake this operation`));
-    console.log(tezsterManager.outputInfo(`If you're using alphanet node, use https://babylonnet.tzstats.com to check contract/transactions`));
+    console.log(tezsterManager.outputInfo(`If you're using babylonnet node, use https://babylonnet.tzstats.com to check contract/transactions`));
 });
 
 //*******gets storage for a contract*/
@@ -302,14 +268,14 @@ program
     console.log(result);
 });
 
-/* Restores an alphanet faucet account */
+/* Restores an testnet faucet account */
 program
-.command('add-alphanet-account')
+.command('add-testnet-account')
 .action(async function(){
     var args = process.argv.slice(3);
     const tezsterManager = require('./tezster-manager');
     if (args.length < 2) {
-        console.log(tezsterManager.outputInfo("Incorrect usage of add-alphanet-account command \n Correct usage: - tezster add-alphanet-account <account-label> <absolut-path-to-json-file>"));
+        console.log(tezsterManager.outputInfo("Incorrect usage of add-testnet-account command \n Correct usage: - tezster add-testnet-account <account-label> <absolut-path-to-json-file>"));
         return;
     }
     await tezsterManager.loadTezsterConfig(); 
@@ -318,14 +284,14 @@ program
     console.log(result);
 });
 
-/* Restores an alphanet faucet account */
+/* Restores an testnet faucet account */
 program
-.command('activate-alphanet-account')
+.command('activate-testnet-account')
 .action(async function(){
     var args = process.argv.slice(3);
     const tezsterManager = require('./tezster-manager');
     if (args.length < 1) {
-        console.log(tezsterManager.outputInfo("Incorrect usage of activate-alphanet-account command \n Correct usage: - tezster activate-alphanet-account <account-label>"));
+        console.log(tezsterManager.outputInfo("Incorrect usage of activate-testnet-account command \n Correct usage: - tezster activate-testnet-account <account-label>"));
         return;
     }
     await tezsterManager.loadTezsterConfig(); 
@@ -343,7 +309,7 @@ program
     await tezsterManager.loadTezsterConfig();    
     const config = tezsterManager.config;
 
-    console.log(tezsterManager.outputInfo('For transactions done on alphanet node ,you can visit https://babylonnet.tzstats.com for more information'))
+    console.log(tezsterManager.outputInfo('For transactions done on babylonnet node ,you can visit https://babylonnet.tzstats.com for more information'))
     if(Object.keys(config.transactions).length > 0){        
         for(var i in config.transactions){
             console.log(tezsterManager.output(JSON.stringify(config.transactions[i])));        
@@ -359,12 +325,23 @@ program
 .action(async function(){  
     var args = process.argv.slice(3);  
     const tezsterManager = require('./tezster-manager');
-    if (args.length < 3) return console.log(tezsterManager.outputError("Incorrect usage - tezster create-account <Indentity> <Account Label> <amount> <spendable=true[Optional]> <delegatable=true[Optional]> <delegate[Optional]> <fee=0[Optional]>"));
+    if (args.length < 3) return console.log(tezsterManager.outputError("Incorrect usage - tezster create-account <Identity> <Account Label> <amount> <spendable=true[Optional]> <delegatable=true[Optional]> <delegate[Optional]> <fee=0[Optional]>"));
     await tezsterManager.loadTezsterConfig(); 
     tezsterManager.createAccount(args).then((result) => {
         console.log(result);
     });
           
+});
+
+//******* To Create an account */
+program
+.command('add-contract')
+.action(async function(){  
+    var args = process.argv.slice(3);  
+    const tezsterManager = require('./tezster-manager');
+    if (args.length < 2) return console.log(tezsterManager.outputError("Incorrect usage - tezster add-contract <label> <Address>"));
+    await tezsterManager.loadTezsterConfig();
+    console.log(tezsterManager.addContract(args[0], args[1], ''));          
 });
 
 program
@@ -380,9 +357,9 @@ if (process.argv.length <= 2){
 }
 var commands=process.argv[2];
 const validCommands = ['list-Identities','list-accounts','list-contracts','get-balance','transfer',
-                        'bake-for','set-provider','get-provider','fix-liquidity-package','install-liquidity',
+                        'bake-for','set-provider','get-provider',
                         'stop-nodes','start-nodes','setup','call','deploy','help','create-account','list-transactions', 
-                        'get-storage', 'add-alphanet-account', 'activate-alphanet-account'];
+                        'get-storage', 'add-testnet-account', 'activate-testnet-account', 'add-contract'];
 if (validCommands.indexOf(commands) < 0 && process.argv.length >2 ) {
     console.log('\x1b[31m%s\x1b[0m', "Error: " + "Invalid command\nPlease run tezster help to get info about commands ");        
 }

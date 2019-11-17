@@ -1,5 +1,5 @@
 # Tezster
-A personal development blockchain based on Javascript that lives entirely on your local machine. It will come as either a CLI with integrated GUI, has log output, and the ability to run transactions or deploy contracts against the local machine node or state of a live network such as the alphanet, without spending any XTZ.
+A personal development blockchain based on Javascript that lives entirely on your local machine. It will come as either a CLI with integrated GUI, has log output, and the ability to run transactions or deploy contracts against the local machine node or state of a live network such as the babylonnet, without spending any XTZ.
 
 ## Getting started
 
@@ -47,19 +47,33 @@ To see generated accounts, run
 ```
 tezster list-accounts
 ```
-User can also activate and use an alphanet faucet account with tezster to interact with alphanet
+User can also activate and use an testnet faucet account with tezster to interact with testnet
 user has to download file from  faucet : https://faucet.tzalpha.net/
+After downloading from faucet you need to change the provider.
+
+to check your current provider run 
 
 ```
-add-alphanet-account <account-label> <absolute-path-to-json-file> - restores account from faucet json file
-e.g. tezster add-alphanet-account alpha4 /home/op/Downloads/tz1Umt3KQUwZYyjFjJrRXjp17qosuxAkmf3n.json
+tezster get-provider
 
 ```
-Any alphanet faucet account requires activation before first use.
+Change your provider to babylonnet by running
 
 ```
- activate-alphanet-account <account-label>
-e.g. tezster activate-alphanet-account alpha4
+tezster set-provider https://tezos-dev.cryptonomic-infra.tech/
+
+```
+
+```
+add-testnet-account <account-label> <absolute-path-to-json-file> - restores account from faucet json file
+e.g. tezster add-testnet-account alpha4 /home/op/Downloads/tz1Umt3KQUwZYyjFjJrRXjp17qosuxAkmf3n.json
+
+```
+Any testnet faucet account requires activation before first use.
+
+```
+ activate-testnet-account <account-label>
+e.g. tezster activate-testnet-account alpha4
 
 ```
 To transfer tezos from account to another, run (baking is required only in case of tx happening between localnode accounts)
@@ -119,7 +133,7 @@ eg.- tezster get-storage simplecontract
 ```
 You can call this after each step when you deploy or call contract to see the updated storage.
 if you're on localhost, storage will change only after the deploy/call operation is baked by user manually.
-on alphanet node, user may have to wait before operation is baked and included in a block.
+on testnet node, user may have to wait before operation is baked and included in a block.
 
 To see what you can do with tezster, run
 
