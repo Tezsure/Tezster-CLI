@@ -25,8 +25,9 @@ var helpData="Usage: tezster [command] [optional parameters].....\n" +
              "deploy [contract-label] [contract-absolute-path] [init-storage-value] [account] - deploys a smart contract written in Michelson\n" +
              "call [contract-name/address] [argument-value] [account]- calls a smart contract with give value provided in Michelson format\n" +
              "get-storage [contract-name/address] - returns current storage for given smart contract\n" + 
-             "add-alphanet-account <account-label> <absolut-path-to-json-file> - restores an alphanet faucet account from json file\n" +
-             "activate-alphanet-account <account-label> - activates an alphanet faucet account resored using tezster";
+             "add-testnet-account <account-label> <absolut-path-to-json-file> - restores an testnet faucet account from json file\n" +
+             "activate-testnet-account <account-label> - activates an testnet faucet account resored using tezster\n" +
+             "add-contract <label> <Address> - adds a smart contract with label for interaction";
 
 var eztz = {}, 
     config = jsonfile.readFileSync(confFile);
@@ -363,7 +364,7 @@ function restoreAlphanetAccount(accountLabel, accountFilePath) {
 
     addIdentity(accountLabel, alphakeys.sk, alphakeys.pk, alphakeys.pkh, accountJSON.secret);
     addAccount('aplha_'+ accountLabel, alphakeys.pkh, accountLabel);
-    return output(`successfully restored alphanet faucet account: ${accountLabel}-${alphakeys.pkh}`);
+    return output(`successfully restored testnet faucet account: ${accountLabel}-${alphakeys.pkh}`);
   } catch(error) {
     return outputError(` occured while restroing account : ${error}`);
   }
@@ -378,10 +379,19 @@ async function activateAlphanetAccount(account) {
 
   try {
     let activationResult = await eztz.rpc.activate(keys.pkh, keys.secret);
-    return output(`successfully activated alphanet faucet account: ${keys.label} : ${keys.pkh} \n with tx hash: ${activationResult}`);
+    return output(`successfully activated testnet faucet account: ${keys.label} : ${keys.pkh} \n with tx hash: ${activationResult}`);
   } catch(error) {
     return outputError(` occured while activating account : ${error}`);
   }
+}
+
+function addContractToConfig(contractLabel, contractAddr) {
+  let contractObj = findKeyObj(config.contracts, contractLabel);
+  if (contractObj) {
+    return outputError(`This contract label is already in use. Please use a different one.`);
+  }
+
+  addContract(contractLabel, contractAddr, '');
 }
 
 module.exports= {
@@ -395,7 +405,7 @@ module.exports= {
     getProvider: getProvider,
     setProvider: setProvider,
     transferAmount: transferAmount,
-    addContract: addContract,
+    addContract: addContractToConfig,
     addTransaction: addTransaction,
     createAccount:createAccount,
     helpData:helpData,
