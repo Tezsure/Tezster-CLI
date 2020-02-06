@@ -20,4 +20,6 @@
 # tezster setup
 # wait
 
+cd tezos && nohup ./tezos-node run --rpc-addr :18731 --log-output tezos.log &
+
 /bin/bash

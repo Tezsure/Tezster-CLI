@@ -4,8 +4,6 @@ EXPOSE 18731 18732
 
 RUN apt-get update
 RUN apt-get install -y nodejs npm sudo
-# RUN npm install -g tezster@latest
-# RUN tezster setup
 
 RUN apt-get install -y git make unzip libev-dev libgmp-dev m4 pkg-config libhidapi-dev build-essential lsof wget
 
@@ -24,11 +22,7 @@ RUN opam switch 4.06.1
 RUN opam update
 RUN eval $(opam env) && cd tezos && make build-deps && eval $(opam env) && make
 
-# RUN ./tezos-node identity generate
-
-# RUN export PATH =~/tezos:$PATH
-# RUN source ./src/bin_client/bash-completion.sh
-# RUN export TEZOS_CLIENT_UNSAFE_DISABLE_DICLAIMER=Y
+RUN cd tezos && ./tezos-node identity generate
 
 ADD shell.sh /usr/local/bin/shell.sh
 RUN chmod +x /usr/local/bin/shell.sh

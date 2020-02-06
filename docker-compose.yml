@@ -1,6 +1,10 @@
+version: '2'
 services:
-  myservice:
-    image: tezster
-    container: 6c783cd759f3
-    
-    command: /usr/local/bin/shell.sh && exec tezster start-nodes
+  tezster:
+    build: .
+    ports:
+      - "18732:8732"
+    # extra_hosts:
+    #   - "dockerhost:$DOCKERHOST"
+
+      #  command: ./start-nodes
