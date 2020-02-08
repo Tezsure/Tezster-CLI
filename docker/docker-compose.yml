@@ -1,10 +1,10 @@
 version: '2'
 services:
-  tezster15:
+  tezster-cli:
     build: .
-    image: tezster15
+    image: tezster-cli
     ports:
-      - "18732:18731"
+      - "18731:18731"
 
     command: bash -c "/usr/local/bin/start_nodes.sh && tail -f /dev/null"
       
