@@ -1,9 +1,5 @@
 version: '2'
 
-# networks:
-#   bridge:
-#     default
-#     attachable: true
 
 services:
   tezster15:
@@ -11,9 +7,8 @@ services:
     image: tezster15
     ports:
       - "0.0.0.0:18731:18731"
+    network_mode: host
 
     command: bash -c "/usr/local/bin/start_nodes.sh && tail -f /dev/null"
 
-      #bash -c "nohup ./tezos/src/bin_node/tezos-sandboxed-node.sh 1 && nohup ./tezos/src/bin_node/tezos-sandboxed-node.sh 2 && nohup ./tezos/src/bin_node/tezos-sandboxed-node.sh 3 & sleep 15 && ./tezos/src/bin_client/tezos-init-sandboxed-client.sh 1 && tezos-client import secret key activator unencrypted:edsk31vznjHSSpGExDMHYASz45VZqXN4DPxvsa4hAyY8dHM28cZzp6 &&./tezos/tezos-client -l --base-dir ./tmp --addr localhost --port 18731  --block genesis activate protocol PsBabyM1eUXZseaJdmXFApDSBqj8YBfwELoxZHHW77EMcAbbwAS with fitness 5 and key activator and parameters ./tezos/sandbox-parameters.json --timestamp $$(TZ='AAA+1' date +%FT%TZ) && sleep 15"
-
-
+     
