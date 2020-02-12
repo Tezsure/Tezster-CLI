@@ -30,8 +30,9 @@ function main {
 }
 
 function activateAlpha() {
-    ./tezos/src/bin_client/tezos-init-sandboxed-client.sh 1
-    ./tezos/tezos-client -l -base-dir ./tmp -addr localhost -port 18731  -block genesis activate protocol PsBabyM1eUXZseaJdmXFApDSBqj8YBfwELoxZHHW77EMcAbbwAS with fitness 1 and key activator and parameters ./tezos/sandbox-parameters.json --timestamp $(TZ='AAA+1' date +%FT%TZ)
+    cd tezos && ./tezos-admin-client --port 18731 config update
+    eval `./tezos/src/bin_client/tezos-init-sandboxed-client.sh 1`
+    cd tezos && tezos-client -l -base-dir ./tmp -addr localhost -port 18731  -block genesis activate protocol PsBabyM1eUXZseaJdmXFApDSBqj8YBfwELoxZHHW77EMcAbbwAS with fitness 1 and key activator and parameters ./sandbox-parameters.json --timestamp $(TZ='AAA+1' date +%FT%TZ)
     sleep 15
     ./tezos/tezos-client -l -base-dir ./tmp -addr localhost -port 18731  bake for bootstrap1
 }
