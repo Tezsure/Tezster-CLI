@@ -2,9 +2,9 @@ version: '2'
 
 
 services:
-  tezster15:
+  tezster-cli:
     build: .
-    image: tezster15
+    image: kapil1221/tezster-cli
     ports:
       - "0.0.0.0:18731:18731"
     network_mode: host
