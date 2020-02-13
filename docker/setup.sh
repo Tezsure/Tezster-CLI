@@ -1,5 +1,5 @@
 #!/bin/bash
-source /usr/local/bin/env.sh
+source ./env.sh
 
 function main {
     sudo apt-get -y update 
@@ -90,5 +90,3 @@ function cleanup {
 }
 
 main
-
-/bin/bash

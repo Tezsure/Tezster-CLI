@@ -1,5 +1,5 @@
 #!/bin/bash
-source usr/local/bin/env.sh
+source ./env.sh
 
 # TODO : 
     #    - Kill any process running on port 18731 & 18732 before starting the node
@@ -44,5 +44,3 @@ function cleanup() {
 }
 
 main
-
-/bin/bash

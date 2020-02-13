@@ -11,6 +11,9 @@ RUN chmod +x /usr/local/bin/start_nodes.sh
 ADD env.sh /usr/local/bin/env.sh
 RUN chmod +x /usr/local/bin/env.sh
 
+ADD tmp /usr/local/bin/tmp
+RUN chmod +x /usr/local/bin/tmp
+
 ADD setup.sh /usr/local/bin/setup.sh
 RUN chmod +x /usr/local/bin/setup.sh
-CMD /usr/local/bin/setup.sh
+RUN cd /usr/local/bin && ./setup.sh
