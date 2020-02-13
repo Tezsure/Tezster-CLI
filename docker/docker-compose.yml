@@ -1,5 +1,6 @@
 version: '2'
 
+<<<<<<< HEAD
 services:
   tezster-cli:
     image: tezster-docker5
@@ -9,3 +10,17 @@ services:
 
     command: bash -c "cd /usr/local/bin && start_nodes.sh && tail -f /dev/null"
      
+=======
+
+services:
+  tezster-cli:
+    build: .
+    image: kapil1221/tezster-cli
+    ports:
+      - "0.0.0.0:18731:18731"
+    network_mode: host
+
+    command: bash -c "/usr/local/bin/start_nodes.sh && tail -f /dev/null"
+
+     
+>>>>>>> bdc3f8e12c8254d182259c89938529d32fb89810
