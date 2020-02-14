@@ -2,10 +2,10 @@ version: '3'
 
 services:
   tezster-cli:
-    build: .
     image: kapil1221/tezster-cli
     ports:
       - "0.0.0.0:18731:18731"
     network_mode: host
 
-    command: bash -c "/usr/local/bin/start_nodes.sh && tail -f /dev/null"
+    command: bash -c "cd /usr/local/bin && start_nodes.sh && tail -f /dev/null"
+     
