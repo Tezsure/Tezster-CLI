@@ -16,7 +16,7 @@ program
     let progress = 1;
     let progressInterval;
     const progressbar = new _cliProgress.Bar({
-                            format: 'progress [{bar}] {percentage}% | ETA: {eta}s'
+                            format: 'progress [{bar}] {percentage}% '
                             }, _cliProgress.Presets.shades_classic);
     progressbar.start(100, progress);
 
@@ -29,12 +29,8 @@ program
             return;
         }
 
-        console.log(`${stdout}`);
-        if (fs.existsSync(setup_successfile_dir)) {
-            console.log('Setup has been completed successfully');
-        } else {
-            console.log('setup is not successful, please try running "tezster setup" again....');
-        }
+        console.log("setup successful")
+
     });
 
     progressInterval = setInterval(() => {
@@ -60,7 +56,7 @@ program
     let progress = 0;
     let progressInterval;
     const progressbar = new _cliProgress.Bar({
-                            format: 'progress [{bar}] {percentage}% | ETA: {eta}s'
+                            format: 'progress [{bar}] {percentage}%'
                             }, _cliProgress.Presets.shades_classic);
     progressbar.start(100, progress);
     exec('./start_nodes.sh',{cwd : workingDir}, (err, stdout, stderr) => {
