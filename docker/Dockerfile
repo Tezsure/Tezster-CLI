@@ -5,15 +5,15 @@ EXPOSE 18731 18732
 RUN apt-get update
 RUN apt-get install -y nodejs npm sudo
 
-ADD docker_start_nodes.sh /usr/local/bin/start_nodes.sh
+ADD start_nodes.sh /usr/local/bin/start_nodes.sh
 RUN chmod +x /usr/local/bin/start_nodes.sh
 
-ADD docker_env.sh /usr/local/bin/env.sh
+ADD env.sh /usr/local/bin/env.sh
 RUN chmod +x /usr/local/bin/env.sh
 
-ADD docker_tmp /usr/local/bin/tmp
+ADD tmp /usr/local/bin/tmp
 RUN chmod +x /usr/local/bin/tmp
 
-ADD docker_setup.sh /usr/local/bin/setup.sh
+ADD setup.sh /usr/local/bin/setup.sh
 RUN chmod +x /usr/local/bin/setup.sh
 RUN cd /usr/local/bin && ./setup.sh

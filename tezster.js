@@ -2,83 +2,53 @@
 'use strict';
 
 const program = require('commander');
+const Docker = require('dockerode');
+var docker = new Docker({socketPath: '/var/run/docker.sock'});
 
 program
 .version('0.1.9', '-v, --version')
 .command('setup')
 .action(function() {
+
     console.log('setting up tezos node, this could take a while....');
-    const { exec } = require('child_process');
-    const fs = require("fs");
-    let workingDir = __dirname + '/script';
-    let setup_successfile_dir = workingDir + '/setup.successful';
-    const _cliProgress = require('cli-progress');
-    let progress = 1;
-    let progressInterval;
-    const progressbar = new _cliProgress.Bar({
-                            format: 'progress [{bar}] {percentage}% '
-                            }, _cliProgress.Presets.shades_classic);
-    progressbar.start(100, progress);
 
-    exec('./setup.sh > setup.log',{cwd : workingDir}, (err, stdout, stderr) => {
-        clearInterval(progressInterval);
-        progressbar.update(100);
-        progressbar.stop();
-        if (err) {
-            console.error(`tezster setup error: ${err}`);
-            return;
-        }
+    return new Promise((resolve, reject) => {
+        docker.pull('kapil1221/tezster-cli:latest', (error, stream) => {
+            docker.modem.followProgress(stream, (error, output) => {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                resolve(output);
+            }, (event) => console.log(event));
+        });
+})
 
-        console.log("setup successful")
-
-    });
-
-    progressInterval = setInterval(() => {
-        progress = progress + 0.055;
-            if (progressInterval >= 100) {
-                clearInterval(progressInterval);
-                progressbar.update(100);
-                progressbar.stop();
-
-                return;
-            }
-            progressbar.update(progress);
-        }, 1000);
 });
 
 program
 .command('start-nodes')
 .action(function() {
     console.log('starting the nodes.....');
-    const { exec } = require('child_process');
-    let workingDir = __dirname + '/script';
-    const _cliProgress = require('cli-progress');
-    let progress = 0;
-    let progressInterval;
-    const progressbar = new _cliProgress.Bar({
-                            format: 'progress [{bar}] {percentage}%'
-                            }, _cliProgress.Presets.shades_classic);
-    progressbar.start(100, progress);
-    exec('./start_nodes.sh',{cwd : workingDir}, (err, stdout, stderr) => {
-        clearInterval(progressInterval);
-        progressbar.update(100);
-        progressbar.stop();
-        if (err) {
-            return;
-        }
 
-        console.log(`${stdout}`);
+    docker.createContainer({
+        Image: 'kapil1221/tezster-cli',
+        Tty: true,
+        ExposedPorts: {
+            "18731/tcp:": {}
+        },
+        PortBindings: { "18731/tcp": [{ "HostPort": "18731" }] },
+        NetworkMode: "host",
+        Cmd: ['/bin/bash', '-c', 'cd /usr/local/bin && start_nodes.sh && tail -f /dev/null'],
+    }, function(err, container) {
+        container.start({
+            
+        }, function(err, data) {
+            if(err) console.log(err);
+            else console.log(data);
+        });
     });
 
-    progressInterval = setInterval(() => {
-        progress = progress + 1.8;
-            if (progressInterval >= 100) {
-                clearInterval(progressInterval);
-                progressbar.update(100);
-                return;
-            }
-            progressbar.update(progress);
-        }, 1000);
 });
 
 program
@@ -186,29 +156,6 @@ program
     console.log(`Please run "tezster bake-for <account-name> to bake this operation if operation is successful`);
     tezsterManager.transferAmount(args).then((result) => {        
         console.log(result);
-    });
-});
-
-//******* To bake any operation */
-program
-.command('bake-for')
-.action(async function(){  
-    var args = process.argv.slice(3);
-    const tezsterManager = require('./tezster-manager');
-    if (args.length < 1) {
-        console.log(tezsterManager.outputError("Incorrect usage - tezster bake-for <identity-label>"));
-        return;
-    }
-    console.log('baking the previous operation.....');
-    const { exec } = require('child_process');
-    let workingDir = __dirname + '/script';
-    exec('./bake_tx.sh ' + args[0],{cwd : workingDir}, (err, stdout, stderr) => {
-        if (err) {
-            console.error(`tezster baking opertaion error: ${err}`);
-            return;
-        }
-
-        console.log(`Baking successful ${stdout}`);
     });
 });
 
@@ -353,7 +300,7 @@ if (process.argv.length <= 2){
 }
 var commands=process.argv[2];
 const validCommands = ['list-Identities','list-accounts','list-contracts','get-balance','transfer',
-                        'bake-for','set-provider','get-provider',
+                        'set-provider','get-provider',
                         'stop-nodes','start-nodes','setup','call','deploy','help','create-account','list-transactions', 
                         'get-storage', 'add-testnet-account', 'activate-testnet-account', 'add-contract'];
 if (validCommands.indexOf(commands) < 0 && process.argv.length >2 ) {
