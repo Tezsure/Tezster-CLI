@@ -1,6 +1,6 @@
 FROM ubuntu:16.04
 
-EXPOSE 18731 18732
+EXPOSE 18731
 
 RUN apt-get update
 RUN apt-get install -y nodejs npm sudo
