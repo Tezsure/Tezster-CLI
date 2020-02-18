@@ -1,4 +1,4 @@
-# Tezster
+# Tezster 2.0 - CLI
 A personal development blockchain based on Javascript that lives entirely on your local machine.
 
 ## Getting Super Powers
