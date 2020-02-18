@@ -44,20 +44,19 @@ program
 
       return new Promise((resolve, reject) => {
         docker.pull("tezsureinc/tezster:1.0.0", (error, stream) => {
+          progressInterval = setInterval(() => {
+            progressbar.start(100, progress);
+            progress = progress + 1.8;
+            clearInterval(progress);
+            if (progress >= 100) {
+              clearInterval(progressInterval);
+              progressbar.update(100);
+              progressbar.stop();
+              return;
+            }
+            progressbar.update(progress);
+          }, 1000);
           docker.modem.followProgress(stream, (error, output) => {
-            progressInterval = setInterval(() => {
-              progressbar.start(100, progress);
-              progress = progress + 1.8;
-              clearInterval(progress);
-              if (progress >= 100) {
-                clearInterval(progressInterval);
-                progressbar.update(100);
-                progressbar.stop();
-                return;
-              }
-              progressbar.update(progress);
-            }, 1000);
-
             if (error) {
               return reject(error);
             }
@@ -84,7 +83,7 @@ program.command("start-nodes").action(function() {
   return new Promise((resolve, reject) => {
     docker.createContainer(
       {
-        name: "tezster-cli",
+        name: "tezster",
         Image: "kapil1221/tezster-cli",
         Tty: true,
         ExposedPorts: {
