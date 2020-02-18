@@ -46,7 +46,7 @@ program
         docker.pull("tezsureinc/tezster:1.0.0", (error, stream) => {
           progressInterval = setInterval(() => {
             progressbar.start(100, progress);
-            progress = progress + 1.8;
+            progress = progress + 0.8;
             clearInterval(progress);
             if (progress >= 100) {
               clearInterval(progressInterval);
