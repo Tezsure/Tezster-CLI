@@ -1,6 +1,6 @@
 {
   "name": "tezster2",
-  "version": "0.4.16",
+  "version": "0.4.23",
   "description": "A personal development blockchain based on Javascript that lives entirely on your local machine.",
   "main": "tezster.js",
   "scripts": {

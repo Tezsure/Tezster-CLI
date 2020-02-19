@@ -5,6 +5,7 @@ const cp = require("child_process");
 const program = require("commander");
 const Docker = require("dockerode");
 var docker = new Docker({ socketPath: "/var/run/docker.sock" });
+const tezsterManager = require("./tezster-manager");
 
 program
   .version("0.1.9", "-v, --version")
