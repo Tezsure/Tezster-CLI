@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 
+const cp = require("child_process");
 const program = require("commander");
 const Docker = require("dockerode");
 var docker = new Docker({ socketPath: "/var/run/docker.sock" });
@@ -9,114 +10,133 @@ program
   .version("0.1.9", "-v, --version")
   .command("setup")
   .action(function() {
-    console.log("setting up tezos node, this could take a while....");
+    console.log(
+      "We may need your password for write permission in config.json...."
+    );
 
-    return new Promise((resolve, reject) => {
-      const cp = require("child_process");
-      cp.exec(
-        `stat -c '%a %n' ${__dirname}/config.json`,
-        (error, __stdout, __stderr) => {
-          resolve(__stdout);
-          if (!error) {
-            if (__stdout !== `777 ${__dirname}/config.json`) {
-              cp.exec(
-                `sudo chmod -R 777 ${__dirname}/config.json`,
-                (error, stdout, stderr) => {
-                  resolve(stdout);
+    cp.exec(`docker --version`, (error, __stdout, __stderr) => {
+      if (__stdout.includes("Docker version")) {
+        return new Promise((resolve, reject) => {
+          const cp = require("child_process");
+          cp.exec(
+            `stat -c '%a %n' ${__dirname}/config.json`,
+            (error, __stdout, __stderr) => {
+              resolve(__stdout);
+              if (!error) {
+                if (__stdout !== `777 ${__dirname}/config.json`) {
+                  cp.exec(
+                    `sudo chmod -R 777 ${__dirname}/config.json`,
+                    (error, stdout, stderr) => {
+                      resolve(stdout);
+                    }
+                  );
+                } else {
+                  resolve(true);
                 }
-              );
-            } else {
-              resolve(true);
+              }
             }
-          }
-        }
-      );
+          );
 
-      const _cliProgress = require("cli-progress");
-      let progress = 1;
-      let progressInterval;
-      const progressbar = new _cliProgress.Bar(
-        {
-          format: "progress [{bar}] {percentage}% | ETA: {eta}s"
-        },
-        _cliProgress.Presets.shades_classic
-      );
+          const _cliProgress = require("cli-progress");
+          let progress = 1;
+          let progressInterval;
+          const progressbar = new _cliProgress.Bar(
+            {
+              format: "progress [{bar}] {percentage}% | ETA: {eta}s"
+            },
+            _cliProgress.Presets.shades_classic
+          );
 
-      return new Promise((resolve, reject) => {
-        docker.pull("tezsureinc/tezster:1.0.0", (error, stream) => {
-          progressInterval = setInterval(() => {
-            progressbar.start(100, progress);
-            progress = progress + 0.8;
-            clearInterval(progress);
-            if (progress >= 100) {
-              clearInterval(progressInterval);
-              progressbar.update(100);
-              progressbar.stop();
-              return;
-            }
-            progressbar.update(progress);
-          }, 1000);
-          docker.modem.followProgress(stream, (error, output) => {
-            if (error) {
-              return reject(error);
-            }
-            return resolve(output);
+          return new Promise((resolve, reject) => {
+            docker.pull("tezsureinc/tezster:1.0.0", (error, stream) => {
+              console.log("setting up tezos node, this could take a while....");
+              progressbar.start(100, progress);
+              progressInterval = setInterval(() => {
+                progress = progress + 0.8;
+                clearInterval(progress);
+                if (progress >= 100) {
+                  clearInterval(progressInterval);
+                  progressbar.update(100);
+                  progressbar.stop();
+                  return;
+                }
+                progressbar.update(progress);
+              }, 1000);
+              docker.modem.followProgress(stream, (error, output) => {
+                if (error) {
+                  return reject(error);
+                }
+                return resolve(output);
+              });
+            });
           });
         });
-      });
+      } else {
+        console.log("Docker not detected on the system please install docker");
+      }
     });
   });
 
 program.command("start-nodes").action(function() {
-  console.log("starting the nodes.....");
+  cp.exec(
+    `sudo docker images tezsureinc/tezster --format "{{.Repository}}:{{.Tag}}:{{.Size}}"`,
+    (error, __stdout, __stderr) => {
+      if (__stdout === "tezsureinc/tezster:1.0.0:2.75GB\n") {
+        console.log("starting the nodes.....");
+        const _cliProgress = require("cli-progress");
+        let progress = 0;
+        let progressInterval;
+        const progressbar = new _cliProgress.Bar(
+          {
+            format: "progress [{bar}] {percentage}%"
+          },
+          _cliProgress.Presets.shades_classic
+        );
 
-  const _cliProgress = require("cli-progress");
-  let progress = 0;
-  let progressInterval;
-  const progressbar = new _cliProgress.Bar(
-    {
-      format: "progress [{bar}] {percentage}% | ETA: {eta}s"
-    },
-    _cliProgress.Presets.shades_classic
-  );
-
-  return new Promise((resolve, reject) => {
-    docker.createContainer(
-      {
-        name: "tezster",
-        Image: "kapil1221/tezster-cli",
-        Tty: true,
-        ExposedPorts: {
-          "18731/tcp:": {}
-        },
-        PortBindings: { "18731/tcp": [{ HostPort: "18731" }] },
-        NetworkMode: "host",
-        Cmd: [
-          "/bin/bash",
-          "-c",
-          "cd /usr/local/bin && start_nodes.sh && tail -f /dev/null"
-        ]
-      },
-      function(err, container) {
-        container.start({}, function(err, data) {
-          progressInterval = setInterval(() => {
-            progressbar.start(100, progress);
-            progress = progress + 5;
-            clearInterval(progress);
-            if (progress >= 100) {
-              clearInterval(progressInterval);
-              progressbar.update(100);
-              progressbar.stop();
-              return;
+        return new Promise((resolve, reject) => {
+          docker.createContainer(
+            {
+              Image: "tezsureinc/tezster:1.0.0",
+              Tty: true,
+              ExposedPorts: {
+                "18731/tcp:": {}
+              },
+              PortBindings: { "18731/tcp": [{ HostPort: "18731" }] },
+              NetworkMode: "host",
+              Cmd: [
+                "/bin/bash",
+                "-c",
+                "cd /usr/local/bin && start_nodes.sh && tail -f /dev/null"
+              ]
+            },
+            function(err, container) {
+              container.start({}, function(err, data) {
+                progressInterval = setInterval(() => {
+                  progressbar.start(100, progress);
+                  progress = progress + 5;
+                  clearInterval(progress);
+                  if (progress >= 100) {
+                    clearInterval(progressInterval);
+                    progressbar.update(100);
+                    progressbar.stop();
+                    return;
+                  }
+                  progressbar.update(progress);
+                }, 1000);
+                if (err)
+                  console.log("check weather docker is installed or not");
+                else console.log();
+              });
             }
-            progressbar.update(progress);
-          }, 1000);
-          if (err) console.log(err);
-          else console.log();
+          );
         });
+      } else {
+        console.log(
+          "No inbuilt nodes found on system. Run 'tezster setup' comamnd for build the nodes."
+        );
       }
-    );
-  });
+    }
+  );
 });
 
 program.command("stop-nodes").action(function() {
@@ -424,7 +444,9 @@ const validCommands = [
   "get-storage",
   "add-testnet-account",
   "activate-testnet-account",
-  "add-contract"
+  "add-contract",
+  "-v",
+  "--version"
 ];
 if (validCommands.indexOf(commands) < 0 && process.argv.length > 2) {
   console.log(

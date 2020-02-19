@@ -7,9 +7,19 @@ Tezster comes in an npm package with a set of easy commands to kickstart the dev
 
 ### Prerequisites
 
-Any Operating System will work ! 
-1. Install Docker & Dockerode
-2. Node v. 12.x+
+Any Operating System will work !
+
+1. Node v. 12.x+
+2. Install docker.io v.
+
+####Note: 
+Make sure after installing docker you have added \$USER to the docker group, if not follow the following steps:
+
+```
+sudo groupadd docker
+sudo usermod -aG docker $USER
+newgrp docker
+```
 
 ### Playground Setup :
 
