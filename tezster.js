@@ -72,14 +72,18 @@ program
           });
         });
       } else {
-        console.log("Docker not detected on the system please install docker");
+        console.log(
+          tezsterManager.outputInfo(
+            "Docker not detected on the system please install docker...."
+          )
+        );
       }
     });
   });
 
 program.command("start-nodes").action(function() {
   cp.exec(
-    `sudo docker images tezsureinc/tezster --format "{{.Repository}}:{{.Tag}}:{{.Size}}"`,
+    `docker images tezsureinc/tezster --format "{{.Repository}}:{{.Tag}}:{{.Size}}"`,
     (error, __stdout, __stderr) => {
       if (__stdout === "tezsureinc/tezster:1.0.0:2.75GB\n") {
         console.log("starting the nodes.....");
@@ -132,7 +136,9 @@ program.command("start-nodes").action(function() {
         });
       } else {
         console.log(
-          "No inbuilt nodes found on system. Run 'tezster setup' comamnd for build the nodes."
+          tezsterManager.outputInfo(
+            "No inbuilt nodes found on system. Run 'tezster setup' comamnd for build the nodes."
+          )
         );
       }
     }
