@@ -12,7 +12,7 @@ Any Operating System will work !
 1. Node v. 12.x+
 2. Install docker.io v.
 
-####Note: 
+#### Note:
 Make sure after installing docker you have added \$USER to the docker group, if not follow the following steps:
 
 ```
@@ -31,7 +31,7 @@ sudo npm install -g tezster@latest
 You can check the version of tezster using :
 
 ```
-tezster --version
+tezster -v
 ```
 Once it is installed run
 
@@ -53,11 +53,7 @@ To stop the nodes run
 ```
 sudo tezster stop-nodes
 ```
-To see generated accounts, run
 
-```
-tezster list-accounts
-```
 
 ### Play with Tezster CLI 
 
@@ -74,6 +70,12 @@ To check your current provider run
 tezster get-provider
 
 ```
+Change your provider to localhost by running
+
+```
+tezster set-provider http://localhost:18731
+```
+
 Change your provider to babylonnet by running
 
 ```
@@ -159,7 +161,7 @@ Coming soon.
 ```
 keep developing
 ```
-![image](tzaddr.PNG)
+
 
 
 
