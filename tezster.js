@@ -446,7 +446,9 @@ const validCommands = [
   "activate-testnet-account",
   "add-contract",
   "-v",
-  "--version"
+  "--version",
+  "--help",
+  "-h"
 ];
 if (validCommands.indexOf(commands) < 0 && process.argv.length > 2) {
   console.log(
