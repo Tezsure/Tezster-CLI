@@ -10,7 +10,7 @@ Tezster comes in an npm package with a set of easy commands to kickstart the dev
 Any Operating System will work !
 
 1. Node v. 12.x+
-2. Install Docker ( For Ubuntu use ``` sudo apt install docker.io ```)
+2. Install Docker ( For Ubuntu/Linux use ``` sudo apt install docker.io ```, For MacBook you can use "docker desktop")
 
 #### Note:
 Make sure after installing docker you have added \$USER to the docker group, if not follow the following steps:
