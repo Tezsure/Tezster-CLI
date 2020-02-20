@@ -154,7 +154,7 @@ function findKeyObj(list, t){
 }
 
 function outputError(e){
-    return '\x1b['+cliColors.red+'Error :'+e.toString().replace('Error:','')+'\x1b[0m';
+    return '\x1b['+cliColors.red+'Error: '+e.toString().replace('Error:','')+'\x1b[0m';
 }
 
 function outputInfo(e){

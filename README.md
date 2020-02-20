@@ -10,7 +10,7 @@ Tezster comes in an npm package with a set of easy commands to kickstart the dev
 Any Operating System will work !
 
 1. Node v. 12.x+
-2. Install Docker
+2. Install Docker ( For Ubuntu use ``` sudo apt install docker.io ```)
 
 #### Note:
 Make sure after installing docker you have added \$USER to the docker group, if not follow the following steps:
@@ -38,21 +38,20 @@ Once it is installed run
 ```
 tezster setup
 ```
-This will download the docker image containing pre-build tezos nodes on your system. You need to run setup only once. After that run,
+This will download the docker image containing 'pre-built tezos nodes and baker' on your system. You need to run setup only once. After that run,
 
 ```
 tezster start-nodes
 ```
-It will activate Tezos alpha. Now you will have three nodes running successfully on port 18731, 18732 and 18733. To see the nodes running run following commands as the root (super user)
+It will activate Tezos alpha. Now you will have nodes running successfully on port 18731.
 
-```
-sudo lsof -i :18731
-```
+
 To stop the nodes run
 
 ```
-sudo tezster stop-nodes
+tezster stop-nodes
 ```
+It will stop all the tezster nodes running on the system. To restart the nodes run "tezster start-nodes".
 
 
 ### Play with Tezster CLI 
@@ -83,6 +82,13 @@ tezster set-provider https://tezos-dev.cryptonomic-infra.tech/
 
 ```
 
+Change your provider to online tezster node :
+
+```
+tezster set-provider http://testnet.tezster.tech
+
+```
+
 
 ```
 add-testnet-account <account-label> <absolute-path-to-json-file> - restores account from faucet json file
@@ -104,8 +110,7 @@ tezster get-provider
 
 ```
 
-To transfer tezos from account to another account , You don't have to Bake your blocks because its taken care automatically
-
+To transfer tezos from account to another account , you don't have to bake your blocks because a baker is running for your local node and it bakes automatically.
 ```
 tezster transfer <amount> <from> <to> 
 eg. - tezster transfer 10 bootstrap1 bootstrap2

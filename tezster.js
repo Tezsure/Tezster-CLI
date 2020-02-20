@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-const cp = require("child_process");
+const childprocess = require("child_process");
 const program = require("commander");
 const Docker = require("dockerode");
 var docker = new Docker({ socketPath: "/var/run/docker.sock" });
@@ -16,15 +16,15 @@ program
       "We may need your password for write permission in config file...."
     ));
 
-    cp.exec(`docker --version`, (error, __stdout, __stderr) => {
+    childprocess.exec(`docker --version`, (error, __stdout, __stderr) => {
       if (__stdout.includes("Docker version")) {
         return new Promise((resolve, reject) => {
-          const cp = require("child_process");
-          cp.exec(`stat -c '%a %n' ${__dirname}/config.json`,(error, __stdout, __stderr) => {
+          const childprocess = require("child_process");
+          childprocess.exec(`stat -c '%a %n' ${__dirname}/config.json`,(error, __stdout, __stderr) => {
               resolve(__stdout);
               if (!error) {
                 if (__stdout !== `777 ${__dirname}/config.json`) {
-                  cp.exec(`sudo chmod -R 777 ${__dirname}/config.json`,(error, stdout, stderr) => {
+                  childprocess.exec(`sudo chmod -R 777 ${__dirname}/config.json`,(error, stdout, stderr) => {
                       resolve(stdout);
                     }
                   );
@@ -39,16 +39,16 @@ program
           let progress = 1;
           let progressInterval;
           const progressbar = new _cliProgress.Bar({
-              format: "Progress [{bar}] {percentage}% | ETA: {eta}s"
+              format: "Progress [{bar}] {percentage}%"
             },
             _cliProgress.Presets.shades_classic
           );
 
           return new Promise((resolve, reject) => {
             docker.pull("tezsureinc/tezster:1.0.0", (error, stream) => {
-              console.log("setting up tezos node, this could take a while....");
-              progressbar.start(100, progress);
+              console.log("setting up tezos node, this could take a while....");      
               progressInterval = setInterval(() => {
+                progressbar.start(100, progress);
                 progress = progress + 0.8;
                 clearInterval(progress);
                 if (progress >= 100) {
@@ -60,17 +60,13 @@ program
                 }
                 progressbar.update(progress);
               }, 1000);
-              docker.modem.followProgress(stream, (error, output) => {
-                if (error) {
-                  return reject(error);
-                }
-                return resolve(output);
-              });
               if (error) {
-                  return reject(error);
+                console.log(tezsterManager.outputError("Make sure you have added docker to the USER group"));
+                process.exit();
                 }
                 return resolve(stream);
-            });
+            });              
+            
           });
         });
       } else {
@@ -84,26 +80,39 @@ program
   });
 
 program.command("start-nodes").action(function() {
-  cp.exec(`docker images tezsureinc/tezster --format "{{.Repository}}:{{.Tag}}:{{.Size}}"`,
+  childprocess.exec(`docker images tezsureinc/tezster --format "{{.Repository}}:{{.Tag}}:{{.Size}}"`,
     (error, __stdout, __stderr) => {
       if (__stdout === "tezsureinc/tezster:1.0.0:2.75GB\n") {
 
-        cp.exec(`docker ps -a -q  --filter ancestor=tezsureinc/tezster:1.0.0 --format "{{.Image}}:{{.Names}}"`,
+        childprocess.exec(`docker ps -a -q  --filter ancestor=tezsureinc/tezster:1.0.0 --format "{{.Image}}:{{.Names}}"`,
         (error, __stdout, __stderr) => {
             if (__stdout.includes("tezsureinc/tezster:1.0.0:tezster\n")) 
             {
-                console.log(tezsterManager.outputInfo("Nodes are in running state...."));
+                console.log(tezsterManager.outputInfo("Nodes are already running...."));
             }
             else{
-        console.log("starting the nodes.....");
         const _cliProgress = require("cli-progress");
-        let progress = 1;
+        console.log("starting the nodes.....");
+        let progress = 0;
         let progressInterval;
         const progressbar = new _cliProgress.Bar({
             format: "Progress [{bar}] {percentage}%"
           },
           _cliProgress.Presets.shades_classic
         );
+        progressInterval = setInterval(() => {
+          progressbar.start(100, progress);
+          progress = progress + 8;
+          clearInterval(progress);
+          if (progress >= 100) {
+            clearInterval(progressInterval);
+            progressbar.update(100);
+            progressbar.stop();
+            console.log(tezsterManager.output("Nodes are running...."));
+            return;
+          }
+          progressbar.update(progress);
+        }, 1000);
 
         return new Promise((resolve, reject) => {
           docker.createContainer({
@@ -111,10 +120,10 @@ program.command("start-nodes").action(function() {
               Image: "tezsureinc/tezster:1.0.0",
               Tty: true,
               ExposedPorts: {
-                "18731/tcp:": {}
+                "18731/tchildprocess:": {}
               },
               PortBindings: {
-                "18731/tcp": [{
+                "18731/tchildprocess": [{
                   HostPort: "18731"
                 }]
               },
@@ -127,22 +136,8 @@ program.command("start-nodes").action(function() {
             },
             function(err, container) {
               container.start({}, function(err, data) {
-                progressInterval = setInterval(() => {
-                progressbar.start(100, progress);
-                progress = progress + 8;
-                clearInterval(progress);
-                if (progress >= 100) {
-                  clearInterval(progressInterval);
-                  progressbar.update(100);
-                  progressbar.stop();
-                  console.log(tezsterManager.output("Nodes are running on 18731, 18732 & 18733 ports...."));
-                  return;
-                }
-                progressbar.update(progress);
-              }, 1000);
                 if (err)
                 console.log(tezsterManager.outputError("Check whether docker is installed or not"));
-                else console.log();
               });
             });
         });
@@ -158,18 +153,18 @@ program.command("start-nodes").action(function() {
 });
 
 program.command("stop-nodes").action(function() {
-  cp.exec(`docker ps -a -q --format "{{.Image}}"`,
+  childprocess.exec(`docker ps -a -q --format "{{.Image}}"`,
     (error, __stdout, __stderr) => {
         if (__stdout.includes("tezsureinc/tezster:1.0.0\n")) 
         {
             console.log("stopping the nodes....");
-            cp.exec(`docker container stop $(docker container ls -q --filter name=tezster*) ; docker rm /tezster`,
+            childprocess.exec(`docker container stop $(docker container ls -q --filter name=tezster*) ; docker rm /tezster`,
             (error, __stdout, __stderr) => {
             console.log(tezsterManager.outputInfo("Nodes has been stopped. Run 'tezster start-nodes' to restart again."));
         });
     }
     else
-        console.log(tezsterManager.outputInfo("Nodes are not running...."));   
+        console.log(tezsterManager.outputError("No Nodes are running...."));   
   });
 });
 
