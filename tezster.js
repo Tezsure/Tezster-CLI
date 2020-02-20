@@ -6,7 +6,8 @@ const program = require("commander");
 const Docker = require("dockerode");
 var docker = new Docker({ socketPath: "/var/run/docker.sock" });
 const tezsterManager = require("./tezster-manager");
-var auxContainer;
+const imageTag = "tezsureinc/tezster:1.0.0";
+const containerName = "tezster";
 
 program
   .version("0.1.9", "-v, --version")
@@ -45,7 +46,7 @@ program
           );
 
           return new Promise((resolve, reject) => {
-            docker.pull("tezsureinc/tezster:1.0.0", (dockerPullError, dockerPullStream) => {
+            docker.pull(imageTag, (dockerPullError, dockerPullStream) => {
               if (dockerPullError) {
                 console.log(tezsterManager.outputError("Make sure you have added docker to the USER group"));
                 reject(dockerPullError);
@@ -88,13 +89,13 @@ program
   });
 
 program.command("start-nodes").action(function() {
-  childprocess.exec(`docker images tezsureinc/tezster --format "{{.Repository}}:{{.Tag}}:{{.Size}}"`,
+  childprocess.exec(`docker images ${imageTag} --format "{{.Repository}}:{{.Tag}}:{{.Size}}"`,
     (error, __stdout, __stderr) => {
-      if (__stdout === "tezsureinc/tezster:1.0.0:2.75GB\n") {
+      if (__stdout === `${imageTag}:2.75GB\n`) {
 
-        childprocess.exec(`docker ps -a -q  --filter ancestor=tezsureinc/tezster:1.0.0 --format "{{.Image}}:{{.Names}}"`,
+        childprocess.exec(`docker ps -a -q  --filter ancestor=${imageTag} --format "{{.Image}}:{{.Names}}"`,
         (error, __stdout, __stderr) => {
-            if (__stdout.includes("tezsureinc/tezster:1.0.0:tezster\n")) 
+            if (__stdout.includes(`${imageTag}:${containerName}\n`)) 
             {
                 console.log(tezsterManager.outputInfo("Nodes are already running...."));
             }
@@ -124,8 +125,8 @@ program.command("start-nodes").action(function() {
 
         return new Promise((resolve, reject) => {
           docker.createContainer({
-              name: "tezster",
-              Image: "tezsureinc/tezster:1.0.0",
+              name: `${containerName}`,
+              Image: `${imageTag}`,
               Tty: true,
               ExposedPorts: {
                 "18731/tchildprocess:": {}
@@ -163,10 +164,10 @@ program.command("start-nodes").action(function() {
 program.command("stop-nodes").action(function() {
   childprocess.exec(`docker ps -a -q --format "{{.Image}}"`,
     (error, __stdout, __stderr) => {
-        if (__stdout.includes("tezsureinc/tezster:1.0.0\n")) 
+        if (__stdout.includes(`${imageTag}\n`)) 
         {
             console.log("stopping the nodes....");
-            childprocess.exec(`docker container stop $(docker container ls -q --filter name=tezster*) ; docker rm /tezster`,
+            childprocess.exec(`docker container stop $(docker container ls -q --filter name=${containerName}*) ; docker rm /${containerName}`,
             (error, __stdout, __stderr) => {
             console.log(tezsterManager.outputInfo("Nodes has been stopped. Run 'tezster start-nodes' to restart again."));
         });

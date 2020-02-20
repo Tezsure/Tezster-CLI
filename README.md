@@ -72,15 +72,14 @@ tezster get-provider
 Change your provider to localhost by running
 
 ```
-tezster set-provider http://localhost:18731  OR
-
-tezster set-provider https://tezos-dev.cryptonomic-infra.tech/
-
+tezster set-provider http://localhost:18731 
 ```
 
-Change your provider to online tezster node :
+Change your provider to babylonnet by running
 
 ```
+tezster set-provider https://tezos-dev.cryptonomic-infra.tech/ OR
+
 tezster set-provider http://testnet.tezster.tech
 
 ```
