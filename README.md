@@ -78,7 +78,9 @@ tezster set-provider http://localhost:18731
 Change your provider to babylonnet by running
 
 ```
-tezster set-provider https://tezos-dev.cryptonomic-infra.tech/ OR
+tezster set-provider https://tezos-dev.cryptonomic-infra.tech/ 
+
+OR
 
 tezster set-provider http://testnet.tezster.tech
 
