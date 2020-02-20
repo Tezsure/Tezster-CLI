@@ -1,105 +1,180 @@
 #!/usr/bin/env node
 'use strict';
 
-const program = require('commander');
+const childprocess = require("child_process");
+const program = require("commander");
+const Docker = require("dockerode");
+var docker = new Docker({ socketPath: "/var/run/docker.sock" });
+const tezsterManager = require("./tezster-manager");
+const imageTag = "tezsureinc/tezster:1.0.0";
+const containerName = "tezster";
 
 program
-.version('0.1.9', '-v, --version')
-.command('setup')
-.action(function() {
-    console.log('setting up tezos node, this could take a while....');
-    const { exec } = require('child_process');
-    const fs = require("fs");
-    let workingDir = __dirname + '/script';
-    let setup_successfile_dir = workingDir + '/setup.successful';
-    const _cliProgress = require('cli-progress');
-    let progress = 1;
-    let progressInterval;
-    const progressbar = new _cliProgress.Bar({
-                            format: 'progress [{bar}] {percentage}% | ETA: {eta}s'
-                            }, _cliProgress.Presets.shades_classic);
-    progressbar.start(100, progress);
+  .version("0.1.9", "-v, --version")
+  .command("setup")
+  .action(function() {
+    console.log(tezsterManager.outputInfo(
+      "We may need your password for write permission in config file...."
+    ));
 
-    exec('./setup.sh > setup.log',{cwd : workingDir}, (err, stdout, stderr) => {
-        clearInterval(progressInterval);
-        progressbar.update(100);
-        progressbar.stop();
-        if (err) {
-            console.error(`tezster setup error: ${err}`);
-            return;
-        }
+    childprocess.exec(`docker --version`, (error, __stdout, __stderr) => {
+      if (__stdout.includes("Docker version")) {
+        return new Promise((resolve, reject) => {
+          const childprocess = require("child_process");
+          childprocess.exec(`stat -c '%a %n' ${__dirname}/config.json`,(error, __stdout, __stderr) => {
+              resolve(__stdout);
+              if (!error) {
+                if (__stdout !== `777 ${__dirname}/config.json`) {
+                  childprocess.exec(`sudo chmod -R 777 ${__dirname}/config.json`,(error, stdout, stderr) => {
+                      resolve(stdout);
+                    }
+                  );
+                } else {
+                  resolve(true);
+                }
+              }
+            }
+          );
 
-        console.log(`${stdout}`);
-        if (fs.existsSync(setup_successfile_dir)) {
-            console.log('Setup has been completed successfully');
+          const _cliProgress = require("cli-progress");
+          let progress = 1;
+          let progressInterval;
+          const progressbar = new _cliProgress.Bar({
+              format: "Progress [{bar}] {percentage}%"
+            },
+            _cliProgress.Presets.shades_classic
+          );
+
+          return new Promise((resolve, reject) => {
+            docker.pull(imageTag, (dockerPullError, dockerPullStream) => {
+              if (dockerPullError) {
+                console.log(tezsterManager.outputError("Make sure you have added docker to the USER group"));
+                reject(dockerPullError);
+                process.exit();
+              }
+              else{
+                console.log("setting up tezos node, this could take a while....");      
+                progressInterval = setInterval(() => {
+                  progressbar.start(100, progress);
+                  progress = progress + 0.55;
+                  clearInterval(progress);
+                  if (progress >= 100) {
+                      clearInterval(progressInterval);
+                      progressbar.update(100);
+                      progressbar.stop();
+                      console.log(tezsterManager.output("Tezos nodes successfully built on system...."));
+                      return;
+                  }
+                  progressbar.update(progress);
+                  }, 1000);
+                  docker.modem.followProgress(dockerPullStream, (__dockerModemError, __dockerModemOutput) => {
+                    if (error) {
+                      return reject(__dockerModemError);
+                    }
+                    return resolve(__dockerModemOutput);
+                  });
+                  return resolve(dockerPullStream);
+                  }
+                });              
+              });
+            });
         } else {
-            console.log('setup is not successful, please try running "tezster setup" again....');
+          console.log(
+            tezsterManager.outputError(
+              "Docker not detected on the system please install docker...."
+            )
+          );
         }
     });
+  });
 
-    progressInterval = setInterval(() => {
-        progress = progress + 0.055;
-            if (progressInterval >= 100) {
-                clearInterval(progressInterval);
-                progressbar.update(100);
-                progressbar.stop();
+program.command("start-nodes").action(function() {
+  childprocess.exec(`docker images ${imageTag} --format "{{.Repository}}:{{.Tag}}:{{.Size}}"`,
+    (error, __stdout, __stderr) => {
+      if (__stdout === `${imageTag}:2.75GB\n`) {
 
-                return;
+        childprocess.exec(`docker ps -a -q  --filter ancestor=${imageTag} --format "{{.Image}}:{{.Names}}"`,
+        (error, __stdout, __stderr) => {
+            if (__stdout.includes(`${imageTag}:${containerName}\n`)) 
+            {
+                console.log(tezsterManager.outputInfo("Nodes are already running...."));
             }
-            progressbar.update(progress);
+            else{
+        const _cliProgress = require("cli-progress");
+        console.log("starting the nodes.....");
+        let progress = 0;
+        let progressInterval;
+        const progressbar = new _cliProgress.Bar({
+            format: "Progress [{bar}] {percentage}%"
+          },
+          _cliProgress.Presets.shades_classic
+        );
+        progressInterval = setInterval(() => {
+          progressbar.start(100, progress);
+          progress = progress + 8;
+          clearInterval(progress);
+          if (progress >= 100) {
+            clearInterval(progressInterval);
+            progressbar.update(100);
+            progressbar.stop();
+            console.log(tezsterManager.output("Nodes are running...."));
+            return;
+          }
+          progressbar.update(progress);
         }, 1000);
+
+        return new Promise((resolve, reject) => {
+          docker.createContainer({
+              name: `${containerName}`,
+              Image: `${imageTag}`,
+              Tty: true,
+              ExposedPorts: {
+                "18731/tchildprocess:": {}
+              },
+              PortBindings: {
+                "18731/tchildprocess": [{
+                  HostPort: "18731"
+                }]
+              },
+              NetworkMode: "host",
+              Cmd: [
+                "/bin/bash",
+                "-c",
+                "cd /usr/local/bin && start_nodes.sh && tail -f /dev/null"
+              ]
+            },
+            function(err, container) {
+              container.start({}, function(err, data) {
+                if (err)
+                console.log(tezsterManager.outputError("Check whether docker is installed or not"));
+              });
+            });
+        });
+        }
+    });
+      }
+      else {
+        console.log(
+          tezsterManager.outputError(
+            "No inbuilt nodes found on system. Run 'tezster setup' comamnd for build the nodes."));
+      }
+    });
 });
 
-program
-.command('start-nodes')
-.action(function() {
-    console.log('starting the nodes.....');
-    const { exec } = require('child_process');
-    let workingDir = __dirname + '/script';
-    const _cliProgress = require('cli-progress');
-    let progress = 0;
-    let progressInterval;
-    const progressbar = new _cliProgress.Bar({
-                            format: 'progress [{bar}] {percentage}% | ETA: {eta}s'
-                            }, _cliProgress.Presets.shades_classic);
-    progressbar.start(100, progress);
-    exec('./start_nodes.sh',{cwd : workingDir}, (err, stdout, stderr) => {
-        clearInterval(progressInterval);
-        progressbar.update(100);
-        progressbar.stop();
-        if (err) {
-            return;
-        }
-
-        console.log(`${stdout}`);
-    });
-
-    progressInterval = setInterval(() => {
-        progress = progress + 1.8;
-            if (progressInterval >= 100) {
-                clearInterval(progressInterval);
-                progressbar.update(100);
-                return;
-            }
-            progressbar.update(progress);
-        }, 1000);
-});
-
-program
-.command('stop-nodes')
-.action(function() {
-    console.log('stopping the nodes....');
-    const { exec } = require('child_process');
-    let workingDir = __dirname + '/script';
-
-    exec('./stop_nodes.sh ',{cwd : workingDir}, (err, stdout, stderr) => {
-        if (err) {
-            console.error(`tezster stopping nodes error: ${err}`);
-            return;
-        }
-
-        console.log(`${stdout}`);
-    });
+program.command("stop-nodes").action(function() {
+  childprocess.exec(`docker ps -a -q --format "{{.Image}}"`,
+    (error, __stdout, __stderr) => {
+        if (__stdout.includes(`${imageTag}\n`)) 
+        {
+            console.log("stopping the nodes....");
+            childprocess.exec(`docker container stop $(docker container ls -q --filter name=${containerName}*) ; docker rm /${containerName}`,
+            (error, __stdout, __stderr) => {
+            console.log(tezsterManager.outputInfo("Nodes have been stopped. Run 'tezster start-nodes' to restart."));
+        });
+    }
+    else
+        console.log(tezsterManager.outputError("No Nodes are running...."));   
+  });
 });
 
 //*******for check the balance check */
@@ -187,32 +262,8 @@ program
         return;
     }
     await tezsterManager.loadTezsterConfig();
-    console.log(`Please run "tezster bake-for <account-name> to bake this operation if operation is successful`);
     tezsterManager.transferAmount(args).then((result) => {        
         console.log(result);
-    });
-});
-
-//******* To bake any operation */
-program
-.command('bake-for')
-.action(async function(){  
-    var args = process.argv.slice(3);
-    const tezsterManager = require('./tezster-manager');
-    if (args.length < 1) {
-        console.log(tezsterManager.outputError("Incorrect usage - tezster bake-for <identity-label>"));
-        return;
-    }
-    console.log('baking the previous operation.....');
-    const { exec } = require('child_process');
-    let workingDir = __dirname + '/script';
-    exec('./bake_tx.sh ' + args[0],{cwd : workingDir}, (err, stdout, stderr) => {
-        if (err) {
-            console.error(`tezster baking opertaion error: ${err}`);
-            return;
-        }
-
-        console.log(`Baking successful ${stdout}`);
     });
 });
 
@@ -230,7 +281,6 @@ program
 
     let result = await tezsterManager.deployContract(args[0], args[1], args[2], args[3]);
     console.log(result);
-    console.log(tezsterManager.outputInfo(`If you're running a local node, Please run "tezster bake-for <account-name> to bake this operation`));
     console.log(tezsterManager.outputInfo(`If you're using babylonnet node, use https://babylonnet.tzstats.com to check contract/transactions`));
 });
 
@@ -248,7 +298,6 @@ program
     
     let result = await tezsterManager.invokeContract(args[0], args[1], args[2]);
     console.log(result);
-    console.log(tezsterManager.outputInfo(`If you're running a local node, Please run "tezster bake-for <account-name> to bake this operation`));
     console.log(tezsterManager.outputInfo(`If you're using babylonnet node, use https://babylonnet.tzstats.com to check contract/transactions`));
 });
 
@@ -356,10 +405,29 @@ if (process.argv.length <= 2){
     console.log('\x1b[31m%s\x1b[0m', "Error: " +"Please enter a command!");
 }
 var commands=process.argv[2];
-const validCommands = ['list-Identities','list-accounts','list-contracts','get-balance','transfer',
-                        'bake-for','set-provider','get-provider',
-                        'stop-nodes','start-nodes','setup','call','deploy','help','create-account','list-transactions', 
-                        'get-storage', 'add-testnet-account', 'activate-testnet-account', 'add-contract'];
+const validCommands = [  "list-Identities",
+"list-accounts",
+"list-contracts",
+"get-balance",
+"transfer",
+"set-provider",
+"get-provider",
+"stop-nodes",
+"start-nodes",
+"setup",
+"call",
+"deploy",
+"help",
+"create-account",
+"list-transactions",
+"get-storage",
+"add-testnet-account",
+"activate-testnet-account",
+"add-contract",
+"-v",
+"--version",
+"--help",
+"-h"];
 if (validCommands.indexOf(commands) < 0 && process.argv.length >2 ) {
     console.log('\x1b[31m%s\x1b[0m', "Error: " + "Invalid command\nPlease run tezster help to get info about commands ");        
 }
