@@ -21,7 +21,6 @@ var helpData="Usage: tezster [command] [optional parameters].....\n" +
              "list-contracts- To fetch all the contracts\n" + 
              "set-provider [http://{ip}:{port}]- To change the default provider\n" + 
              "get-provider- To fetch the current provider\n" + 
-             "bake-for- To complete transaction run bake-for for account label\n" + 
              "deploy [contract-label] [contract-absolute-path] [init-storage-value] [account] - deploys a smart contract written in Michelson\n" +
              "call [contract-name/address] [argument-value] [account]- calls a smart contract with give value provided in Michelson format\n" +
              "get-storage [contract-name/address] - returns current storage for given smart contract\n" + 
@@ -155,7 +154,7 @@ function findKeyObj(list, t){
 }
 
 function outputError(e){
-    return '\x1b['+cliColors.red+'Error :'+e+'\x1b[0m';
+    return '\x1b['+cliColors.red+'Error: '+e.toString().replace('Error:','')+'\x1b[0m';
 }
 
 function outputInfo(e){
