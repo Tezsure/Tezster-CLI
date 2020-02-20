@@ -169,7 +169,7 @@ program.command("stop-nodes").action(function() {
             console.log("stopping the nodes....");
             childprocess.exec(`docker container stop $(docker container ls -q --filter name=${containerName}*) ; docker rm /${containerName}`,
             (error, __stdout, __stderr) => {
-            console.log(tezsterManager.outputInfo("Nodes has been stopped. Run 'tezster start-nodes' to restart again."));
+            console.log(tezsterManager.outputInfo("Nodes have been stopped. Run 'tezster start-nodes' to restart."));
         });
     }
     else
