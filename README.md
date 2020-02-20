@@ -72,12 +72,8 @@ tezster get-provider
 Change your provider to localhost by running
 
 ```
-tezster set-provider http://localhost:18731
-```
+tezster set-provider http://localhost:18731  OR
 
-Change your provider to babylonnet by running
-
-```
 tezster set-provider https://tezos-dev.cryptonomic-infra.tech/
 
 ```
@@ -161,7 +157,7 @@ tezster --help
 
 ### Extra
 
-Coming soon.
+We’re building a lot of exciting features which will be released soon, So stay tuned with our updates and releases!
 
 ```
 keep developing

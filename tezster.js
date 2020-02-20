@@ -45,37 +45,45 @@ program
           );
 
           return new Promise((resolve, reject) => {
-            docker.pull("tezsureinc/tezster:1.0.0", (error, stream) => {
-              console.log("setting up tezos node, this could take a while....");      
-              progressInterval = setInterval(() => {
-                progressbar.start(100, progress);
-                progress = progress + 0.8;
-                clearInterval(progress);
-                if (progress >= 100) {
-                  clearInterval(progressInterval);
-                  progressbar.update(100);
-                  progressbar.stop();
-                  console.log(tezsterManager.output("Tezos nodes successfully built on system...."));
-                  return;
-                }
-                progressbar.update(progress);
-              }, 1000);
-              if (error) {
+            docker.pull("tezsureinc/tezster:1.0.0", (dockerPullError, dockerPullStream) => {
+              if (dockerPullError) {
                 console.log(tezsterManager.outputError("Make sure you have added docker to the USER group"));
+                reject(dockerPullError);
                 process.exit();
-                }
-                return resolve(stream);
-            });              
-            
-          });
-        });
-      } else {
-        console.log(
-          tezsterManager.outputError(
-            "Docker not detected on the system please install docker...."
-          )
-        );
-      }
+              }
+              else{
+                console.log("setting up tezos node, this could take a while....");      
+                progressInterval = setInterval(() => {
+                  progressbar.start(100, progress);
+                  progress = progress + 0.55;
+                  clearInterval(progress);
+                  if (progress >= 100) {
+                      clearInterval(progressInterval);
+                      progressbar.update(100);
+                      progressbar.stop();
+                      console.log(tezsterManager.output("Tezos nodes successfully built on system...."));
+                      return;
+                  }
+                  progressbar.update(progress);
+                  }, 1000);
+                  docker.modem.followProgress(dockerPullStream, (__dockerModemError, __dockerModemOutput) => {
+                    if (error) {
+                      return reject(__dockerModemError);
+                    }
+                    return resolve(__dockerModemOutput);
+                  });
+                  return resolve(dockerPullStream);
+                  }
+                });              
+              });
+            });
+        } else {
+          console.log(
+            tezsterManager.outputError(
+              "Docker not detected on the system please install docker...."
+            )
+          );
+        }
     });
   });
 
