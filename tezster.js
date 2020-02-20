@@ -10,7 +10,7 @@ const imageTag = "tezsureinc/tezster:1.0.0";
 const containerName = "tezster";
 
 program
-  .version("0.1.9", "-v, --version")
+  .version("0.2.0", "-v, --version")
   .command("setup")
   .action(function() {
     console.log(tezsterManager.outputInfo(
