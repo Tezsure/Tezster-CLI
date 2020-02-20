@@ -33,6 +33,13 @@ You can check the version of tezster using :
 ```
 tezster -v
 ```
+
+To see what you can do with tezster, run
+
+```
+tezster --help
+```
+
 Once it is installed run
 
 ```
@@ -150,11 +157,6 @@ eg.- tezster get-storage simplecontract
 ```
 You can call this after each step when you deploy or call contract to see the updated storage.
 
-To see what you can do with tezster, run
-
-```
-tezster --help
-```
 
 ### Extra
 
