@@ -10,7 +10,7 @@ const imageTag = "tezsureinc/tezster:1.0.0";
 const containerName = "tezster";
 
 program
-  .version("0.1.9", "-v, --version")
+  .version("0.2.0", "-v, --version")
   .command("setup")
   .action(function() {
     console.log(tezsterManager.outputInfo(
@@ -56,18 +56,18 @@ program
                 console.log("setting up tezos node, this could take a while....");      
                 progressInterval = setInterval(() => {
                   progressbar.start(100, progress);
-                  progress = progress + 0.55;
+                  progress = progress + 0.88;
                   clearInterval(progress);
                   if (progress >= 100) {
                       clearInterval(progressInterval);
                       progressbar.update(100);
                       progressbar.stop();
-                      console.log(tezsterManager.output("Tezos nodes successfully built on system...."));
                       return;
                   }
                   progressbar.update(progress);
                   }, 1000);
                   docker.modem.followProgress(dockerPullStream, (__dockerModemError, __dockerModemOutput) => {
+                    console.log(tezsterManager.output("Tezos nodes have been setup successfully on system...."));
                     if (error) {
                       return reject(__dockerModemError);
                     }
@@ -111,7 +111,7 @@ program.command("start-nodes").action(function() {
         );
         progressInterval = setInterval(() => {
           progressbar.start(100, progress);
-          progress = progress + 8;
+          progress = progress + 7;
           clearInterval(progress);
           if (progress >= 100) {
             clearInterval(progressInterval);
@@ -161,20 +161,21 @@ program.command("start-nodes").action(function() {
     });
 });
 
+
 program.command("stop-nodes").action(function() {
   childprocess.exec(`docker ps -a -q --format "{{.Image}}"`,
     (error, __stdout, __stderr) => {
         if (__stdout.includes(`${imageTag}\n`)) 
         {
-            console.log("stopping the nodes....");
-            childprocess.exec(`docker container stop $(docker container ls -q --filter name=${containerName}*) ; docker rm /${containerName}`,
-            (error, __stdout, __stderr) => {
-            console.log(tezsterManager.outputInfo("Nodes has been stopped. Run 'tezster start-nodes' to restart again."));
+          const container = docker.getContainer(containerName) 
+          docker.listContainers(function(err, containers) {
+          container.stop(); 
+          container.remove({force: true});
         });
-    }
-    else
-        console.log(tezsterManager.outputError("No Nodes are running...."));   
-  });
+        }
+        else
+            console.log(tezsterManager.outputError("No Nodes are running...."));   
+    });
 });
 
 //*******for check the balance check */
