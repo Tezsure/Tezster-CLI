@@ -14,7 +14,7 @@ var helpData="Usage: tezster [command] [optional parameters].....\n" +
              "setup- setting up tezos node\n" + 
              "start-nodes- starting the nodes\n" + 
              "stop-nodes- stopping the nodes\n" + 
-             "create-account [Indentity][Label][amount]- To create a new account.\n" + 
+             "create-account [Identity][Label][amount]- To create a new account.\n" + 
              "get-balance [account/contract(pkh)]- To get the balance of account/contracts\n" + 
              "transfer [amount][from][to][fees]- To transfer the funds b/w accounts\n" + 
              "list-accounts- To fetch all the accounts\n" +
@@ -22,7 +22,7 @@ var helpData="Usage: tezster [command] [optional parameters].....\n" +
              "set-provider [http://{ip}:{port}]- To change the default provider\n" + 
              "get-provider- To fetch the current provider\n" + 
              "deploy [contract-label] [contract-absolute-path] [init-storage-value] [account] - deploys a smart contract written in Michelson\n" +
-             "call [contract-name/address] [argument-value] [account]- calls a smart contract with give value provided in Michelson format\n" +
+             "call [contract-name/address] [argument-value] [account]- calls a smart contract with given value provided in Michelson format\n" +
              "get-storage [contract-name/address] - returns current storage for given smart contract\n" + 
              "add-testnet-account <account-label> <absolut-path-to-json-file> - restores an testnet faucet account from json file\n" +
              "activate-testnet-account <account-label> - activates an testnet faucet account resored using tezster\n" +
