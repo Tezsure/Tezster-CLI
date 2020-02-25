@@ -433,12 +433,6 @@ program
   console.log("\ttezster [command] --help");
 });
 
-program.on('*', function (command) {
-    this.commands.some(function (command) {
-      return command._name === argv[0];
-    }) || this.help();
-  });
-
 if (process.argv.length <= 2){
     console.log('\x1b[31m%s\x1b[0m', "Error: " +"Please enter a command!");
 }
@@ -472,7 +466,5 @@ if (validCommands.indexOf(commands) < 0 && process.argv.length >2 ) {
     console.log("\nThe most similar commands are:")
     console.log("\t"+availableCommands.toString().replace(/,/g,"\n\t"));    
 }
-
-
 
 program.parse(process.argv);
