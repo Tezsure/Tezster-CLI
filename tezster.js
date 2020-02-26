@@ -12,7 +12,7 @@ const containerName = "tezster";
 program
   .version('0.1.9', '-v, --version')
   .command('setup')
-  .description('Set tezos nodes')
+  .description('To set up Tezos nodes')
   .action(function() {
     console.log(tezsterManager.outputInfo(
       "We may need your password for write permission in config file...."
