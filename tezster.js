@@ -10,9 +10,9 @@ const imageTag = "tezsureinc/tezster:1.0.0";
 const containerName = "tezster";
 
 program
-  .version('0.2.0', '-v, --version')
+  .version('0.1.9', '-v, --version')
   .command('setup')
-  .description('Setting up Tezos node')
+  .description('Build Tezos nodes on system')
   .action(function() {
     console.log(tezsterManager.outputInfo(
       "We may need your password for write permission in config file...."
@@ -57,7 +57,7 @@ program
                 console.log("setting up tezos node, this could take a while....");      
                 progressInterval = setInterval(() => {
                   progressbar.start(100, progress);
-                  progress = progress + 0.70;
+                  progress = progress + 0.55;
                   clearInterval(progress);
                   if (progress >= 100) {
                       clearInterval(progressInterval);
@@ -70,14 +70,14 @@ program
                   docker.modem.followProgress(dockerPullStream, (__dockerModemError, __dockerModemOutput) => {
                     clearInterval(progress);
                     progressbar.update(100);
-                    console.log(tezsterManager.output("\nTezos nodes have been setup successfully on system...."));
-                    process.exit();
+                    console.log(tezsterManager.output("\nTezos nodes have been setup successfully on system...."));                    
                     if (error) {
                       return reject(__dockerModemError);
                     }
-                    return resolve(__dockerModemOutput);
-                  });
-                  return resolve(dockerPullStream);
+                      resolve(__dockerModemOutput);
+                      process.exit();
+                    });                   
+                    return resolve(dockerPullStream);                    
                   }
                 });              
               });
@@ -93,7 +93,7 @@ program
   });
 
 program.command('start-nodes')
-.description('Start Tezos node')
+.description('Starts Tezos nodes')
 .action(function() {
   childprocess.exec(`docker images ${imageTag} --format "{{.Repository}}:{{.Tag}}:{{.Size}}"`,
     (error, __stdout, __stderr) => {
@@ -106,6 +106,7 @@ program.command('start-nodes')
                 console.log(tezsterManager.outputInfo("Nodes are already running...."));
             }
             else{
+
         const _cliProgress = require("cli-progress");
         console.log("starting the nodes.....");
         let progress = 0;
@@ -130,6 +131,30 @@ program.command('start-nodes')
         }, 1000);
 
         return new Promise((resolve, reject) => {
+          const http = require('http');
+          var options = {
+            host: 'localhost',
+            port: '18731',
+            path: '/chains/main/blocks/head/protocols',
+            method: 'GET'
+          }
+
+          var request = http.request(options, function (res) {
+            var data = '';
+            res.on('data', function (chunk) {
+                data += chunk;
+            });
+            res.on('end', function () {
+                console.log("data:::::::",data);
+        
+            });
+        });
+        request.on('uncaughtException', function (e) {
+            console.log("error message:::::",e.message);
+        });
+        request.end();
+
+
           docker.createContainer({
               name: `${containerName}`,
               Image: `${imageTag}`,
@@ -168,21 +193,22 @@ program.command('start-nodes')
 });
 
 program.command('stop-nodes')
-.description('Stop Tezos node')
+.description('Stops Tezos nodes')
 .action(function() {
   childprocess.exec(`docker ps -a -q --format "{{.Image}}"`,
     (error, __stdout, __stderr) => {
         if (__stdout.includes(`${imageTag}\n`)) 
         {
+          console.log("stopping the nodes....");
           const container = docker.getContainer(containerName) 
           docker.listContainers(function(err, containers) {
           container.stop(); 
           container.remove({force: true});
-          console.log(tezsterManager.outputInfo("Nodes has been stopped. Run 'tezster start-nodes' to restart again."));
+          console.log(tezsterManager.outputInfo("Nodes have been stopped. Run 'tezster start-nodes' to restart."));
         });
         }
         else
-            console.log(tezsterManager.outputError("No Nodes are running...."));   
+          console.log(tezsterManager.outputError("No Nodes are running...."));   
     });
 });
 
@@ -400,7 +426,7 @@ program
 //******* To Create an account */
 program
 .command('create-account')
-.usage('<Identity> <Label> <Amount>')
+.usage('<identity> <label> <amount>')
 .description('To create a new account')
 .action(async function(){  
     var args = process.argv.slice(3);  
@@ -416,7 +442,7 @@ program
 //******* To Create an account */
 program
 .command('add-contract')
-.usage('<Label> <Address>')
+.usage('<label> <address>')
 .description('Adds a smart contract with label for interaction')
 .action(async function(){  
     var args = process.argv.slice(3);  
@@ -428,9 +454,7 @@ program
 
 program
 .on("--help", () => {
-  console.log();
-  console.log("To know more about particular command usage:");
-  console.log("\ttezster [command] --help");
+  console.log("\nTo know more about particular command usage:\n\ttezster [command] --help");
 });
 
 if (process.argv.length <= 2){
@@ -461,9 +485,9 @@ const validCommands = [  "list-Identities",
 "--help",
 "-h"];
 if (validCommands.indexOf(commands) < 0 && process.argv.length >2 ) {
-  const availableCommands = validCommands.filter(elem => elem.indexOf(commands) > -1);
+    const availableCommands = validCommands.filter(elem => elem.indexOf(commands) > -1);
     console.log('\x1b[31m%s\x1b[0m', "Error: " + "Invalid command\nPlease run 'tezster --help' to get info about commands ");    
-    console.log("\nThe most similar commands are:")
+    console.log("\nThe most similar commands are:");
     console.log("\t"+availableCommands.toString().replace(/,/g,"\n\t"));    
 }
 
