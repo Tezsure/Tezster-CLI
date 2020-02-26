@@ -10,8 +10,9 @@ const imageTag = "tezsureinc/tezster:1.0.0";
 const containerName = "tezster";
 
 program
-  .version("0.2.0", "-v, --version")
-  .command("setup")
+  .version('0.2.0', '-v, --version')
+  .command('setup')
+  .description('Setting up Tezos node')
   .action(function() {
     console.log(tezsterManager.outputInfo(
       "We may need your password for write permission in config file...."
@@ -56,18 +57,21 @@ program
                 console.log("setting up tezos node, this could take a while....");      
                 progressInterval = setInterval(() => {
                   progressbar.start(100, progress);
-                  progress = progress + 0.55;
+                  progress = progress + 0.70;
                   clearInterval(progress);
                   if (progress >= 100) {
                       clearInterval(progressInterval);
                       progressbar.update(100);
                       progressbar.stop();
-                      console.log(tezsterManager.output("Tezos nodes successfully built on system...."));
                       return;
                   }
                   progressbar.update(progress);
                   }, 1000);
                   docker.modem.followProgress(dockerPullStream, (__dockerModemError, __dockerModemOutput) => {
+                    clearInterval(progress);
+                    progressbar.update(100);
+                    console.log(tezsterManager.output("\nTezos nodes have been setup successfully on system...."));
+                    process.exit();
                     if (error) {
                       return reject(__dockerModemError);
                     }
@@ -88,7 +92,9 @@ program
     });
   });
 
-program.command("start-nodes").action(function() {
+program.command('start-nodes')
+.description('Start Tezos node')
+.action(function() {
   childprocess.exec(`docker images ${imageTag} --format "{{.Repository}}:{{.Tag}}:{{.Size}}"`,
     (error, __stdout, __stderr) => {
       if (__stdout === `${imageTag}:2.75GB\n`) {
@@ -111,7 +117,7 @@ program.command("start-nodes").action(function() {
         );
         progressInterval = setInterval(() => {
           progressbar.start(100, progress);
-          progress = progress + 8;
+          progress = progress + 7;
           clearInterval(progress);
           if (progress >= 100) {
             clearInterval(progressInterval);
@@ -161,25 +167,30 @@ program.command("start-nodes").action(function() {
     });
 });
 
-program.command("stop-nodes").action(function() {
+program.command('stop-nodes')
+.description('Stop Tezos node')
+.action(function() {
   childprocess.exec(`docker ps -a -q --format "{{.Image}}"`,
     (error, __stdout, __stderr) => {
         if (__stdout.includes(`${imageTag}\n`)) 
         {
-            console.log("stopping the nodes....");
-            childprocess.exec(`docker container stop $(docker container ls -q --filter name=${containerName}*) ; docker rm /${containerName}`,
-            (error, __stdout, __stderr) => {
-            console.log(tezsterManager.outputInfo("Nodes have been stopped. Run 'tezster start-nodes' to restart."));
+          const container = docker.getContainer(containerName) 
+          docker.listContainers(function(err, containers) {
+          container.stop(); 
+          container.remove({force: true});
+          console.log(tezsterManager.outputInfo("Nodes has been stopped. Run 'tezster start-nodes' to restart again."));
         });
-    }
-    else
-        console.log(tezsterManager.outputError("No Nodes are running...."));   
-  });
+        }
+        else
+            console.log(tezsterManager.outputError("No Nodes are running...."));   
+    });
 });
 
 //*******for check the balance check */
 program
 .command('get-balance')
+.usage('<account/contract(pkh)>')
+.description('To get the balance of account/contracts')
 .action(async function(){
     var args = process.argv.slice(3);
     const tezsterManager = require('./tezster-manager');
@@ -196,6 +207,7 @@ program
 //******* To get the list accounts */
 program
 .command('list-accounts')
+.description('To fetch all the accounts')
 .action(async function(){    
     const tezsterManager = require('./tezster-manager');    
     await tezsterManager.loadTezsterConfig();
@@ -213,6 +225,7 @@ program
 //******* TO get the list Contracts */
 program
 .command('list-contracts')
+.description('To fetch all the contracts')
 .action(async function(){     
     const tezsterManager = require('./tezster-manager');       
     await tezsterManager.loadTezsterConfig();    
@@ -230,6 +243,7 @@ program
 //******* To get the Provider */
 program
 .command('get-provider')
+.description('To fetch the current provider')
 .action(async function(){        
     const tezsterManager = require('./tezster-manager');    
     await tezsterManager.loadTezsterConfig(); 
@@ -240,6 +254,8 @@ program
 //******* To set the Provider */
 program
 .command('set-provider')
+.usage('[http://<ip>:<port>]')
+.description('To change the default provider')
 .action(async function(){  
     var args = process.argv.slice(3);  
     const tezsterManager = require('./tezster-manager');  
@@ -254,6 +270,8 @@ program
 //******* To transfer the amount */
 program
 .command('transfer')
+.usage('<amount> <from> <to>')
+.description('To transfer the funds between accounts')
 .action(async function(){  
     var args = process.argv.slice(3);  
     const tezsterManager = require('./tezster-manager');
@@ -270,6 +288,8 @@ program
 //*******deploy contract written in Michelson*/
 program
 .command('deploy')
+.usage('<contract-label> <contract-absolute-path> <init-storage-value> <account>')
+.description('Deploys a smart contract written in Michelson')
 .action(async function(){
     var args = process.argv.slice(3);
     const tezsterManager = require('./tezster-manager');
@@ -287,6 +307,8 @@ program
 //*******calls contract written in Michelson*/
 program
 .command('call')
+.usage('<contract-name/address> <argument-value> <account>')
+.description('Calls a smart contract with given value provided in Michelson format')
 .action(async function(){
     var args = process.argv.slice(3);
     const tezsterManager = require('./tezster-manager');
@@ -304,6 +326,8 @@ program
 //*******gets storage for a contract*/
 program
 .command('get-storage')
+.usage('<contract-name/address>')
+.description('Returns current storage for given smart contract')
 .action(async function(){
     var args = process.argv.slice(3);
     const tezsterManager = require('./tezster-manager');
@@ -320,6 +344,8 @@ program
 /* Restores an testnet faucet account */
 program
 .command('add-testnet-account')
+.usage('<account-label> <absolut-path-to-json-file>')
+.description('Restores a testnet faucet account from json file')
 .action(async function(){
     var args = process.argv.slice(3);
     const tezsterManager = require('./tezster-manager');
@@ -336,6 +362,8 @@ program
 /* Restores an testnet faucet account */
 program
 .command('activate-testnet-account')
+.usage('<account-label>')
+.description('Activates a testnet faucet account resored using tezster')
 .action(async function(){
     var args = process.argv.slice(3);
     const tezsterManager = require('./tezster-manager');
@@ -353,6 +381,7 @@ program
 /* list transactions done with tezster */
 program
 .command('list-transactions')
+.description('List down all the transactions')
 .action(async function(){  
     const tezsterManager = require('./tezster-manager');       
     await tezsterManager.loadTezsterConfig();    
@@ -371,6 +400,8 @@ program
 //******* To Create an account */
 program
 .command('create-account')
+.usage('<Identity> <Label> <Amount>')
+.description('To create a new account')
 .action(async function(){  
     var args = process.argv.slice(3);  
     const tezsterManager = require('./tezster-manager');
@@ -385,6 +416,8 @@ program
 //******* To Create an account */
 program
 .command('add-contract')
+.usage('<Label> <Address>')
+.description('Adds a smart contract with label for interaction')
 .action(async function(){  
     var args = process.argv.slice(3);  
     const tezsterManager = require('./tezster-manager');
@@ -394,12 +427,11 @@ program
 });
 
 program
-.command('help')
-.action(async function(){
-    const tezsterManager = require('./tezster-manager');
-    console.log(tezsterManager.helpData); //'\x1b[33m%s\x1b[0m',         
+.on("--help", () => {
+  console.log();
+  console.log("To know more about particular command usage:");
+  console.log("\ttezster [command] --help");
 });
-
 
 if (process.argv.length <= 2){
     console.log('\x1b[31m%s\x1b[0m', "Error: " +"Please enter a command!");
@@ -429,7 +461,10 @@ const validCommands = [  "list-Identities",
 "--help",
 "-h"];
 if (validCommands.indexOf(commands) < 0 && process.argv.length >2 ) {
-    console.log('\x1b[31m%s\x1b[0m', "Error: " + "Invalid command\nPlease run tezster help to get info about commands ");        
+  const availableCommands = validCommands.filter(elem => elem.indexOf(commands) > -1);
+    console.log('\x1b[31m%s\x1b[0m', "Error: " + "Invalid command\nPlease run 'tezster --help' to get info about commands ");    
+    console.log("\nThe most similar commands are:")
+    console.log("\t"+availableCommands.toString().replace(/,/g,"\n\t"));    
 }
 
 program.parse(process.argv);
