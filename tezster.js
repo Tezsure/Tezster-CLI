@@ -131,30 +131,6 @@ program.command('start-nodes')
         }, 1000);
 
         return new Promise((resolve, reject) => {
-          const http = require('http');
-          var options = {
-            host: 'localhost',
-            port: '18731',
-            path: '/chains/main/blocks/head/protocols',
-            method: 'GET'
-          }
-
-          var request = http.request(options, function (res) {
-            var data = '';
-            res.on('data', function (chunk) {
-                data += chunk;
-            });
-            res.on('end', function () {
-                console.log("data:::::::",data);
-        
-            });
-        });
-        request.on('uncaughtException', function (e) {
-            console.log("error message:::::",e.message);
-        });
-        request.end();
-
-
           docker.createContainer({
               name: `${containerName}`,
               Image: `${imageTag}`,
