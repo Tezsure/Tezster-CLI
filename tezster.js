@@ -125,12 +125,12 @@ program.command('start-nodes')
             progressbar.update(100);
             progressbar.stop();
             return;
-          }
+            }
           progressbar.update(progress);
-        }, 1000);
+          }, 1000);
 
         setTimeout(() => {
-        setInterval(() =>{
+        const myInterval = setInterval(() =>{
           const request = require('request');
           request('http://localhost:18731/chains/main/blocks/head/protocols', function (error, response, body) {
           var data = JSON.parse(body);
@@ -138,6 +138,7 @@ program.command('start-nodes')
               progressbar.update(100);
               progressbar.stop();
               console.log(tezsterManager.output("Nodes have been started successfully...."));
+              clearInterval(myInterval);
               process.exit();
           }
           });
