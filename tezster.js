@@ -118,17 +118,31 @@ program.command('start-nodes')
         );
         progressInterval = setInterval(() => {
           progressbar.start(100, progress);
-          progress = progress + 7;
+          progress = progress + 3.6;
           clearInterval(progress);
           if (progress >= 100) {
             clearInterval(progressInterval);
             progressbar.update(100);
             progressbar.stop();
-            console.log(tezsterManager.output("Nodes are running...."));
             return;
           }
           progressbar.update(progress);
         }, 1000);
+
+        setTimeout(() => {
+        setInterval(() =>{
+          const request = require('request');
+          request('http://localhost:18731/chains/main/blocks/head/protocols', function (error, response, body) {
+          var data = JSON.parse(body);
+          if(data.protocol.startsWith("PsBaby")){
+              progressbar.update(100);
+              progressbar.stop();
+              console.log(tezsterManager.output("Nodes have been started successfully...."));
+              process.exit();
+          }
+          });
+        },1000);
+      },5000);
 
         return new Promise((resolve, reject) => {
           docker.createContainer({
@@ -151,7 +165,7 @@ program.command('start-nodes')
               ]
             },
             function(err, container) {
-              container.start({}, function(err, data) {
+              container.start({}, function(err, data) {              
                 if (err)
                 console.log(tezsterManager.outputError("Check whether docker is installed or not"));
               });

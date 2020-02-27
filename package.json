@@ -40,6 +40,7 @@
     "node-cmd": "^3.0.0",
     "node-fetch": "^2.6.0",
     "pbkdf2": "^3.0.17",
+    "request": "^2.81.0",
     "xmlhttprequest": "^1.8.0",
     "zxcvbn": "^4.4.2"
   }
