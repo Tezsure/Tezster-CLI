@@ -25,42 +25,6 @@ async function loadTezsterConfig() {
     eztz.library.sodium = _sodium;
 }
 
-function getProvider(){    
-    if (config.provider){
-        return outputInfo(config.provider);
-    }else{
-        return outputInfo("No provider is set");
-    } 
-}
-
-function setProvider(args){    
-    config.provider = args[0];
-    jsonfile.writeFile(confFile, config);
-    eztz.node.setProvider(config.provider);
-    return outputInfo("Provider updated to " + config.provider);
-}
-
-function createAccount(args){
-  var pkh = args[0], f;  
-  if (findKeyObj(config.accounts, args[1])) return console.log(outputError("That account name is already in use"));
-  if (f = findKeyObj(config.identities, pkh)) {
-      return eztz.rpc.account(f, parseFloat(args[2]), true, true,f.pkh, 1400).then(function(r){                  
-              var d=eztz.contract.hash(r.hash, 0);        
-              config.accounts.push({
-                label : args[1],
-                pkh : d,
-                identity : pkh,        
-              });
-              jsonfile.writeFile(confFile, config);
-              return output("New account created " + args[1]);
-          }).catch(function(e){           
-              return outputError(e);
-            });
-  } else {
-      return outputError(pkh + " is not a valid identity");
-  }
-}
-
 function findKeyObj(list, t){
     for (var i = 0; i < list.length; i++){
       if (list[i].pkh == t || list[i].label == t) return list[i];
@@ -131,54 +95,6 @@ function getKeys(account) {
   }
 
   return keys;
-}
-
-async function deployContract(contractLabel, contractPath, initValue, account) {
-  const fs = require("fs");
-  const conseiljs = require(ConseilJS);
-  const tezosNode = config.provider;  
-  
-  const keys = getKeys(account);
-  if(!keys) {
-    return outputError(`Couldn't find keys for given account.
-      Please make sure the account exists and added to tezster. Run 'tezster list-accounts to get all accounts`);
-  }
-  const keystore = {
-      publicKey: keys.pk,
-      privateKey: keys.sk,
-      publicKeyHash: keys.pkh,
-      seed: '',
-      storeType: conseiljs.StoreType.Fundraiser
-  };
-
-  let contractObj = findKeyObj(config.contracts, contractLabel);
-  if (contractObj) {
-    return outputError(`This contract label is already in use. Please use a different one.`);
-  }
-
-  try {
-    const contract = fs.readFileSync(contractPath, 'utf8');
-    const result = await conseiljs.TezosNodeWriter.sendContractOriginationOperation(
-                              tezosNode, keystore, 0, undefined,
-                              100000, '', 1000, 100000, 
-                              contract, initValue, conseiljs.TezosParameterFormat.Michelson);
-    if (result.results) {
-      switch(result.results.contents[0].metadata.operation_result.status) {
-        case 'applied':
-            let opHash = result.operationGroupID.slice(1,result.operationGroupID.length-2);
-            opHash = eztz.contract.hash(opHash);
-            addContract(contractLabel, opHash , keys.pkh);
-            return output(`contract ${contractLabel} has been deployed at ${opHash}`);
-
-        case 'failed':
-        default:
-            return outputError(`Contract deployment has failed : ${JSON.stringify(result.results.contents[0].metadata.operation_result)}`)
-      }
-    }
-    return outputError(`Contract deployment has failed : ${JSON.stringify(result)}`);
-  } catch(error) {
-    return outputError(error);
-  }
 }
 
 async function invokeContract(contract, argument, account) {
@@ -310,21 +226,18 @@ function addContractToConfig(contractLabel, contractAddr) {
 
 module.exports= {
     loadTezsterConfig: loadTezsterConfig,
+    findKeyObj : findKeyObj,
+    getKeys: getKeys,
     outputInfo: outputInfo,
     outputError: outputError,
     output:output,
     config: config,
     eztz: eztz,
-    getProvider: getProvider,
-    setProvider: setProvider,
-    transferAmount: transferAmount,
+
     addContract: addContractToConfig,
     addTransaction: addTransaction,
-    createAccount:createAccount,
-    deployContract:  deployContract,
     invokeContract: invokeContract,
     getStorage: getStorage,
     restoreAlphanetAccount: restoreAlphanetAccount,
-    activateAlphanetAccount : activateAlphanetAccount,
-    findKeyObj : findKeyObj
+    activateAlphanetAccount : activateAlphanetAccount
 };

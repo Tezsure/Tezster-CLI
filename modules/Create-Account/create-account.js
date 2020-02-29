@@ -1,12 +1,13 @@
 const tezsterManager = require("../../tezster-manager");
+const createAccountManager = require("./create-account-manager");
 
-async function createAccount() {  
+async function __createAccount() {  
     var args = process.argv.slice(3);  
     if (args.length < 3) return console.log(tezsterManager.outputError("Incorrect usage - tezster create-account <Identity> <Account Label> <amount> <spendable=true[Optional]> <delegatable=true[Optional]> <delegate[Optional]> <fee=0[Optional]>"));
     await tezsterManager.loadTezsterConfig(); 
-    tezsterManager.createAccount(args).then((result) => {
+    createAccountManager.createAccount(args).then((result) => {
         console.log(result);
     });
 }
 
-module.exports = { createAccount };
+module.exports = { __createAccount };

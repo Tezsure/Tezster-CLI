@@ -1,6 +1,6 @@
 const tezsterManager = require("../../tezster-manager");
 
-async function setProvider() {
+async function __setProvider() {
     var args = process.argv.slice(3);  
     if (args.length < 1){ 
         console.log(tezsterManager.outputError("Incorrect usage - tezster set-provider http://{ip}:{port}"));
@@ -10,4 +10,4 @@ async function setProvider() {
     console.log(tezsterManager.setProvider(args));
 }
 
-module.exports = { setProvider };
+module.exports = { __setProvider };

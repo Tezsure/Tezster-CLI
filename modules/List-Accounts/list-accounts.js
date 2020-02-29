@@ -1,6 +1,6 @@
 const tezsterManager = require("../../tezster-manager");
 
-async function listAccounts() {  
+async function __listAccounts() {  
     await tezsterManager.loadTezsterConfig();
     const config = tezsterManager.config;
     if(Object.keys(config.accounts).length > 0){
@@ -13,4 +13,4 @@ async function listAccounts() {
     }
 }
 
-module.exports = { listAccounts };
+module.exports = { __listAccounts };

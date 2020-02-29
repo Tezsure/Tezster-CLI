@@ -1,8 +1,9 @@
 const tezsterManager = require("../../tezster-manager");
+const getProviderManager = require("./get-provider-manager");
 
-async function getProvider() {
+async function __getProvider() {
     await tezsterManager.loadTezsterConfig(); 
-    console.log(tezsterManager.getProvider());
+    console.log(getProviderManager.getProvider());
 }
 
-module.exports = { getProvider };
+module.exports = { __getProvider };

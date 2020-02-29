@@ -5,17 +5,17 @@ const {setup} = require('./modules/Setup/setup.js');
 const {startNodes} = require('./modules/Start-Nodes/start-nodes.js');
 const {stopNodes} = require('./modules/Stop-Nodes/stop-nodes.js');
 const {__getBalance} = require('./modules/Get-Balance/get-balance.js');
-const {getProvider} = require('./modules/Get-Provider/get-provider.js');
-const {setProvider} = require('./modules/Set-Provider/set-provider.js');
-const {deployContract} = require('./modules/Deploy/deploy.js');
-const {callContract} = require('./modules/Call/call.js');
-const {listContracts} = require('./modules/List-Contracts/list-contracts.js');
+const {__getProvider} = require('./modules/Get-Provider/get-provider.js');
+const {__setProvider} = require('./modules/Set-Provider/set-provider.js');
+const {__deployContract} = require('./modules/Deploy/deploy.js');
+const {__callContract} = require('./modules/Call/call.js');
+const {__listContracts} = require('./modules/List-Contracts/list-contracts.js');
 const {__transfer} = require('./modules/Transfer/transfer.js');
-const {listAccounts} = require('./modules/List-Accounts/list-accounts.js');
+const {__listAccounts} = require('./modules/List-Accounts/list-accounts.js');
 const {getStorage} = require('./modules/Get-Storage/get-storage.js');
 const {addContract} = require('./modules/Add-Contract/add-contract.js');
-const {listTransactions} = require('./modules/List-Transactions/list-transactions.js');
-const {createAccount} = require('./modules/Create-Account/create-account.js');
+const {__listTransactions} = require('./modules/List-Transactions/list-transactions.js');
+const {__createAccount} = require('./modules/Create-Account/create-account.js');
 const {addTestnetAccount} = require('./modules/Add-Testnet-Account/add-testnet-account.js');
 const {activateTestnetAccount} = require('./modules/Activate-Testnet-Account/activate-testnet-account.js');
 
@@ -56,7 +56,7 @@ program
 .command('list-accounts')
 .description('To fetch all the accounts')
 .action(function(){    
-    listAccounts()
+    __listAccounts()
 });
 
 //******* TO get the list Contracts */
@@ -64,7 +64,7 @@ program
 .command('list-contracts')
 .description('To fetch all the contracts')
 .action(function(){     
-    listContracts();
+    __listContracts();
 });
 
 //******* To get the Provider */
@@ -72,7 +72,7 @@ program
 .command('get-provider')
 .description('To fetch the current provider')
 .action(function(){        
-    getProvider();
+    __getProvider();
 });
 
 
@@ -82,7 +82,7 @@ program
 .usage('[http://<ip>:<port>]')
 .description('To change the default provider')
 .action(function(){  
-    setProvider();
+    __setProvider();
 });
 
 //******* To transfer the amount */
@@ -100,7 +100,7 @@ program
 .usage('<contract-label> <contract-absolute-path> <init-storage-value> <account>')
 .description('Deploys a smart contract written in Michelson')
 .action(function(){
-    deployContract();
+    __deployContract();
 });
 
 //*******calls contract written in Michelson*/
@@ -109,7 +109,7 @@ program
 .usage('<contract-name/address> <argument-value> <account>')
 .description('Calls a smart contract with given value provided in Michelson format')
 .action(function(){
-    callContract();
+    __callContract();
 });
 
 //*******gets storage for a contract*/
@@ -144,7 +144,7 @@ program
 .command('list-transactions')
 .description('List down all the transactions')
 .action(function(){  
-    listTransactions();
+    __listTransactions();
 });
 
 //******* To Create an account */
@@ -153,7 +153,7 @@ program
 .usage('<identity> <label> <amount>')
 .description('To create a new account')
 .action(async function(){  
-    createAccount(); 
+    __createAccount(); 
 });
 
 //******* To Create an contract */

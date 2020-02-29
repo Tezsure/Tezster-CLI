@@ -1,6 +1,6 @@
 const tezsterManager = require("../../tezster-manager");
 
-async function listContracts() {
+async function __listContracts() {
     await tezsterManager.loadTezsterConfig();    
     const config = tezsterManager.config;
     if(Object.keys(config.contracts).length > 0){        
@@ -13,4 +13,4 @@ async function listContracts() {
     }
 }
 
-module.exports = { listContracts };
+module.exports = { __listContracts };

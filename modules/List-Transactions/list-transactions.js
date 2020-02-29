@@ -1,6 +1,6 @@
 const tezsterManager = require("../../tezster-manager");
 
-async function listTransactions() {       
+async function __listTransactions() {       
     await tezsterManager.loadTezsterConfig();    
     const config = tezsterManager.config;
 
@@ -14,4 +14,4 @@ async function listTransactions() {
     }
 }
 
-module.exports = { listTransactions };
+module.exports = { __listTransactions };
