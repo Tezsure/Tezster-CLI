@@ -8,25 +8,6 @@ const cliColors = {
     },
     confFile = __dirname + '/config.json',
     jsonfile = require('jsonfile');
-var helpData="Usage: tezster [command] [optional parameters].....\n" +
-             "Tezster comes in an npm package with a set of easy commands to kickstart the development or interaction with Tezos. The current beta version will install and start tezos node on your local machine.\n\n" +
-             "Most used commands:\n" + 
-             "setup- setting up tezos node\n" + 
-             "start-nodes- starting the nodes\n" + 
-             "stop-nodes- stopping the nodes\n" + 
-             "create-account [Identity][Label][amount]- To create a new account.\n" + 
-             "get-balance [account/contract(pkh)]- To get the balance of account/contracts\n" + 
-             "transfer [amount][from][to][fees]- To transfer the funds b/w accounts\n" + 
-             "list-accounts- To fetch all the accounts\n" +
-             "list-contracts- To fetch all the contracts\n" + 
-             "set-provider [http://{ip}:{port}]- To change the default provider\n" + 
-             "get-provider- To fetch the current provider\n" + 
-             "deploy [contract-label] [contract-absolute-path] [init-storage-value] [account] - deploys a smart contract written in Michelson\n" +
-             "call [contract-name/address] [argument-value] [account]- calls a smart contract with given value provided in Michelson format\n" +
-             "get-storage [contract-name/address] - returns current storage for given smart contract\n" + 
-             "add-testnet-account <account-label> <absolut-path-to-json-file> - restores an testnet faucet account from json file\n" +
-             "activate-testnet-account <account-label> - activates an testnet faucet account resored using tezster\n" +
-             "add-contract <label> <Address> - adds a smart contract with label for interaction";
 
 var eztz = {}, 
     config = jsonfile.readFileSync(confFile);
@@ -44,36 +25,6 @@ async function loadTezsterConfig() {
     eztz.library.sodium = _sodium;
 }
 
-function formatTez(a){
-    return formatMoney(a)+" ꜩ";
-}
-
-function formatMoney(n, c, d, t) {
-    var c = isNaN(c = Math.abs(c)) ? 2 : c, 
-    d = d == undefined ? "." : d, 
-    t = t == undefined ? "," : t, 
-    s = n < 0 ? "-" : "", 
-    i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(c))), 
-    j = (j = i.length) > 3 ? j % 3 : 0;
-    return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
-}
-
-function getBalance(account) {
-    var pkh = account, f;
-    if (f = findKeyObj(config.identities, pkh)) {
-    pkh = f.pkh;
-    } else if (f = findKeyObj(config.accounts, pkh)) {
-    pkh = f.pkh;
-    } else if (f = findKeyObj(config.contracts, pkh)) {
-    pkh = f.pkh;
-    }
-    return eztz.rpc.getBalance(pkh).then(function(r){
-        return output(formatTez(r/100));
-    }).catch(function(e){
-        return outputError(e);
-    });
-}
-
 function getProvider(){    
     if (config.provider){
         return outputInfo(config.provider);
@@ -87,42 +38,6 @@ function setProvider(args){
     jsonfile.writeFile(confFile, config);
     eztz.node.setProvider(config.provider);
     return outputInfo("Provider updated to " + config.provider);
-}
-
-function transferAmount(args){    
-    var amount = parseFloat(args[0]), from = args[1], to = args[2],
-        fees = args[3], f;
-    var keys = "main"; 
-    if (f = findKeyObj(config.identities, from)) {
-      keys = f;
-      from = f.pkh;
-    } else if (f = findKeyObj(config.accounts, from)) {
-      keys = findKeyObj(config.identities, f.identity);
-      from = f.pkh;
-    } else if (f = findKeyObj(config.contracts, from)) {
-      keys = findKeyObj(config.identities, f.identity);
-      from = f.pkh;
-    } else {
-      return outputError("No valid identity to send this transaction");
-    }
-    
-    if (f = findKeyObj(config.identities, to)) {
-      to = f.pkh;
-    } else if (f = findKeyObj(config.accounts, to)) {
-      to = f.pkh;
-    } else if (f = findKeyObj(config.contracts, to)) {
-      to = f.pkh;
-    }
-
-    fees = fees || 1500;
-
-    return eztz.rpc.transfer(from, keys, to, amount, fees, undefined, 10600).then(function(r){
-      addTransaction('transfer', r.hash, from, to, amount);
-      return output("Transfer complete - operation hash #" + r.hash);
-    }).catch(function(e){
-      return outputError(e);
-    });
-    
 }
 
 function createAccount(args){
@@ -395,7 +310,6 @@ function addContractToConfig(contractLabel, contractAddr) {
 
 module.exports= {
     loadTezsterConfig: loadTezsterConfig,
-    getBalance: getBalance,
     outputInfo: outputInfo,
     outputError: outputError,
     output:output,
@@ -407,10 +321,10 @@ module.exports= {
     addContract: addContractToConfig,
     addTransaction: addTransaction,
     createAccount:createAccount,
-    helpData:helpData,
     deployContract:  deployContract,
     invokeContract: invokeContract,
     getStorage: getStorage,
     restoreAlphanetAccount: restoreAlphanetAccount,
-    activateAlphanetAccount : activateAlphanetAccount
+    activateAlphanetAccount : activateAlphanetAccount,
+    findKeyObj : findKeyObj
 };
