@@ -140,25 +140,22 @@ childprocess.exec(`docker images ${imageTag} --format "{{.Repository}}:{{.Tag}}:
               }
               });
             },1000);
-            },8000);
+            },5000);
 
             return new Promise((resolve, reject) => {
             docker.createContainer({
               name: `${containerName}`,
               Image: `${imageTag}`,
               Tty: true,
-              HostConfig: {
-              PortBindings: {
-                "18731/tcp": [{
-                  "HostIP": "0.0.0.0",
-                  "HostPort": "18731"
-                }],
-              },
-              },
               ExposedPorts: {
-                "18731/tcp": {},
+                "18731/tchildprocess:": {}
               },
-             // NetworkMode: "host",
+              PortBindings: {
+                "18731/tchildprocess": [{
+                  HostPort: "18731"
+                }]
+              },
+              NetworkMode: "host",
               Cmd: [
                 "/bin/bash",
                 "-c",
@@ -166,11 +163,7 @@ childprocess.exec(`docker images ${imageTag} --format "{{.Repository}}:{{.Tag}}:
               ]
             },
             function(err, container) {
-              const data = await container.inspect();
-console.log("data",d);
-console.dir("-------------",data.Config.ExposedPorts);
-              container.start({}, function(err, data) {  
-                const container = Dockerode.getContainer(containerName);            
+              container.start({}, function(err, data) {              
                 if (err)
                 console.log(self.helper.outputError("Check whether docker is installed or not"));
               });
