@@ -10,7 +10,7 @@ program
 .command('setup')
 .description('To set up Tezos nodes')
 .action(function(){  
-    tezstermanager.setup();
+    tezstermanager.setUp();
 });
 
 program.command('start-nodes')
@@ -148,7 +148,7 @@ program
 });
 
 program
-.on("--help", () => {
+.on('--help', () => {
     console.log("\nTo know more about particular command usage:\n\ttezster [command] --help");
 });
 

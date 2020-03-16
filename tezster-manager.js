@@ -6,80 +6,80 @@ const {Transactions} = require('./modules/transactions/transactions.js');
 
 class TezsterManager{
 
-constructor(){
-    this.Accounts = new Accounts();
-    this.Setup = new Setup();
-    this.Contracts = new Contracts();
-    this.Transactions = new Transactions();
-} 
+  constructor(){
+      this.accounts = new Accounts();
+      this.setup = new Setup();
+      this.contracts = new Contracts();
+      this.transactions = new Transactions();
+  } 
 
-setup(){
-    this.Setup._setup();
-}
+  setUp(){
+      this.setup.setup();
+  }
 
-startNodes(){
-    this.Setup._startNodes();
-}
+  startNodes(){
+      this.setup.startNodes();
+  }
 
-stopNodes(){
-    this.Setup._stopNodes();
-}
+  stopNodes(){
+      this.setup.stopNodes();
+  }
 
-setProvider(){
-    this.Accounts._setProvider();
-}
+  setProvider(){
+      this.accounts.setProvider();
+  }
 
-getProvider(){
-  this.Accounts._getProvider();
-}
+  getProvider(){
+    this.accounts.getProvider();
+  }
 
-listAccounts(){
-  this.Accounts._listAccounts();
-}
+  listAccounts(){
+    this.accounts.listAccounts();
+  }
 
-getBalance(){
-  this.Accounts._getBalance();
-}
+  getBalance(){
+    this.accounts.getBalance();
+  }
 
-createAccount(){
-  this.Accounts._createAccount();
-}
+  createAccount(){
+    this.accounts.createAccount();
+  }
 
-addTestnetAccount(){
-  this.Accounts._addTestnetAccount();
-}
+  addTestnetAccount(){
+    this.accounts.addTestnetAccount();
+  }
 
-activateTestnetAccount(){
-  this.Accounts._activateTestnetAccount();
-}
+  activateTestnetAccount(){
+    this.accounts.activateTestnetAccount();
+  }
 
-listContracts(){
-  this.Contracts._listContracts();
-}
+  listContracts(){
+    this.contracts.listContracts();
+  }
 
-deployContract(){
-  this.Contracts._deployContract();
-}
+  deployContract(){
+    this.contracts.deployContract();
+  }
 
-callContract(){
-  this.Contracts._callContract();
-}
+  callContract(){
+    this.contracts.callContract();
+  }
 
-getStorage(){
-  this.Contracts._getStorage();
-}
+  getStorage(){
+    this.contracts.getStorage();
+  }
 
-addContract(){
-  this.Contracts._addContract();
-}
+  addContract(){
+    this.contracts.addContract();
+  }
 
-transfer(){
-  this.Transactions._transfer();
-}
+  transfer(){
+    this.transactions.transfer();
+  }
 
-listTransactions(){
-  this.Transactions._listTransactions();
-}
+  listTransactions(){
+    this.transactions.listTransactions();
+  }
 }
 
 module.exports = {TezsterManager};
