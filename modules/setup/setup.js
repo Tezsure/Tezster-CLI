@@ -13,7 +13,7 @@ class Setup{
         "We may need your password for write permission in config file...."
       ));
 
-      childprocess.exec(`docker --version`, (error, __stdout, __stderr) => {
+      child_process.exec(`docker --version`, (error, __stdout, __stderr) => {
         if (__stdout.includes("Docker version")) {
           return new Promise((resolve, reject) => {
             const child_process = require("child_process");
