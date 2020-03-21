@@ -85,7 +85,7 @@ tezster set-provider http://localhost:18731
 Change your provider to carthagenet by running
 
 ```
-tezster set-provider https://tezos-dev.cryptonomic-infra.tech/ 
+tezster set-provider https://carthagenet.SmartPy.io 
 
 OR
 
