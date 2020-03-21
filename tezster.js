@@ -8,6 +8,7 @@ var docker = new Docker({ socketPath: "/var/run/docker.sock" });
 const tezsterManager = require("./tezster-manager");
 const imageTag = "tezsureinc/tezster:1.0.1";
 const containerName = "tezster";
+const TESTNET_NAME = 'carthagenet';
 
 program
   .version('0.2.1', '-v, --version')
@@ -301,7 +302,7 @@ program
 
     let result = await tezsterManager.deployContract(args[0], args[1], args[2], args[3]);
     console.log(result);
-    console.log(tezsterManager.outputInfo(`If you're using babylonnet node, use https://babylonnet.tzstats.com to check contract/transactions`));
+    console.log(tezsterManager.outputInfo(`If you're using ${TESTNET_NAME} node, use https://${TESTNET_NAME}.tzstats.com to check contract/transactions`));
 });
 
 //*******calls contract written in Michelson*/
@@ -320,7 +321,7 @@ program
     
     let result = await tezsterManager.invokeContract(args[0], args[1], args[2]);
     console.log(result);
-    console.log(tezsterManager.outputInfo(`If you're using babylonnet node, use https://babylonnet.tzstats.com to check contract/transactions`));
+    console.log(tezsterManager.outputInfo(`If you're using ${TESTNET_NAME} node, use https://${TESTNET_NAME}.tzstats.com to check contract/transactions`));
 });
 
 //*******gets storage for a contract*/
@@ -375,7 +376,7 @@ program
     
     let result = await tezsterManager.activateAlphanetAccount(args[0]);
     console.log(result);
-    console.log(tezsterManager.outputInfo(`If this account has already been activated, it may throw 'invalid_activation' error. You can visit https://babylonnet.tzstats.com for more information on this account`));
+    console.log(tezsterManager.outputInfo(`If this account has already been activated, it may throw 'invalid_activation' error. You can visit https://${TESTNET_NAME}.tzstats.com for more information on this account`));
 });
 
 /* list transactions done with tezster */
@@ -387,7 +388,7 @@ program
     await tezsterManager.loadTezsterConfig();    
     const config = tezsterManager.config;
 
-    console.log(tezsterManager.outputInfo('For transactions done on babylonnet node ,you can visit https://babylonnet.tzstats.com for more information'))
+    console.log(tezsterManager.outputInfo(`For transactions done on ${TESTNET_NAME} node ,you can visit https://${TESTNET_NAME}.tzstats.com for more information`));
     if(Object.keys(config.transactions).length > 0){        
         for(var i in config.transactions){
             console.log(tezsterManager.output(JSON.stringify(config.transactions[i])));        
