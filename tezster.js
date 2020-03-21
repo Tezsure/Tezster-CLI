@@ -6,11 +6,11 @@ const program = require("commander");
 const Docker = require("dockerode");
 var docker = new Docker({ socketPath: "/var/run/docker.sock" });
 const tezsterManager = require("./tezster-manager");
-const imageTag = "tezsureinc/tezster:1.0.0";
+const imageTag = "tezsureinc/tezster:1.0.1";
 const containerName = "tezster";
 
 program
-  .version("0.2.0", "-v, --version")
+  .version("0.2.1", "-v, --version")
   .command("setup")
   .action(function() {
     console.log(tezsterManager.outputInfo(
@@ -91,7 +91,7 @@ program
 program.command("start-nodes").action(function() {
   childprocess.exec(`docker images ${imageTag} --format "{{.Repository}}:{{.Tag}}:{{.Size}}"`,
     (error, __stdout, __stderr) => {
-      if (__stdout === `${imageTag}:2.75GB\n`) {
+      if (__stdout === `${imageTag}:3GB\n`) {
 
         childprocess.exec(`docker ps -a -q  --filter ancestor=${imageTag} --format "{{.Image}}:{{.Names}}"`,
         (error, __stdout, __stderr) => {
