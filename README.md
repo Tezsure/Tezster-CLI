@@ -68,7 +68,7 @@ To see generated accounts, run
 ```
 tezster list-accounts
 ``` 
-User can also activate and use an babylonnet faucet account with tezster to interact with babylonnet (test network of tezos) user has to download file from faucet : https://faucet.tzalpha.net/ After downloading from faucet you need to change the provider.
+User can also activate and use an carthagenet faucet account with tezster to interact with carthagenet (test network of tezos) user has to download file from faucet : https://faucet.tzalpha.net/ After downloading from faucet you need to change the provider.
 
 To check your current provider run
 
@@ -82,7 +82,7 @@ Change your provider to localhost by running
 tezster set-provider http://localhost:18731 
 ```
 
-Change your provider to babylonnet by running
+Change your provider to carthagenet by running
 
 ```
 tezster set-provider https://tezos-dev.cryptonomic-infra.tech/ 
