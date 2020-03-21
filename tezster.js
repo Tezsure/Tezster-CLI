@@ -73,10 +73,6 @@ program
                     progressbar.update(100);
                     console.log(tezsterManager.output("\nTezos nodes have been setup successfully on system...."));
                     process.exit();
-                    if (error) {
-                      return reject(__dockerModemError);
-                    }
-                    return resolve(__dockerModemOutput);
                   });
                   return resolve(dockerPullStream);
                   }
@@ -177,9 +173,9 @@ program.command('stop-nodes')
         {
           const container = docker.getContainer(containerName) 
           docker.listContainers(function(err, containers) {
-          container.stop(); 
-          container.remove({force: true});
-          console.log(tezsterManager.outputInfo("Nodes has been stopped. Run 'tezster start-nodes' to restart again."));
+            container.stop(); 
+            container.remove({force: true});
+            console.log(tezsterManager.outputInfo("Nodes have been stopped. Run 'tezster start-nodes' to restart."));
         });
         }
         else
