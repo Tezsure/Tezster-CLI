@@ -1,7 +1,7 @@
 const Docker = require('dockerode');
 var docker = new Docker({ socketPath: '/var/run/docker.sock' });
 const child_process = require('child_process');
-const IMAGE_TAG = 'kapil1221/kapil:latest';
+const IMAGE_TAG = 'tezsureinc/tezster:1.0.1';
 const CONTAINER_NAME = 'tezster';
 
 const { Helper } = require('../../helper');
@@ -60,7 +60,7 @@ class Setup {
         const container = docker.getContainer(CONTAINER_NAME);
 
         const fs = require('fs');
-        container.getArchive( { path: `/usr/local/bin/tezster-logs` }, (error, stream) => {
+        container.getArchive( { path: `/usr/local/bin/` }, (error, stream) => {
             let writeStream = fs.createWriteStream('/tmp/tezster-logs.tar.gz', { encoding: 'utf8' });
 
             if (error) {
