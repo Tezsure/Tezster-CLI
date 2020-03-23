@@ -1,6 +1,6 @@
 {
   "name": "tezster",
-  "version": "2.0.0",
+  "version": "0.2.0",
   "description": "A personal development blockchain based on Javascript that lives entirely on your local machine.",
   "main": "tezster.js",
   "scripts": {
@@ -12,7 +12,8 @@
   "keywords": [
     "tezster",
     "tezos",
-    "tezsure"
+    "tezsure",
+    "blockchain"
   ],
   "author": "",
   "license": "ISC",
@@ -41,7 +42,6 @@
     "node-fetch": "^2.6.0",
     "pbkdf2": "^3.0.17",
     "request": "^2.81.0",
-    "tezster2": "^0.7.5",
     "xmlhttprequest": "^1.8.0",
     "zxcvbn": "^4.4.2"
   }

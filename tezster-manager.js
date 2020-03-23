@@ -1,85 +1,90 @@
 'use strict';
-const {Accounts} = require('./modules/accounts/accounts.js');
-const {Setup} = require('./modules/setup/setup.js');
-const {Contracts} = require('./modules/contract/contracts.js');
-const {Transactions} = require('./modules/transactions/transactions.js');
+const { Accounts } = require('./modules/accounts/accounts.js'),
+      { Setup } = require('./modules/setup/setup.js'),
+      { Contracts } = require('./modules/contract/contracts.js'),
+      { Transactions } = require('./modules/transactions/transactions.js');
+var args = process.argv.slice(3);
 
 class TezsterManager{
 
-  constructor(){
-      this.accounts = new Accounts();
-      this.setup = new Setup();
-      this.contracts = new Contracts();
-      this.transactions = new Transactions();
-  } 
+    constructor(){
+        this.accounts = new Accounts();
+        this.setup = new Setup();
+        this.contracts = new Contracts();
+        this.transactions = new Transactions();
+    } 
+    
+    setUp(){
+        this.setup.setup();
+    }
 
-  setUp(){
-      this.setup.setup();
-  }
+    startNodes(){
+        this.setup.startNodes();
+    }
 
-  startNodes(){
-      this.setup.startNodes();
-  }
+    stopNodes(){
+        this.setup.stopNodes();
+    }
 
-  stopNodes(){
-      this.setup.stopNodes();
-  }
+    getLogFiles(){
+        this.setup.getLogFiles();
+    }
 
-  setProvider(){
-      this.accounts.setProvider();
-  }
+    setProvider(){
+        this.accounts.setProvider(args);
+    }
 
-  getProvider(){
-    this.accounts.getProvider();
-  }
+    getProvider(){
+        this.accounts.getProvider();
+    }
 
-  listAccounts(){
-    this.accounts.listAccounts();
-  }
+    listAccounts(){
+        this.accounts.listAccounts();
+    }
 
-  getBalance(){
-    this.accounts.getBalance();
-  }
+    getBalance(){
+        this.accounts.getBalance(args);
+    }
 
-  createAccount(){
-    this.accounts.createAccount();
-  }
+    createAccount(){
+        this.accounts.createAccount(args);
+    }
 
-  addTestnetAccount(){
-    this.accounts.addTestnetAccount();
-  }
+    addTestnetAccount(){
+        this.accounts.addTestnetAccount(args);
+    }
 
-  activateTestnetAccount(){
-    this.accounts.activateTestnetAccount();
-  }
+    activateTestnetAccount(){
+        this.accounts.activateTestnetAccount(args);
+    }
 
-  listContracts(){
-    this.contracts.listContracts();
-  }
+    listContracts(){
+        this.contracts.listContracts();
+    }
 
-  deployContract(){
-    this.contracts.deployContract();
-  }
+    deployContract(){
+        this.contracts.deployContract(args);
+    }
 
-  callContract(){
-    this.contracts.callContract();
-  }
+    callContract(){
+        this.contracts.callContract(args);
+    }
 
-  getStorage(){
-    this.contracts.getStorage();
-  }
+    getStorage(){
+        this.contracts.getStorage(args);
+    }
 
-  addContract(){
-    this.contracts.addContract();
-  }
+    addContract(){
+        this.contracts.addContract(args);
+    }
 
-  transfer(){
-    this.transactions.transfer();
-  }
+    transfer(){
+        this.transactions.transfer(args);
+    }
 
-  listTransactions(){
-    this.transactions.listTransactions();
-  }
+    listTransactions(){
+        this.transactions.listTransactions();
+    }
 }
 
 module.exports = {TezsterManager};
