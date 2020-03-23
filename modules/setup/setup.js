@@ -60,7 +60,7 @@ class Setup {
         const container = docker.getContainer(CONTAINER_NAME);
 
         const fs = require('fs');
-        container.getArchive( { path: `/usr/local/bin/` }, (error, stream) => {
+        container.getArchive( { path: `/usr/local/bin/tezster-logs` }, (error, stream) => {
             let writeStream = fs.createWriteStream('/tmp/tezster-logs.tar.gz', { encoding: 'utf8' });
 
             if (error) {
