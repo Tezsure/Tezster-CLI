@@ -130,7 +130,7 @@ class Accounts{
     async loadTezsterConfig() {
         eztz = require('../../lib/eztz.cli.js').eztz;
         const jsonfile = require('jsonfile');
-        config=jsonfile.readFileSync(confFile);
+        config = jsonfile.readFileSync(confFile);
         if (config.provider) {
             eztz.node.setProvider(config.provider);
         }  
