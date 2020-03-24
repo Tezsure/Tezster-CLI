@@ -5,30 +5,30 @@ const program = require('commander');
 const { TezsterManager } = require('./tezster-manager');
 const tezstermanager = new TezsterManager();
 
-//******* To setup tezos nodes on user system */
+/******* To setup tezos nodes on user system */
 program
-    .version('0.2.0', '-v, --version')
+    .version('0.2.1', '-v, --version')
     .command('setup')
     .description('To set up Tezos nodes')
     .action(function(){  
-        tezstermanager.setUp();
+        tezstermanager.setupNodes();
 });
 
-//******* To start tezos nodes */
+/******* To start tezos nodes */
 program.command('start-nodes')
     .description('Starts Tezos nodes')
     .action(function(){  
         tezstermanager.startNodes();
 });
 
-//******* To stop tezos nodes */
+/******* To stop tezos nodes */
 program.command('stop-nodes')
     .description('Stops Tezos nodes')
     .action(function() {
         tezstermanager.stopNodes();
 });
 
-//******* To set the Provider */
+/******* To set the Provider */
 program
     .command('set-provider')
     .usage('[http://<ip>:<port>]')
@@ -37,7 +37,7 @@ program
         tezstermanager.setProvider();
 });
 
-//******* To get the Provider */
+/******* To get the Provider */
 program
     .command('get-provider')
     .description('To fetch the current provider')
@@ -45,7 +45,7 @@ program
         tezstermanager.getProvider();
 });
 
-//******* To get the list accounts */
+/******* To get the list accounts */
 program
     .command('list-accounts')
     .description('To fetch all the accounts')
@@ -53,7 +53,7 @@ program
         tezstermanager.listAccounts();
 });
 
-//*******for check the balance check */
+/*******for check the balance check */
 program
     .command('get-balance')
     .usage('<account/contract(pkh)>')
@@ -62,7 +62,7 @@ program
         tezstermanager.getBalance();
 });
 
-//******* To Create an account */
+/******* To Create an account */
 program
     .command('create-account')
     .usage('<identity> <label> <amount>')
@@ -89,7 +89,7 @@ program
         tezstermanager.activateTestnetAccount();
 });
 
-//******* TO get the list Contracts */
+/******* TO get the list Contracts */
 program
     .command('list-contracts')
     .description('To fetch all the contracts')
@@ -97,7 +97,7 @@ program
         tezstermanager.listContracts();
 });
 
-//*******deploy contract written in Michelson*/
+/*******deploy contract written in Michelson*/
 program
     .command('deploy')
     .usage('<contract-label> <contract-absolute-path> <init-storage-value> <account>')
@@ -106,7 +106,7 @@ program
         tezstermanager.deployContract();
 });
 
-//*******calls contract written in Michelson*/
+/*******calls contract written in Michelson*/
 program
     .command('call')
     .usage('<contract-name/address> <argument-value> <account>')
@@ -115,7 +115,7 @@ program
         tezstermanager.callContract();
 });
 
-//*******gets storage for a contract*/
+/*******gets storage for a contract*/
 program
     .command('get-storage')
     .usage('<contract-name/address>')
@@ -124,7 +124,7 @@ program
         tezstermanager.getStorage();
 });
 
-//******* To Create an contract */
+/******* To Create an contract */
 program
     .command('add-contract')
     .usage('<label> <address>')
@@ -133,7 +133,7 @@ program
         tezstermanager.addContract();    
 });
 
-//******* To transfer the amount */
+/******* To transfer the amount */
 program
     .command('transfer')
     .usage('<amount> <from> <to>')

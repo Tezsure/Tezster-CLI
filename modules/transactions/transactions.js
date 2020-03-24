@@ -4,7 +4,7 @@ var eztz = {};
 var config = jsonfile.readFileSync(confFile);
 const TESTNET_NAME = 'carthagenet';
 
-const { Helper } = require('../../helper');
+const { Helper } = require('../helper');
 
 class Transactions {
 

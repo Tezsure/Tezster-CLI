@@ -14,7 +14,7 @@ class TezsterManager{
         this.transactions = new Transactions();
     } 
     
-    setUp(){
+    setupNodes(){
         this.setup.setup();
     }
 

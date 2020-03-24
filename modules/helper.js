@@ -1,4 +1,4 @@
-const { Variables } = require('./utils/cli-variables');
+const { Variables } = require('../utils/cli-variables');
 
 class Helper{
 

@@ -5,7 +5,7 @@ var config = jsonfile.readFileSync(confFile);
 const ConseilJS = '../../lib/conseiljs';
 const TESTNET_NAME = 'carthagenet';
 
-const { Helper } = require('../../helper');
+const { Helper } = require('../helper');
 
 class Contracts {
 

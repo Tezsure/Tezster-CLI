@@ -1,18 +1,18 @@
 const Docker = require('dockerode');
 var docker = new Docker({ socketPath: '/var/run/docker.sock' });
-const child_process = require('child_process');
-const IMAGE_TAG = 'tezsureinc/tezster:1.0.1';
-const CONTAINER_NAME = 'tezster';
+const child_process = require('child_process'),
+      IMAGE_TAG = 'tezsureinc/tezster:1.0.1',
+      CONTAINER_NAME = 'tezster';
 
-const { Helper } = require('../../helper');
+const { Helper } = require('../helper');
 
 class Setup {
 
     setup() {
         console.log(Helper.outputInfo('We may need your password for write permission in config file....'));
 
-        child_process.exec(`docker --version`, (error, __stdout, __stderr) => {
-            if (__stdout.includes('Docker version')) {
+        child_process.exec(`docker --version`, (error, _stdout, _stderr) => {
+            if (_stdout.includes('Docker version')) {
                     this.checkPermission();
               } else {
                     console.log(Helper.outputError('Docker not detected on the system please install docker....'));
@@ -22,12 +22,12 @@ class Setup {
 
     startNodes() {
         child_process.exec(`docker images ${IMAGE_TAG} --format '{{.Repository}}:{{.Tag}}:{{.Size}}'`,
-        (error, __stdout, __stderr) => {
-            if (__stdout === `${IMAGE_TAG}:3GB\n`) {
+        (error, _stdout, _stderr) => {
+            if (_stdout === `${IMAGE_TAG}:3GB\n`) {
 
                 child_process.exec(`docker ps -a -q  --filter ancestor=${IMAGE_TAG} --format '{{.Image}}:{{.Names}}'`,
-                (error, __stdout, __stderr) => {
-                    if (__stdout.includes(`${IMAGE_TAG}:${CONTAINER_NAME}\n`)) {
+                (error, _stdout, _stderr) => {
+                    if (_stdout.includes(`${IMAGE_TAG}:${CONTAINER_NAME}\n`)) {
                           console.log(Helper.outputInfo('Nodes are already running....'));
                     } else {
                           this.runContainer();
@@ -40,8 +40,8 @@ class Setup {
     }
 
     stopNodes() {
-        child_process.exec(`docker ps -a -q --format '{{.Image}}'`,(error, __stdout, __stderr) => {
-            if (__stdout.includes(`${IMAGE_TAG}\n`)) {
+        child_process.exec(`docker ps -a -q --format '{{.Image}}'`,(error, _stdout, _stderr) => {
+            if (_stdout.includes(`${IMAGE_TAG}\n`)) {
                 console.log(`stopping the nodes....`);
                 const container = docker.getContainer(CONTAINER_NAME);
                 docker.listContainers(function(err, containers) {
@@ -82,17 +82,17 @@ class Setup {
     }
 
     checkPermission(){
-        child_process.exec(`stat -c '%a %n' ${__dirname}/config.json`,(error, __stdout, __stderr) => {
+        child_process.exec(`stat -c '%a %n' ${__dirname}/config.json`,(error, _stdout, _stderr) => {
             if (!error) {
-                if (__stdout !== `777 ${__dirname}/config.json`) {
+                if (_stdout !== `777 ${__dirname}/config.json`) {
                     child_process.exec(`sudo chmod -R 777 ${__dirname}/config.json`);
                 }
             }
         });
-        this.buildImage();
+        this.pullNodeSetup();
     }
 
-    buildImage() {              
+    pullNodeSetup () {              
         const _cliProgress = require('cli-progress');
         let progress = 1;
         let progressInterval;
@@ -120,18 +120,18 @@ class Setup {
                     }
                     progressbar.update(progress);
                     }, 1000);
-                    docker.modem.followProgress(dockerPullStream, (__dockerModemError, __dockerModemOutput) => {
+                    docker.modem.followProgress(dockerPullStream, (_dockerModemError, _dockerModemOutput) => {
                         clearInterval(progress);
                         progressbar.update(100);
                         console.log(Helper.output('\nTezos nodes have been setup successfully on system....'));
                         process.exit();
                     });
                 }
-            });                     
+        });                     
     }
 
     runContainer(){
-        this.startProgressBar();
+        this.startNodesProgressBar();
         docker.createContainer({
             name: `${CONTAINER_NAME}`,
             Image: `${IMAGE_TAG}`,
@@ -160,7 +160,7 @@ class Setup {
         });
     }
 
-    startProgressBar() {
+    startNodesProgressBar() {
         const _cliProgress = require('cli-progress');
         console.log('starting the nodes.....');
         let progress = 0;
@@ -196,7 +196,7 @@ class Setup {
                 _cliProgress.Presets.shades_classic
             );
 
-            const myInterval = setInterval(() =>{
+            const interval = setInterval(() =>{
                 const request = require('request');
                 request('http://localhost:18731/chains/main/blocks/head/protocols', function (error, response, body) {
                     if(error){
@@ -208,7 +208,7 @@ class Setup {
                             progressbar.update(100);
                             progressbar.stop();
                             console.log(Helper.output('Nodes have been started successfully....'));
-                            clearInterval(myInterval);
+                            clearInterval(interval);
                             process.exit();
                         }
                     }
