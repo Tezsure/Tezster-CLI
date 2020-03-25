@@ -150,10 +150,10 @@ program
         tezstermanager.listTransactions();
 });
 
-/* Get all logs file in zip fromat on user system */
+/* Get all logs file in archive file fromat on user system */
 program
     .command('get-logs')
-    .description('Fetch log files on user system in zip format')
+    .description('Fetch log files on user system in archive file format')
     .action(function(){  
         tezstermanager.getLogFiles();
 });
