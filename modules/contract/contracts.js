@@ -71,8 +71,7 @@ class Contracts {
 
         const keys = this.getKeys(account);
         if(!keys) {
-            return Helper.outputError(`Couldn't find keys for given account.
-                Please make sure the account exists and added to tezster. Run 'tezster list-accounts to get all accounts`);
+            return Helper.outputError(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster. Run 'tezster list-accounts' to get all accounts`);
         }
         const keystore = {
             publicKey: keys.pk,
@@ -99,7 +98,7 @@ class Contracts {
                         let opHash = result.operationGroupID.slice(1,result.operationGroupID.length-2);
                         opHash = eztz.contract.hash(opHash);
                         this.addNewContract(contractLabel, opHash , keys.pkh);
-                        return Helper.output(`contract ${contractLabel} has been deployed at ${opHash}`);
+                        return Helper.output(`contract '${contractLabel}' has been deployed at ${opHash}`);
           
                     case 'failed':
                     default:
@@ -117,8 +116,7 @@ class Contracts {
         const tezosNode = config.provider;
         const keys = this.getKeys(account);
         if(!keys) {
-            return Helper.outputError(`Couldn't find keys for given account.
-                Please make sure the account exists and added to tezster. Run 'tezster list-accounts to get all accounts`);
+            return Helper.outputError(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster. Run 'tezster list-accounts' to get all accounts`);
         }
         const keystore = {
             publicKey: keys.pk,
