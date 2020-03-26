@@ -60,6 +60,16 @@ tezster stop-nodes
 ```
 It will stop all the tezster nodes running on the system. To restart the nodes run "tezster start-nodes".
 
+To get node related log files run
+
+```
+tezster get-logs
+```
+
+```
+It will save logs as archieve file format at - "/tmp/tezster-logs.tar.gz".
+To unzip use command - "tar -xf tezster-logs.tar.gz" inside /tmp/ folder.
+```
 
 ### Play with Tezster CLI 
 
