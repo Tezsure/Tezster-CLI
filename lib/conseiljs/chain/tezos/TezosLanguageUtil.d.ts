@@ -6,6 +6,7 @@ export declare namespace TezosLanguageUtil {
     export function translateMichelineToHex(code: string): string;
     export function preProcessMichelsonScript(code: string): string[];
     export function normalizeMichelineWhiteSpace(fragment: string): string;
+    export function stripComments(fragment: string): string;
     interface codeEnvelope {
         code: string;
         consumed: number;

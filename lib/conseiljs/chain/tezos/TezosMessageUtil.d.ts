@@ -11,6 +11,7 @@ export declare namespace TezosMessageUtils {
         value: number;
         length: number;
     };
+    function writeString(value: string): string;
     function readAddress(hex: string): string;
     function readAddressWithHint(b: Buffer | Uint8Array, hint: string): string;
     function writeAddress(address: string): string;
@@ -25,4 +26,8 @@ export declare namespace TezosMessageUtils {
     function writeBufferWithHint(b: string): Buffer;
     function computeOperationHash(signedOpGroup: SignedOperationGroup): string;
     function computeKeyHash(key: Buffer, prefix?: string): string;
+    function dataLength(value: number): string;
+    function writePackedData(value: string | number | Buffer, type: string): string;
+    function readPackedData(b: Buffer, type: string): void;
+    function encodeBigMapKey(key: Buffer): string;
 }
