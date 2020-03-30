@@ -165,12 +165,11 @@ tezster get-storage <contract-label/address>
 eg.- tezster get-storage simplecontract
 
 ```
-You can call this after each step when you deploy or call contract to see the updated storage.
 
 
 ### Complex smart contract deployment
 
-Copy the michelson code from the link - "https://www.codepile.net/pile/w5OEK2ro" and copy in a file (eg.- calculator.tz)
+Copy the michelson code from - https://www.codepile.net/pile/w5OEK2ro and copy in a file (eg.- calculator.tz)
 
 To list down all entry points and initial storage type, run
 
@@ -196,7 +195,7 @@ eg.- tezster call calculator "(Left (Right (Left 5)))" bootstrap1
 
 ```
 
-Note : The above call will calculate factorial of number according to our contract.
+Note : The above call will calculate factorial of number according to our smart contract. You can call any entry point using output of command (tezster extract-entry-points <absolute path>). Don't forget to replace "$PARAM" with your value (having proper datatype).
 
 To see the current storage in a contract, run
 
@@ -205,6 +204,8 @@ tezster get-storage <contract-label/address>
 eg.- tezster get-storage calculator
 
 ```
+
+You can call this after each step when you deploy or call contract to see the updated storage.
 
 
 ### Extra

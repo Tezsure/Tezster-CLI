@@ -110,7 +110,7 @@ class Setup {
                 console.log('setting up tezos node, this could take a while....');      
                 progressInterval = setInterval(() => {
                     progressbar.start(100, progress);
-                    progress = progress + 0.70;
+                    progress = progress + 0.45;
                     clearInterval(progress);
                     if (progress >= 100) {
                         clearInterval(progressInterval);

@@ -66,7 +66,7 @@ class Contracts {
 
     async getEntryPoints(args) {
         if (args.length < 1) {
-            return console.log(Helper.outputError('Incorrect usage - tezster list-entry-points <Address>'));
+            return console.log(Helper.outputError('Incorrect usage - tezster list-entry-points <contract-absolute-path>'));
         }
         await this.loadTezsterConfig();
         this.extractEntryPoints(args[0]);
@@ -79,7 +79,7 @@ class Contracts {
             const contractCode = fs.readFileSync(contractPath, 'utf8');
             const entryPoints = await conseiljs.TezosContractIntrospector.generateEntryPointsFromCode(contractCode);
             const storageFormat = await conseiljs.TezosLanguageUtil.preProcessMichelsonScript(contractCode);
-            console.log('Initial Storage input must be of type : ', storageFormat[1].slice(8));
+            console.log('Initial Storage input must be of type :', storageFormat[1].slice(9));
             entryPoints.forEach(p => {
                 console.log(`\nName => ${p.name}\nParameters => (${p.parameters.map(pp => (pp.name || '') + pp.type).join(', ')})\nStructure => ${p.structure}\n`);
             });
