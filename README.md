@@ -195,7 +195,7 @@ eg.- tezster call calculator "(Left (Right (Left 5)))" bootstrap1
 
 ```
 
-Note : The above call will calculate factorial of number according to our smart contract. You can call any entry point using output of command (tezster extract-entry-points <absolute path>). Don't forget to replace "$PARAM" with your value (having proper datatype).
+Note : The above call will calculate factorial of number according to our smart contract. You can call any entry point using output of command (tezster extract-entry-points). Don't forget to replace "$PARAM" with your value (having proper datatype).
 
 To see the current storage in a contract, run
 
