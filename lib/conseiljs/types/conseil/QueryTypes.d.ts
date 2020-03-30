@@ -40,6 +40,7 @@ export interface ConseilPredicate {
     operation: ConseilOperator;
     set: any[];
     inverse: boolean;
+    group?: string;
 }
 export interface ConseilQuery {
     fields: string[];

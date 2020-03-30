@@ -2,7 +2,7 @@ import { ConseilQuery, ConseilOperator, ConseilSortDirection, ConseilFunction, C
 export declare namespace ConseilQueryBuilder {
     function blankQuery(): ConseilQuery;
     function addFields(query: ConseilQuery, ...fields: string[]): ConseilQuery;
-    function addPredicate(query: ConseilQuery, field: string, operation: ConseilOperator, values: any[], invert?: boolean): ConseilQuery;
+    function addPredicate(query: ConseilQuery, field: string, operation: ConseilOperator, values: any[], invert?: boolean, group?: string | undefined): ConseilQuery;
     function addOrdering(query: ConseilQuery, field: string, direction?: ConseilSortDirection): ConseilQuery;
     function setLimit(query: ConseilQuery, limit: number): ConseilQuery;
     function setOutputType(query: ConseilQuery, outputType: ConseilOutput): ConseilQuery;

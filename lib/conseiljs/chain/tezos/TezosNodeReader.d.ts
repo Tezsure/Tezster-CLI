@@ -5,7 +5,9 @@ export declare namespace TezosNodeReader {
     function getAccountForBlock(server: string, blockHash: string, accountHash: string, chainid?: string): Promise<TezosRPCTypes.Contract>;
     function getCounterForAccount(server: string, accountHash: string, chainid?: string): Promise<number>;
     function getSpendableBalanceForAccount(server: string, accountHash: string, chainid?: string): Promise<number>;
-    function getAccountManagerForBlock(server: string, blockHash: string, accountHash: string, chainid?: string): Promise<TezosRPCTypes.ManagerKey>;
+    function getAccountManagerForBlock(server: string, block: string, accountHash: string, chainid?: string): Promise<string>;
     function isImplicitAndEmpty(server: string, accountHash: string): Promise<boolean>;
     function isManagerKeyRevealedForAccount(server: string, accountHash: string): Promise<boolean>;
+    function getContractStorage(server: string, accountHash: string, block?: string, chainid?: string): Promise<any>;
+    function getValueForBigMapKey(server: string, index: number, key: string, block?: string, chainid?: string): Promise<any>;
 }

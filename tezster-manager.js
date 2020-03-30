@@ -78,6 +78,10 @@ class TezsterManager{
         this.contracts.addContract(args);
     }
 
+    extractEntryPoints(){
+        this.contracts.getEntryPoints(args);
+    }
+
     transfer(){
         this.transactions.transfer(args);
     }

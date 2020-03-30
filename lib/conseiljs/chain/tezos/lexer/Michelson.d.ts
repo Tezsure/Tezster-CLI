@@ -1,24 +1,28 @@
-export interface Token {
+interface NearleyToken {
     value: any;
     [key: string]: any;
 }
-export interface Lexer {
+interface NearleyLexer {
     reset: (chunk: string, info: any) => void;
-    next: () => Token | undefined;
+    next: () => NearleyToken | undefined;
     save: () => any;
-    formatError: (token: Token) => string;
+    formatError: (token: NearleyToken) => string;
     has: (tokenType: string) => boolean;
 }
-export interface NearleyRule {
+interface NearleyRule {
     name: string;
     symbols: NearleySymbol[];
     postprocess?: (d: any[], loc?: number, reject?: {}) => any;
 }
-export declare type NearleySymbol = string | {
+declare type NearleySymbol = string | {
     literal: any;
 } | {
     test: (token: any) => boolean;
 };
-export declare var Lexer: Lexer | undefined;
-export declare var ParserRules: NearleyRule[];
-export declare var ParserStart: string;
+interface Grammar {
+    Lexer: NearleyLexer | undefined;
+    ParserRules: NearleyRule[];
+    ParserStart: string;
+}
+declare const grammar: Grammar;
+export default grammar;

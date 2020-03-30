@@ -64,6 +64,31 @@ class Contracts {
         console.log(this.addContractToConfig(args[0], args[1], ''));      
     }
 
+    async getEntryPoints(args) {
+        if (args.length < 1) {
+            return console.log(Helper.outputError('Incorrect usage - tezster list-entry-points <Address>'));
+        }
+        await this.loadTezsterConfig();
+        this.extractEntryPoints(args[0]);
+    }
+
+    async extractEntryPoints(contractPath) {
+        const fs = require('fs');
+        const conseiljs = require(ConseilJS);
+        try {
+            const contractCode = fs.readFileSync(contractPath, 'utf8');
+            const entryPoints = await conseiljs.TezosContractIntrospector.generateEntryPointsFromCode(contractCode);
+            const storageFormat = await conseiljs.TezosLanguageUtil.preProcessMichelsonScript(contractCode);
+            console.log('Initial Storage input must be of type : ', storageFormat[1].slice(8));
+            entryPoints.forEach(p => {
+                console.log(`\nName => ${p.name}\nParameters => (${p.parameters.map(pp => (pp.name || '') + pp.type).join(', ')})\nStructure => ${p.structure}\n`);
+            });
+        }
+        catch(error) {
+            return Helper.outputError(error);
+        }
+    }
+
     async deploy(contractLabel, contractPath, initValue, account) {
         const fs = require('fs');
         const conseiljs = require(ConseilJS);
@@ -90,8 +115,9 @@ class Contracts {
             const contract = fs.readFileSync(contractPath, 'utf8');
             const result = await conseiljs.TezosNodeWriter.sendContractOriginationOperation(
                                       tezosNode, keystore, 0, undefined,
-                                      100000, '', 1000, 100000, 
+                                      100000, '', 10000, 100000,
                                       contract, initValue, conseiljs.TezosParameterFormat.Michelson);
+           
             if (result.results) {
                 switch(result.results.contents[0].metadata.operation_result.status) {
                     case 'applied':

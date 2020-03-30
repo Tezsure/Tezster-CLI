@@ -150,6 +150,14 @@ program
         tezstermanager.listTransactions();
 });
 
+/* list down all the entry points and initial storage format from smart contract */
+program
+    .command('extract-entry-points')
+    .description('Fetch all entry points and initial storage format from smart contract')
+    .action(function(){
+        tezstermanager.extractEntryPoints();
+});
+
 /* Get all logs file in archive file fromat on user system */
 program
     .command('get-logs')
@@ -169,6 +177,7 @@ if (process.argv.length <= 2){
 
 var commands=process.argv[2];
 const validCommands = [  
+    'extract-entry-points', 
     'list-Identities',
     'get-logs',
     'list-accounts',
