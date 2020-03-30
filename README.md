@@ -168,13 +168,9 @@ eg.- tezster get-storage simplecontract
 You can call this after each step when you deploy or call contract to see the updated storage.
 
 
-#### Complex smart contract deployment
+### Complex smart contract deployment
 
-Copy the michelson code from the following link and copy in a file (eg.- calculator.tz) - 
-
-```
-https://www.codepile.net/pile/w5OEK2ro
-```
+Copy the michelson code from the link - "https://www.codepile.net/pile/w5OEK2ro" and copy in a file (eg.- calculator.tz)
 
 To list down all entry points and initial storage type, run
 
