@@ -115,7 +115,7 @@ class Contracts {
             const contract = fs.readFileSync(contractPath, 'utf8');
             const result = await conseiljs.TezosNodeWriter.sendContractOriginationOperation(
                                       tezosNode, keystore, 0, undefined,
-                                      100000, '', 10000, 100000,
+                                      100000, '', 10000, 100000, 
                                       contract, initValue, conseiljs.TezosParameterFormat.Michelson);
            
             if (result.results) {
