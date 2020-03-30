@@ -168,6 +168,49 @@ eg.- tezster get-storage simplecontract
 You can call this after each step when you deploy or call contract to see the updated storage.
 
 
+#### Complex smart contract deployment
+
+Copy the michelson code from the following link and copy in a file (eg.- calculator.tz) - 
+
+```
+https://www.codepile.net/pile/w5OEK2ro
+```
+
+To list down all entry points and initial storage type, run
+
+```
+tezster extract-entry-points <absolute path>
+```
+
+To deploy contract using initial storage value run,
+
+```
+tezster deploy <contract label> <absolute path> <initial storage value> <account>
+
+eg.- tezster deploy calculator /home/op/calculator.tz "1" bootstrap1
+
+```
+if this is successful, you'll receive a contract hash.
+
+To call the contract, run
+
+```
+tezster call <contract label> <argument value> <account>
+eg.- tezster call calculator "(Left (Right (Left 5)))" bootstrap1
+
+```
+
+Note : The above call will calculate factorial of number according to our contract.
+
+To see the current storage in a contract, run
+
+```
+tezster get-storage <contract-label/address>
+eg.- tezster get-storage calculator
+
+```
+
+
 ### Extra
 
 We’re building a lot of exciting features which will be released soon, So stay tuned with our updates and releases!
