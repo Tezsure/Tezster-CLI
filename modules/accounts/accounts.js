@@ -4,74 +4,82 @@ var eztz = {};
 var config = jsonfile.readFileSync(confFile);
 const TESTNET_NAME = 'carthagenet';
 
+const Logger = require('../logger');
 const { Helper } = require('../helper');
 
 class Accounts{
 
     async setProvider(args){
+        Logger.verbose(`Command : tezster set-provider ${args}`);
         if (args.length < 1){ 
-            console.log(Helper.outputError('Incorrect usage - tezster set-provider http://<ip>:<port>'));
+            Logger.info(Helper.outputError('Incorrect usage - tezster set-provider http://<ip>:<port>'));
             return;
         }
         await this.loadTezsterConfig(); 
-        console.log(this.setProviderAccounts(args));
+        Logger.info(this.setProviderAccounts(args));
     }
 
     async getProvider() {
+        Logger.verbose(`Command : tezster get-provider`);
         await this.loadTezsterConfig(); 
-        console.log(this.getProviderAccounts());
+        Logger.info(this.getProviderAccounts());
     }
 
     async listAccounts() {  
+        Logger.verbose(`Command : tezster list-accounts`);
         await this.loadTezsterConfig();
         if(Object.keys(config.accounts).length > 0) {
             for(var i in config.accounts) {
-                console.log(Helper.output(config.accounts[i].label + ' - ' + config.accounts[i].pkh + '(' + config.accounts[i].identity + ')'));
+                Logger.info(Helper.output(config.accounts[i].label + ' - ' + config.accounts[i].pkh + '(' + config.accounts[i].identity + ')'));
             }
         } else {    
-            console.log(Helper.outputError('No Account is available !!'));        
+            Logger.info(Helper.outputError('No Account is available !!'));        
         }
     }
 
     async getBalance(args) {
+        Logger.verbose(`Command : tezster get-balance ${args}`);
         if (args.length < 1) {
-            console.log(Helper.outputInfo('Incorrect usage of get-balance command \nCorrect usage: - tezster get-balance <account/contract>'));
+            Logger.info(Helper.outputInfo('Incorrect usage of get-balance command \nCorrect usage: - tezster get-balance <account/contract>'));
             return;
         }
         await this.loadTezsterConfig();
         this.getBalanceAccounts(args[0]).then((result) => {
-            console.log(result);
+            Logger.info(result);
         });
     }
 
     async createAccount(args) {   
-        if (args.length < 3) return console.log(Helper.outputError('Incorrect usage - tezster create-account <Identity> <Account Label> <amount> <spendable=true[Optional]> <delegatable=true[Optional]> <delegate[Optional]> <fee=0[Optional]>'));
+        Logger.verbose(`Command : tezster create-account ${args}`);
+        if (args.length < 3) return Logger.info(Helper.outputError('Incorrect usage - tezster create-account <Identity> <Account Label> <amount> <spendable=true[Optional]> <delegatable=true[Optional]> <delegate[Optional]> <fee=0[Optional]>'));
         await this.loadTezsterConfig(); 
         this.createTestnetAccount(args).then((result) => {
-            console.log(result);
+            Logger.info(result);
         });
     }
 
     async addTestnetAccount(args) {  
+        Logger.verbose(`Command : tezster add-testnet-account ${args}`);
         if (args.length < 2) {
-            console.log(Helper.outputInfo('Incorrect usage of add-testnet-account command \nCorrect usage: - tezster add-testnet-account <account-label> <absolut-path-to-json-file>'));
+            Logger.info(Helper.outputInfo('Incorrect usage of add-testnet-account command \nCorrect usage: - tezster add-testnet-account <account-label> <absolut-path-to-json-file>'));
             return;
         }
         await this.loadTezsterConfig(); 
         let result = this.restoreAlphanetAccount(args[0], args[1]);
-        console.log(result);
+        Logger.info(result);
     }
 
     async activateTestnetAccount(args) {  
+        Logger.verbose(`Command : tezster activate-testnet-account ${args}`);
         if (args.length < 1) {
-            console.log(Helper.outputInfo('Incorrect usage of activate-testnet-account command \nCorrect usage: - tezster activate-testnet-account <account-label>'));
+            Logger.info(Helper.outputInfo('Incorrect usage of activate-testnet-account command \nCorrect usage: - tezster activate-testnet-account <account-label>'));
             return;
         }
         await this.loadTezsterConfig(); 
         
         let result = await this.activateAlphanetAccount(args[0]);
-        console.log(result);
-        console.log(Helper.outputInfo(`If this account has already been activated, it may throw 'invalid_activation' error. You can visit https://${TESTNET_NAME}.tzstats.com for more information on this account`));
+        Logger.info(result);
+        Logger.info(Helper.outputInfo(`If this account has already been activated, it may throw 'invalid_activation' error. You can visit https://${TESTNET_NAME}.tzstats.com for more information on this account`));
     }
 
     setProviderAccounts(args){    
@@ -108,7 +116,7 @@ class Accounts{
     createTestnetAccount(args){
         var pkh = args[0], f;  
         if (Helper.findKeyObj(config.accounts, args[1])) 
-        return console.log(Helper.outputError('That account name is already in use'));
+        return Logger.info(Helper.outputError('That account name is already in use'));
         if (f = Helper.findKeyObj(config.identities, pkh)) {
             return eztz.rpc.account(f, parseFloat(args[2]), true, true,f.pkh, 1400).then(function(r) {                  
                 var d=eztz.contract.hash(r.hash, 0);        
