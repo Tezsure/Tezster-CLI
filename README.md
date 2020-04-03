@@ -189,7 +189,7 @@ tezster deploy <contract label> <absolute path> <initial storage value> <account
 
 eg.- tezster deploy calculator /home/op/calculator.tz "1" bootstrap1
 
-If you want to send some tz to contract then use
+If you want to send some tz (Say 2) into contract then run
 
 tezster deploy calculator /home/op/calculator.tz "1" bootstrap1 --amount 2
 
