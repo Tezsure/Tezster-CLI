@@ -2,39 +2,53 @@ const confFile = __dirname + '/../../config.json';
 const jsonfile = require('jsonfile');
 var eztz = {};
 var config = jsonfile.readFileSync(confFile);
+const ConseilJS = '../../lib/conseiljs';
 const TESTNET_NAME = 'carthagenet';
 
+const Logger = require('../logger');
 const { Helper } = require('../helper');
 
 class Transactions {
 
     async transfer(args) {
+        Logger.verbose(`Command : tezster transfer ${args}`);
         if (args.length < 2) {
-            console.log(Helper.outputError('Incorrect usage - tezster transfer <amount> <from> <to>'));
+            Logger.info(Helper.outputError('Incorrect usage - tezster transfer <amount> <from> <to>'));
             return;
         }
         await this.loadTezsterConfig();
         this.transferAmount(args).then((result) => {        
-            console.log(result);
+            Logger.info(result);
         });
     }
 
     async listTransactions() {       
-        await this.loadTezsterConfig();    
-        console.log(Helper.outputInfo(`For transactions done on ${TESTNET_NAME} node ,you can visit https://${TESTNET_NAME}.tzstats.com for more information`))
+        Logger.verbose(`Command : tezster list-transactions`);
+        Logger.info(Helper.outputInfo(`For transactions done on ${TESTNET_NAME} node ,you can visit https://${TESTNET_NAME}.tzstats.com for more information`))
         if(Object.keys(config.transactions).length > 0) {        
             for(var i in config.transactions) {
-                console.log(Helper.output(JSON.stringify(config.transactions[i])));        
+                Logger.info(Helper.output(JSON.stringify(config.transactions[i])));        
             }
         } else {
-            console.log(Helper.outputError('No transactions are Available !!'));        
+            Logger.info(Helper.outputError('No transactions are Available !!'));        
         }
     }
 
-    transferAmount(args) {    
-        var amount = parseFloat(args[0]), from = args[1], to = args[2],
-            fees = args[3], f;
-        var keys = "main"; 
+    async transferAmount(args) {
+        var amount = parseFloat(args[0]), from = args[1], to = args[2], fees = args[3], f;
+        
+        const conseiljs = require(ConseilJS);
+        const tezosNode = config.provider;
+        var keys = this.getKeys(from);
+
+        const keystore = {
+            publicKey: keys.pk,
+            privateKey: keys.sk,
+            publicKeyHash: keys.pkh,
+            seed: '',
+            storeType: conseiljs.StoreType.Fundraiser
+        };
+
         if (f = Helper.findKeyObj(config.identities, from)) {
             keys = f;
             from = f.pkh;
@@ -57,13 +71,16 @@ class Transactions {
         }
 
         fees = fees || 1500;
+        amount = amount * 1000000 ;
 
-        return eztz.rpc.transfer(from, keys, to, amount, fees, undefined, 10600).then(function(r) {
-            Transactions.addTransaction('transfer', r.hash, from, to, amount);
-            return Helper.output('Transfer complete - operation hash #' + r.hash);
-        }).catch(function(e) {
-            return Helper.outputError(e);
-        });
+        try {
+            const result = await conseiljs.TezosNodeWriter.sendTransactionOperation(tezosNode, keystore, to, amount, fees, '');
+            Transactions.addTransaction('transfer', `${JSON.stringify(result.operationGroupID)}`, from, to, amount);
+            return Helper.output(`Transfer complete - operation hash #${JSON.stringify(result.operationGroupID)}`);
+        }
+        catch(error) {
+            return Helper.outputError(error);
+        }
     }
 
     static addTransaction(operation, opHash, from, to, amount) {
@@ -87,6 +104,18 @@ class Transactions {
         const _sodium = require('libsodium-wrappers');
         await _sodium.ready;
         eztz.library.sodium = _sodium;
+    }
+
+    getKeys(account) {
+        let keys,f;
+        if (f = Helper.findKeyObj(config.identities, account)) {
+            keys = f;
+        } else if (f = Helper.findKeyObj(config.accounts, account)) {
+            keys = Helper.findKeyObj(config.identities, f.identity);
+        } else if (f = Helper.findKeyObj(config.contracts, account)) {
+            keys = Helper.findKeyObj(config.identities, f.identity);
+        }
+        return keys;
     }
 
 }

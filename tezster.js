@@ -102,6 +102,7 @@ program
     .command('deploy')
     .usage('<contract-label> <contract-absolute-path> <init-storage-value> <account>')
     .description('Deploys a smart contract written in Michelson')
+    .option('-a, --amount <amount>', 'Initial funding amount of new account')
     .action(function(){
         tezstermanager.deployContract();
 });
@@ -153,6 +154,7 @@ program
 /* list down all the entry points and initial storage format from smart contract */
 program
     .command('extract-entry-points')
+    .usage('<contract-absolute-path>')
     .description('Fetch all entry points and initial storage format from smart contract')
     .action(function(){
         tezstermanager.extractEntryPoints();
