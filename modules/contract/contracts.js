@@ -43,7 +43,8 @@ class Contracts {
         }
         
         let result = await this.invokeContract(args[0], args[1], args[2]);
-        Logger.info(result);
+        var parseError = result.indexOf('Instead, ');
+        Logger.info(result.substring(0, parseError != -1  ? parseError : result.length));
         Logger.info(Helper.outputInfo(`If you're using ${TESTNET_NAME} node, use https://${TESTNET_NAME}.tzstats.com to check contract/transactions`));
     }
 

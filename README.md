@@ -185,9 +185,13 @@ tezster extract-entry-points <absolute path>
 To deploy contract using initial storage value run,
 
 ```
-tezster deploy <contract label> <absolute path> <initial storage value> <account>
+tezster deploy <contract label> <absolute path> <initial storage value> <account> [options]
 
 eg.- tezster deploy calculator /home/op/calculator.tz "1" bootstrap1
+
+If you want to send some tz (Say 2) into contract then run
+
+tezster deploy calculator /home/op/calculator.tz "1" bootstrap1 --amount 2
 
 ```
 if this is successful, you'll receive a contract hash.

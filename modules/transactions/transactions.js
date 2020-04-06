@@ -1,6 +1,5 @@
 const confFile = __dirname + '/../../config.json';
 const jsonfile = require('jsonfile');
-var eztz = {};
 var config = jsonfile.readFileSync(confFile);
 const ConseilJS = '../../lib/conseiljs';
 const TESTNET_NAME = 'carthagenet';
@@ -16,7 +15,6 @@ class Transactions {
             Logger.info(Helper.outputError('Incorrect usage - tezster transfer <amount> <from> <to>'));
             return;
         }
-        await this.loadTezsterConfig();
         this.transferAmount(args).then((result) => {        
             Logger.info(result);
         });
@@ -94,16 +92,16 @@ class Transactions {
         jsonfile.writeFile(confFile, config);
     }
 
-    async loadTezsterConfig() {
-        eztz = require('../../lib/eztz.cli.js').eztz;
-        const jsonfile = require('jsonfile');
-        config=jsonfile.readFileSync(confFile);
-        if (config.provider) {
-            eztz.node.setProvider(config.provider);
-        }  
-        const _sodium = require('libsodium-wrappers');
-        await _sodium.ready;
-        eztz.library.sodium = _sodium;
+    getKeys(account) {
+        let keys,f;
+        if (f = Helper.findKeyObj(config.identities, account)) {
+            keys = f;
+        } else if (f = Helper.findKeyObj(config.accounts, account)) {
+            keys = Helper.findKeyObj(config.identities, f.identity);
+        } else if (f = Helper.findKeyObj(config.contracts, account)) {
+            keys = Helper.findKeyObj(config.identities, f.identity);
+        }
+        return keys;
     }
 
     getKeys(account) {
