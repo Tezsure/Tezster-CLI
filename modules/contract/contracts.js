@@ -38,7 +38,7 @@ class Contracts {
             return;
         }
         
-        await this.invokeContract(args[0], args[1], args[2]);
+        await this.invokeContract(args[0], args[1], args[2], args[4]);
         Logger.warn(`If you're using ${TESTNET_NAME} node, use https://${TESTNET_NAME}.tzstats.com to check contract/transactions`);
     }
 
@@ -134,7 +134,7 @@ class Contracts {
         }
     }
 
-    async invokeContract(contract, argument, account) {
+    async invokeContract(contract, argument, account, amount) {
         const conseiljs = require(CONSEIL_JS);
         const tezosNode = config.provider;
         const keys = this.getKeys(account);
@@ -158,10 +158,12 @@ class Contracts {
         if (!contractAddress) {
           return Logger.error(`couldn't find the contract, please make sure contract label or address is correct!`);
         }
+
+        amount = amount | 0;
       
         try {
           const result = await conseiljs.TezosNodeWriter.sendContractInvocationOperation(
-                                      tezosNode, keystore, contractAddress, 0, 100000, '', 1000, 100000, undefined, 
+                                      tezosNode, keystore, contractAddress, amount, 100000, '', 1000, 100000, undefined, 
                                       argument, conseiljs.TezosParameterFormat.Michelson);
           
           if (result.results) {

@@ -102,7 +102,7 @@ program
     .command('deploy')
     .usage('<contract-label> <contract-absolute-path> <init-storage-value> <account>')
     .description('Deploys a smart contract written in Michelson')
-    .option('-a, --amount <amount>', 'Initial funding amount of new account')
+    .option('-a, --amount <amount>', 'Initial funding amount to new account')
     .action(function(){
         tezstermanager.deployContract();
 });
@@ -112,6 +112,7 @@ program
     .command('call')
     .usage('<contract-name/address> <argument-value> <account>')
     .description('Calls a smart contract with given value provided in Michelson format')
+    .option('-a, --amount <amount>', 'Funding amount to deployed contract')
     .action(function(){
         tezstermanager.callContract();
 });
