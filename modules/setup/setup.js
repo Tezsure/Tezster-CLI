@@ -2,7 +2,9 @@ const Docker = require('dockerode');
 var docker = new Docker({ socketPath: '/var/run/docker.sock' });
 const child_process = require('child_process'),
       IMAGE_TAG = 'tezsureinc/tezster:1.0.2',
-      CONTAINER_NAME = 'tezster';
+      CONTAINER_NAME = 'tezster',
+      SET_INTERVAL_TIME = 1000,
+      SET_TIMEOUT_TIME = 10000;
 
 const Logger = require('../logger');
 const { Helper } = require('../helper');
@@ -11,13 +13,13 @@ class Setup {
 
     setup() {
         Logger.verbose('Command : tezster setup');
-        Logger.info(Helper.outputInfo('We may need your password for write permission in config file....'));
+        Logger.warn('We may need your password for write permission in config file....');
 
         child_process.exec(`docker --version`, (error, _stdout, _stderr) => {
             if (_stdout.includes('Docker version')) {
                     this.checkPermission();
               } else {
-                    Logger.info(Helper.outputError('Docker not detected on the system please install docker....'));
+                    Logger.error('Docker not detected on the system please install docker....');
               }
         });
     }
@@ -31,13 +33,13 @@ class Setup {
                 child_process.exec(`docker ps -a -q  --filter ancestor=${IMAGE_TAG} --format '{{.Image}}:{{.Names}}'`,
                 (error, _stdout, _stderr) => {
                     if (_stdout.includes(`${IMAGE_TAG}:${CONTAINER_NAME}\n`)) {
-                          Logger.info(Helper.outputInfo('Nodes are already running....'));
+                          Logger.warn('Nodes are already running....');
                     } else {
                           this.runContainer();
                     }
                 });
             } else {
-                  Logger.info(Helper.outputError(`No inbuilt nodes found on system. Run 'tezster setup' comamnd for build the nodes.`));
+                  Logger.error(`No inbuilt nodes found on system. Run 'tezster setup' comamnd for build the nodes.`);
               }
         });
     }
@@ -51,10 +53,10 @@ class Setup {
                 docker.listContainers(function(err, containers) {
                     container.stop(); 
                     container.remove({force: true});
-                    Logger.info(Helper.outputInfo(`Nodes have been stopped. Run 'tezster start-nodes' to restart.`));
+                    Logger.warn(`Nodes have been stopped. Run 'tezster start-nodes' to restart.`);
                 });
             } else {
-               Logger.info(Helper.outputError('No Nodes are running....'));  
+               Logger.error('No Nodes are running....');
             } 
         });
     }
@@ -63,7 +65,7 @@ class Setup {
         Logger.verbose('Command : tezster get-logs');
         child_process.exec(`docker ps -q --format '{{.Image}}'`,(error, _stdout, _stderr) => {
             if (_stdout.includes(`${IMAGE_TAG}\n`)) {
-                Logger.info(Helper.outputInfo(`getting log file....please wait for some time`));
+                Logger.warn(`getting log file....please wait for some time`);
                 const container = docker.getContainer(CONTAINER_NAME);
 
                 const fs = require('fs');
@@ -71,7 +73,7 @@ class Setup {
                     let writeStream = fs.createWriteStream('/tmp/tezster-logs/tezster-node-logs.tar.gz', { encoding: 'utf8' });
 
                     if (error) {
-                        Logger.info(Helper.outputError('get archive error', error));
+                        Logger.error(`get archive error ${error}`);
                         writeStream.end();
                         writeStream.close();
                     }
@@ -83,12 +85,12 @@ class Setup {
                     stream.on('end', () => {
                         writeStream.end();
                         writeStream.close();
-                        Logger.info(Helper.output(`log files stored as archieve format at: \n'/tmp/tezster-logstezster-logs.tar.gz'`))
+                        Logger.info(`log files stored as archieve format at: \n'/tmp/tezster-logstezster-logs.tar.gz'`);
                     });
                 });
             } else { 
-                Logger.info(Helper.outputError(`No container is in running state....`));
-                Logger.info(Helper.outputInfo(`Run 'tezster start-nodes' to start nodes `));
+                Logger.error(`No container is in running state....`);
+                Logger.warn(`Run 'tezster start-nodes' to start nodes `);
             }
         });
     }
@@ -116,7 +118,7 @@ class Setup {
 
         docker.pull(IMAGE_TAG, (dockerPullError, dockerPullStream) => {
             if (dockerPullError) {
-                Logger.info(Helper.outputError('Make sure you have added docker to the USER group'));
+                Logger.error('Make sure you have added docker to the USER group');
                 process.exit();
             } else {
                 Logger.info('setting up tezos node, this could take a while....');      
@@ -131,11 +133,11 @@ class Setup {
                         return;
                     }
                     progressbar.update(progress);
-                    }, 1000);
+                    }, SET_INTERVAL_TIME);
                     docker.modem.followProgress(dockerPullStream, (_dockerModemError, _dockerModemOutput) => {
                         clearInterval(progress);
                         progressbar.update(100);
-                        Logger.info(Helper.output('\nTezos nodes have been setup successfully on system....'));
+                        Logger.info('\nTezos nodes have been setup successfully on system....');
                         process.exit();
                     });
                 }
@@ -166,7 +168,7 @@ class Setup {
         function(err, container) {
             container.start({}, function(err, data) {
                 if (err) {
-                    Logger.info(Helper.outputError('Check whether docker is installed or not'));
+                    Logger.error('Check whether docker is installed or not');
                 }
             });
         });
@@ -194,7 +196,7 @@ class Setup {
                 return;
             }
             progressbar.update(progress);
-        }, 1000);
+        }, SET_INTERVAL_TIME);
         this.confirmNodeStatus();
     }
 
@@ -212,21 +214,21 @@ class Setup {
                 const request = require('request');
                 request('http://localhost:18731/chains/main/blocks/head/protocols', function (error, response, body) {
                     if(error){
-                        Logger.info('\n'+Helper.outputError(`check log files by using command 'tezster get-logs'...`));
+                        Logger.error('\n'+`check log files by using command 'tezster get-logs'...`);
                         process.exit();
                     } else {
                         var data = JSON.parse(body);
                         if(data.protocol.startsWith('PsCARTHAG')){
                             progressbar.update(100);
                             progressbar.stop();
-                            Logger.info(Helper.output('Nodes have been started successfully....'));
+                            Logger.info('Nodes have been started successfully....');
                             clearInterval(interval);
                             process.exit();
                         }
                     }
                 });
-            },1000);
-        },10000);
+            }, SET_INTERVAL_TIME);
+        }, SET_TIMEOUT_TIME);
     }
 
 }

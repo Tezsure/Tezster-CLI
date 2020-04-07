@@ -1,9 +1,8 @@
 const confFile = __dirname + '/../../config.json';
 const jsonfile = require('jsonfile');
 var config = jsonfile.readFileSync(confFile);
-const ConseilJS = '../../lib/conseiljs';
+const CONSEIL_JS = '../../lib/conseiljs';
 const TESTNET_NAME = 'carthagenet';
-
 const Logger = require('../logger');
 const { Helper } = require('../helper');
 
@@ -12,30 +11,28 @@ class Transactions {
     async transfer(args) {
         Logger.verbose(`Command : tezster transfer ${args}`);
         if (args.length < 2) {
-            Logger.info(Helper.outputError('Incorrect usage - tezster transfer <amount> <from> <to>'));
+            Logger.error('Incorrect usage - tezster transfer <amount> <from> <to>');
             return;
         }
-        this.transferAmount(args).then((result) => {        
-            Logger.info(result);
-        });
+        this.transferAmount(args);
     }
 
     async listTransactions() {       
         Logger.verbose(`Command : tezster list-transactions`);
-        Logger.info(Helper.outputInfo(`For transactions done on ${TESTNET_NAME} node ,you can visit https://${TESTNET_NAME}.tzstats.com for more information`))
+        Logger.warn(`For transactions done on ${TESTNET_NAME} node ,you can visit https://${TESTNET_NAME}.tzstats.com for more information`);
         if(Object.keys(config.transactions).length > 0) {        
             for(var i in config.transactions) {
-                Logger.info(Helper.output(JSON.stringify(config.transactions[i])));        
+                Logger.info(JSON.stringify(config.transactions[i]));
             }
         } else {
-            Logger.info(Helper.outputError('No transactions are Available !!'));        
+            Logger.error('No transactions are Available !!');
         }
     }
 
     async transferAmount(args) {
         var amount = parseFloat(args[0]), from = args[1], to = args[2], fees = args[3], f;
         
-        const conseiljs = require(ConseilJS);
+        const conseiljs = require(CONSEIL_JS);
         const tezosNode = config.provider;
         var keys = this.getKeys(from);
 
@@ -57,7 +54,7 @@ class Transactions {
             keys = Helper.findKeyObj(config.identities, f.identity);
             from = f.pkh;
         } else {
-            return Helper.outputError('No valid identity to send this transaction');
+            return Logger.error('No valid identity to send this transaction');
         }
         
         if (f = Helper.findKeyObj(config.identities, to)) {
@@ -73,15 +70,15 @@ class Transactions {
 
         try {
             const result = await conseiljs.TezosNodeWriter.sendTransactionOperation(tezosNode, keystore, to, amount, fees, '');
-            Transactions.addTransaction('transfer', `${JSON.stringify(result.operationGroupID)}`, from, to, amount);
-            return Helper.output(`Transfer complete - operation hash #${JSON.stringify(result.operationGroupID)}`);
+            this.addTransaction('transfer', `${JSON.stringify(result.operationGroupID)}`, from, to, amount);
+            return Logger.info(`Transfer complete - operation hash #${JSON.stringify(result.operationGroupID)}`);
         }
         catch(error) {
-            return Helper.outputError(error);
+            return Logger.error(`${error}`);
         }
     }
 
-    static addTransaction(operation, opHash, from, to, amount) {
+    addTransaction(operation, opHash, from, to, amount) {
         config.transactions.push({
           operation : operation,
           hash : opHash,
@@ -90,18 +87,6 @@ class Transactions {
           amount: amount
         });
         jsonfile.writeFile(confFile, config);
-    }
-
-    getKeys(account) {
-        let keys,f;
-        if (f = Helper.findKeyObj(config.identities, account)) {
-            keys = f;
-        } else if (f = Helper.findKeyObj(config.accounts, account)) {
-            keys = Helper.findKeyObj(config.identities, f.identity);
-        } else if (f = Helper.findKeyObj(config.contracts, account)) {
-            keys = Helper.findKeyObj(config.identities, f.identity);
-        }
-        return keys;
     }
 
     getKeys(account) {

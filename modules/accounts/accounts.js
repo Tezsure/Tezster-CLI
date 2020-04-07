@@ -12,17 +12,17 @@ class Accounts{
     async setProvider(args){
         Logger.verbose(`Command : tezster set-provider ${args}`);
         if (args.length < 1){ 
-            Logger.info(Helper.outputError('Incorrect usage - tezster set-provider http://<ip>:<port>'));
+            Logger.warn('Incorrect usage - tezster set-provider http://<ip>:<port>');
             return;
         }
         await this.loadTezsterConfig(); 
-        Logger.info(this.setProviderAccounts(args));
+        this.setProviderAccounts(args);
     }
 
     async getProvider() {
         Logger.verbose(`Command : tezster get-provider`);
         await this.loadTezsterConfig(); 
-        Logger.info(this.getProviderAccounts());
+        this.getProviderAccounts();
     }
 
     async listAccounts() {  
@@ -30,70 +30,67 @@ class Accounts{
         await this.loadTezsterConfig();
         if(Object.keys(config.accounts).length > 0) {
             for(var i in config.accounts) {
-                Logger.info(Helper.output(config.accounts[i].label + ' - ' + config.accounts[i].pkh + '(' + config.accounts[i].identity + ')'));
+                Logger.info(config.accounts[i].label + ' - ' + config.accounts[i].pkh + '(' + config.accounts[i].identity + ')');
             }
         } else {    
-            Logger.info(Helper.outputError('No Account is available !!'));        
+            Logger.error('No Account is available !!');
         }
     }
 
     async getBalance(args) {
         Logger.verbose(`Command : tezster get-balance ${args}`);
         if (args.length < 1) {
-            Logger.info(Helper.outputInfo('Incorrect usage of get-balance command \nCorrect usage: - tezster get-balance <account/contract>'));
+            Logger.warn('Incorrect usage of get-balance command \nCorrect usage: - tezster get-balance <account/contract>');
             return;
         }
         await this.loadTezsterConfig();
-        this.getBalanceAccounts(args[0]).then((result) => {
-            Logger.info(result);
-        });
+        this.getBalanceAccounts(args[0]);
     }
 
     async createAccount(args) {   
         Logger.verbose(`Command : tezster create-account ${args}`);
-        if (args.length < 3) return Logger.info(Helper.outputError('Incorrect usage - tezster create-account <Identity> <Account Label> <amount> <spendable=true[Optional]> <delegatable=true[Optional]> <delegate[Optional]> <fee=0[Optional]>'));
+        if (args.length < 3) {
+            Logger.warn('Incorrect usage - tezster create-account <Identity> <Account Label> <amount> <spendable=true[Optional]> <delegatable=true[Optional]> <delegate[Optional]> <fee=0[Optional]>');
+            return;
+        }
         await this.loadTezsterConfig(); 
-        this.createTestnetAccount(args).then((result) => {
-            Logger.info(result);
-        });
+        this.createTestnetAccount(args);
     }
 
     async addTestnetAccount(args) {  
         Logger.verbose(`Command : tezster add-testnet-account ${args}`);
         if (args.length < 2) {
-            Logger.info(Helper.outputInfo('Incorrect usage of add-testnet-account command \nCorrect usage: - tezster add-testnet-account <account-label> <absolut-path-to-json-file>'));
+            Logger.warn('Incorrect usage of add-testnet-account command \nCorrect usage: - tezster add-testnet-account <account-label> <absolut-path-to-json-file>');
             return;
         }
         await this.loadTezsterConfig(); 
-        let result = this.restoreAlphanetAccount(args[0], args[1]);
-        Logger.info(result);
+        this.restoreAlphanetAccount(args[0], args[1]);
     }
 
     async activateTestnetAccount(args) {  
         Logger.verbose(`Command : tezster activate-testnet-account ${args}`);
         if (args.length < 1) {
-            Logger.info(Helper.outputInfo('Incorrect usage of activate-testnet-account command \nCorrect usage: - tezster activate-testnet-account <account-label>'));
+            Logger.warn(`Incorrect usage of activate-testnet-account command \nCorrect usage: - tezster activate-testnet-account <account-label>`);
             return;
         }
         await this.loadTezsterConfig(); 
         
-        let result = await this.activateAlphanetAccount(args[0]);
-        Logger.info(result);
-        Logger.info(Helper.outputInfo(`If this account has already been activated, it may throw 'invalid_activation' error. You can visit https://${TESTNET_NAME}.tzstats.com for more information on this account`));
+        await this.activateAlphanetAccount(args[0]);
+        Logger.warn(`If this account has already been activated, it may throw 'invalid_activation' error. You can visit https://${TESTNET_NAME}.tzstats.com for more information on this account`);
     }
 
     setProviderAccounts(args){    
         config.provider = args[0];
         jsonfile.writeFile(confFile, config);
         eztz.node.setProvider(config.provider);
-        return Helper.outputInfo('Provider updated to ' + config.provider);
+        return Logger.info('Provider updated to ' + config.provider);
     }
 
     getProviderAccounts(){    
         if (config.provider) {
-            return Helper.outputInfo(config.provider);
+            return Logger.info(config.provider);
         } else {
-            return Helper.outputInfo('No provider is set');
+            return Logger.warn('No provider is set');
         } 
     }
 
@@ -107,16 +104,16 @@ class Accounts{
             pkh = f.pkh;
         }
         return eztz.rpc.getBalance(pkh).then(function(r){
-            return Helper.output(Helper.formatTez(r/100));
+            return Logger.info(Helper.formatTez(r/100));
         }).catch(function(e){
-            return Helper.outputError(e);
+            return Logger.error(`${e}`);
         });
     }
 
     createTestnetAccount(args){
         var pkh = args[0], f;  
         if (Helper.findKeyObj(config.accounts, args[1])) 
-        return Logger.info(Helper.outputError('That account name is already in use'));
+        return Logger.errorr('That account name is already in use');
         if (f = Helper.findKeyObj(config.identities, pkh)) {
             return eztz.rpc.account(f, parseFloat(args[2]), true, true,f.pkh, 1400).then(function(r) {                  
                 var d=eztz.contract.hash(r.hash, 0);        
@@ -126,12 +123,12 @@ class Accounts{
                     identity : pkh,        
                 });
                 jsonfile.writeFile(confFile, config);
-                return Helper.output('New account created ' + args[1]);
+                return Logger.info('New account created ' + args[1]);
             }).catch(function(e) {           
-                return Helper.outputError(e);
+                return Logger.error(`${e}`);
             });
         } else {
-            return Helper.outputError(pkh + ' is not a valid identity');
+            return Logger.error(`${pkh} is not a valid identity`);
         }
     }
 
@@ -151,19 +148,19 @@ class Accounts{
         const fs = require('fs');
         const keys = this.getKeys(accountLabel);
         if(keys) {
-            return Helper.outputError(` Account with this label already exists.`);
+            return Logger.error(` Account with this label already exists.`);
         }
         try {
             let accountJSON = fs.readFileSync(accountFilePath, 'utf8');
             accountJSON = accountJSON && JSON.parse(accountJSON);
             if(!accountJSON) {
-                return Helper.outputError(` occured while restroing account : empty JSON file`);
+                return Logger.error(` occured while restroing account : empty JSON file`);
             }
             let mnemonic = accountJSON.mnemonic;
             let email = accountJSON.email;
             let password = accountJSON.password;
             if (!mnemonic || !email || !password) {
-                return Helper.outputError(` occured while restroing account : invalid JSON file`);
+                return Logger.error(` occured while restroing account : invalid JSON file`);
             }
             mnemonic = mnemonic.join(' ');
             
@@ -175,22 +172,22 @@ class Accounts{
         
             this.addIdentity(accountLabel, alphakeys.sk, alphakeys.pk, alphakeys.pkh, accountJSON.secret);
             this.addAccount('aplha_'+ accountLabel, alphakeys.pkh, accountLabel);
-            return Helper.output(`successfully restored testnet faucet account: ${accountLabel}-${alphakeys.pkh}`);
+            return Logger.info(`successfully restored testnet faucet account: ${accountLabel}-${alphakeys.pkh}`);
         } catch(error) {
-            return Helper.outputError(` occured while restroing account : ${error}`);
+            return Logger.error(` occured while restroing account : ${error}`);
         }
     }
 
     async activateAlphanetAccount(account) {
         const keys = this.getKeys(account);
         if(!keys || !keys.secret) {
-            return Helper.outputError(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster.`);
+            return Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster.`);
         }
         try {
             let activationResult = await eztz.rpc.activate(keys.pkh, keys.secret);
-            return Helper.output(`successfully activated testnet faucet account: ${keys.label} : ${keys.pkh} \n with tx hash: ${activationResult}`);
+            return Logger.info(`successfully activated testnet faucet account: ${keys.label} : ${keys.pkh} \n with tx hash: ${activationResult}`);
         } catch(error) {
-            return Helper.outputError(` occured while activating account : ${error}`);
+            return Logger.error(` occured while activating account : ${error}`);
         }
     }
 

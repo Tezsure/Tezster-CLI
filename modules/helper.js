@@ -1,19 +1,7 @@
 const { Variables } = require('../utils/cli-variables');
 
 class Helper{
-
-    static outputError(e){
-        return '\x1b['+Variables.cliColors.red+'Error: '+e.toString().replace('Error:','')+'\x1b[0m';
-    }
-
-    static outputInfo(e){
-        return '\x1b['+Variables.cliColors.yellow+e+'\x1b[0m';
-    }
-
-    static output(e){
-        return '\x1b['+Variables.cliColors.green+e+'\x1b[0m';
-    }
-
+    
     static formatMoney(n, c, d, t) {
         var c = isNaN(c = Math.abs(c)) ? 2 : c, 
             d = d == undefined ? '.' : d, 
