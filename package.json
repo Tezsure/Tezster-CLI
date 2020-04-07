@@ -15,8 +15,8 @@
     "tezsure",
     "blockchain"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "Tezsure Inc.",
+  "license": "MIT",
   "dependencies": {
     "base-n": "^1.0.0",
     "big-integer": "^1.6.45",
