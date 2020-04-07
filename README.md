@@ -48,7 +48,7 @@ To know about usage for any particular command, run
 tezster <command-name> --help
 ```
 
-### Nodes Setup
+### Node Setup
 
 After tezster successfully installed, Tezos nodes need to be setup on the machine.
 
@@ -72,6 +72,8 @@ tezster stop-nodes
 ```
 It will stop all the tezster nodes running on the system. To restart the nodes run "tezster start-nodes".
 
+### Logs
+
 To get nodes related log files, run
 
 ```
@@ -85,7 +87,7 @@ To unzip use command - "tar -xf tezster-node-logs.tar.gz" inside "/tmp/tezster-l
 
 ## Play with Tezster CLI 
 
-### Provider 
+### Switch Provider
 
 To check your active provider, run
 
@@ -110,7 +112,7 @@ tezster set-provider https://carthagenet.SmartPy.io
 
 ```
 
-### Faucet Account
+### Faucet Account Activation
 
 To list down ALL generated accounts, run
 
@@ -149,7 +151,7 @@ eg. - tezster transfer 10 bootstrap1 bootstrap2
 ```
 You don't have to bake your blocks because a baker is running for your local node and it bakes automatically.
 
-### Smart Contract
+### Smart Contract Operation
 
 To deploy a smart contract, put the michelson code in  a file (eg.- testcontract.tz) Code eg.-
 
