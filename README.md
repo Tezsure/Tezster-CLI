@@ -246,7 +246,6 @@ eg.- tezster get-storage calculator
 
 ```
 
-
 ### Extra
 
 We’re building a lot of exciting features which will be released soon, So stay tuned with our updates and releases!
