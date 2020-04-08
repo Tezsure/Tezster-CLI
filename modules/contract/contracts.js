@@ -34,7 +34,7 @@ class Contracts {
     async callContract(args) {
         Logger.verbose(`Command : tezster call ${args}`);
         if (args.length < 3) {
-            Logger.warn('Incorrect usage of call command \nCorrect usage: - tezster call <contract-name> <argument-value> <account>');
+            Logger.warn('Incorrect usage of call command \nCorrect usage: - tezster call <contract-name> <argument-value> <account> [options]');
             return;
         }
         

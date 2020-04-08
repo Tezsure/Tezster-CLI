@@ -10,9 +10,14 @@ Tezster comes in an npm package with a set of easy commands to kickstart the dev
 Any Operating System will work !
 
 1. Node v. 12.x+
-2. Install Docker ( For Ubuntu/Linux use ``` sudo apt install docker.io ```. For Mac OS you can use "Docker desktop")
+2. Install Docker 
 
-#### Note:
+#### Docker Installation
+For Ubuntu/Linux use ``` sudo apt install docker.io ```
+For MAC refer - https://docs.docker.com/docker-for-mac/install
+For Windows refer - https://docs.docker.com/docker-for-windows
+
+#### Post docker installation step:
 Make sure after installing docker you have added \$USER to the docker group, if not follow the following steps:
 
 ```
@@ -25,12 +30,12 @@ newgrp docker
 
 ### Installation
 
-Download tezster npm package
+Download tezster npm package using
 
 ```
 sudo npm install -g tezster@latest
 ```
-You can check tezster version using :
+Run ```tezster --version``` to ensure the installed version of tezster.
 
 ```
 tezster --version
@@ -46,6 +51,7 @@ To know about usage for any particular command, run
 
 ```
 tezster <command-name> --help
+e.g. tezster deploy --help
 ```
 
 ### Node Setup
@@ -57,7 +63,7 @@ tezster setup
 ```
 This will download the docker image containing 'pre-built tezos nodes and baker' on your system. You need to run setup only once.
 
-After building nodes on machine, start tezos nodes locally.
+After building nodes, start tezos nodes
 
 ```
 tezster start-nodes
@@ -72,7 +78,7 @@ tezster stop-nodes
 ```
 It will stop all the tezster nodes running on the system. To restart the nodes run "tezster start-nodes".
 
-### Logs
+#### Logs
 
 To get nodes related log files, run
 
@@ -128,7 +134,7 @@ add-testnet-account <account-label> <absolute-path-to-json-file> - restores acco
 e.g. tezster add-testnet-account alpha4 /home/op/Downloads/tz1Umt3KQUwZYyjFjJrRXjp17qosuxAkmf3n.json
 
 ```
-Any testnet faucet account requires activation before first use.
+Any testnet faucet account requires activation before first use. To activate testnet faucet account, run
 
 ```
 activate-testnet-account <account-label>
@@ -149,7 +155,7 @@ tezster transfer <amount> <from> <to>
 eg. - tezster transfer 10 bootstrap1 bootstrap2
 
 ```
-You don't have to bake your blocks because a baker is running for your local node and it bakes automatically.
+You don't have to bake your blocks because a baker is running for your local node and it bakes automatically. 
 
 ### Smart Contract Operation
 
@@ -161,9 +167,9 @@ storage string;
 code {CAR; NIL operation; PAIR;};
 
 ```
-this stores any string to the storage
+this code stores any string to the storage
 
-then run,
+To deploy the smart contract on tezos network run,
 
 ```
 tezster deploy <contract label> <absolute path> <initial storage value> <account>
@@ -171,9 +177,9 @@ tezster deploy <contract label> <absolute path> <initial storage value> <account
 eg.- tezster deploy simplecontract /home/op/testcontract.tz "\"helloworld\"" bootstrap1
 
 ```
-if this is successful, you'll receive a contract hash.
+if this is successful, you'll receive a contract address.
 
-To call the contract, run
+If you want to make any other trasnactions into already deployed contracts, then call the contract
 
 ```
 tezster call <contract label> <argument value> <account>
@@ -188,9 +194,9 @@ tezster get-storage <contract-label/address>
 eg.- tezster get-storage simplecontract
 
 ```
-You can call this after each step when you deploy or call contract to see the updated storage.
+You can check the updated storage after each step when you deploy or call contract.
 
-To list down all the deployed smart contracts, run
+To list down all deployed smart contracts, run
 
 ```
 tezster list-contracts
@@ -199,10 +205,10 @@ tezster list-contracts
 
 #### Complex smart contract
 
-Copy the michelson code from the link - "https://www.codepile.net/pile/w5OEK2ro" and copy in a file (eg.- calculator.tz) - 
+Copy the michelson code from the link - https://www.codepile.net/pile/w5OEK2ro and copy in a file (eg.- calculator.tz) - 
 
 
-To list down all entry points and initial storage type, run
+To extract all entry points and initial storage format type, run
 
 ```
 tezster extract-entry-points <absolute path>
@@ -215,20 +221,20 @@ tezster deploy <contract label> <absolute path> <initial storage value> <account
 
 eg.- tezster deploy calculator /home/op/calculator.tz "1" bootstrap1
 
-If you are willing to send some tz (Say 2) into contract then, run
+If you are willing to send some tz (Say 2) into contract then, use options as
 
 tezster deploy calculator /home/op/calculator.tz "1" bootstrap1 --amount 2
 
 ```
-if this is successful, you'll receive a contract hash.
+if contract deploy is successful, you'll receive a contract hash.
 
-To call the contract, run
+Again to call the contract, run
 
 ```
 tezster call <contract label> <argument value> <account>
 eg.- tezster call calculator "(Left (Right (Left 5)))" bootstrap1
 
-Note : The above call will calculate factorial of number according to our contract.
+Note : Argument value input format can be get by running ```tezster extract-entry-points <absolute path>```
 
 ```
 
