@@ -13,8 +13,8 @@ Any Operating System will work !
 2. Install Docker 
 
 #### Docker Installation
-For Ubuntu/Linux use ``` sudo apt install docker.io ```
-For MAC refer - https://docs.docker.com/docker-for-mac/install
+For Ubuntu/Linux use ``` sudo apt install docker.io ``` <br />
+For MAC refer - https://docs.docker.com/docker-for-mac/install <br />
 For Windows refer - https://docs.docker.com/docker-for-windows
 
 #### Post docker installation step:
