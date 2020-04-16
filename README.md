@@ -1,5 +1,6 @@
 # Tezster 2.0
-A personal development blockchain based on Javascript that lives entirely on your local machine.
+A complete testing setup to build, deploy and interact with applications on Tezos sandbox and Tezos testnets..
+.
 
 ## Getting Super Powers
 
