@@ -7,10 +7,14 @@ Tezster comes in an npm package with a set of easy commands to kickstart the dev
 
 ### Prerequisites
 
-Any Operating System will work !
-
 1. Node v. 12.x+
 2. Install Docker 
+
+#### OS Support
+1. Linux (Ubuntu and Debian)
+2. Mac OS X
+3. Windows 10 
+Note : There might be some issues with Mac OS & Windows 10. If you face any please report in our [issues section](https://github.com/Tezsure/Tezster-CLI/issues).
 
 #### Node.js Installation
 Run following commands to install Node.js LTS version 
@@ -28,11 +32,11 @@ node -v
 #### Docker Installation
 For Ubuntu/Linux run :  sudo apt install docker.io <br />
 For Debian : https://docs.docker.com/engine/install/debian/ <br />
- For MAC refer : https://docs.docker.com/docker-for-mac/edge-release-notes/ <br />
- For Windows (Win-10 enterprise edition) refer : https://docs.docker.com/docker-for-windows/edge-release-notes/ <br />
-For Windows (Win-10 home edition or older) refer : https://docs.docker.com/toolbox/toolbox_install_windows/
+For MAC refer :  <br />
+For Windows (Win-10 enterprise edition) refer :  <br />
+For Windows (Win-10 home edition or older) refer : 
 
-#### Post docker installation step:
+#### Post docker installation step
 Make sure after installing docker you have added $USER to the docker group, if not run the following commands:
 
 ```
@@ -41,7 +45,7 @@ sudo usermod -aG docker $USER
 newgrp docker
 ```
 
-## Playground Setup :
+## Playground Setup
 
 ### Install NPM package
 
@@ -271,7 +275,7 @@ tezster remove-contract <contract-label>
 
 #### Complex smart contract
 
-Copy the Michelson code from the link - https://www.codepile.net/pile/w5OEK2ro and paste in a file (eg.- event.tz) -
+Copy the Michelson code from the [link](https://www.codepile.net/pile/w5OEK2ro) and paste in a file (eg.- event.tz).
 
 #### Extract Entry Points
 To extract all entry points and its corresponding parameters, run:
@@ -316,6 +320,19 @@ tezster get-storage <contract-label/address>
 eg.- tezster get-storage event
 ````
 
+### Tezster Bundle Integration
+
+**Developing DApps? Use Tezster Bundles for better Experience :**
+
+* Clone the repo, you’ll get a React-ready Front-end , with Local compilation of SmartPy Code and Deployment feature.
+* It comes with 4 Bootstrap Accounts compatible with Tezster-CLI which can be used directly in the DApp.
+
+**How to configure for Tezster-CLI :**
+
+* Change the deploy_config.node : “http://localhost:18731” in the config.json file and the Local Tezster nodes will be used.
+
+*Note : Once Tezster container is down all the deployed contracts & transactions will be lost. Please keep the Tezster-CLI running during the development process.*
+
 ### Extra
 
 We’re building a lot of exciting features which will be released soon, So stay tuned with our updates and releases!
@@ -324,4 +341,4 @@ We’re building a lot of exciting features which will be released soon, So stay
 keep developing
 ```
 
-For more deatiled description and error guidance refer: https://app.gitbook.com/@malviyaop/s/tezster-cli/
+For more deatiled description and error guidance [refer this](https://cli.tezster.tech/)
