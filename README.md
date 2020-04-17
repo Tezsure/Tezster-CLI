@@ -1,5 +1,5 @@
 # Tezster 2.0 - CLI
-A JavaScript-based private Tezos Blockchain Dev Tool that lives entirely on your local machine.
+A complete testing setup to build, deploy and interact with applications on Tezos sandbox and Tezos testnets.
 
 ## Getting Super Powers
 
