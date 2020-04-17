@@ -32,7 +32,7 @@ export interface TezosBlockMetadata {
     baker: string;
     level: TezosBlockMetadataLevel;
     voting_period_kind: string;
-    nonce_hash?: string;
+    nonce_hash: string | null;
     consumed_gas: string;
     deactivated: any[];
     balance_updates: TezosBlockMetadataBalanceUpdate[];
@@ -53,10 +53,10 @@ export interface TezosBlockMetadataLevel {
 export interface TezosBlockMetadataBalanceUpdate {
     kind: string;
     change: string;
-    contract: string;
-    category: string;
-    delegate: string;
-    cycle: number;
+    contract?: string;
+    category?: string;
+    delegate?: string;
+    cycle?: number;
 }
 export interface TezosBlockOperationEnvelope {
     protocol: string;
@@ -98,18 +98,12 @@ export interface TezosBlockOperationContentMetadataOperationResult {
     consumed_gas: string;
 }
 export interface Contract {
-    manager: string;
     balance: string;
-    spendable: boolean;
-    delegate: ContractDelegate;
+    delegate?: ContractDelegate;
     script?: string;
     counter: string;
 }
 export interface ContractDelegate {
     setable: boolean;
     value: string;
-}
-export interface ManagerKey {
-    manager: string;
-    key: string;
 }

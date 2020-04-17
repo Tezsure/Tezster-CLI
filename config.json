@@ -34,27 +34,27 @@
     ],
     "accounts": [
       {
-        "label": "bootstrap_1",
+        "label": "localnode_bootstrap1",
         "pkh": "tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx",
         "identity": "bootstrap1"
       },
       {
-        "label": "bootstrap_2",
+        "label": "localnode_bootstrap2",
         "pkh": "tz1gjaF81ZRRvdzjobyfVNsAeSC6PScjfQwN",
         "identity": "bootstrap2"
       },
       {
-        "label": "bootstrap_3",
+        "label": "localnode_bootstrap3",
         "pkh": "tz1faswCTDciRzE4oJ9jn2Vm2dvjeyA9fUzU",
         "identity": "bootstrap3"
       },
       {
-        "label": "bootstrap_4",
+        "label": "localnode_bootstrap4",
         "pkh": "tz1b7tUupMgCNw2cCLpKTkSD1NZzB5TkP2sv",
         "identity": "bootstrap4"
       },
       {
-        "label": "bootstrap_5",
+        "label": "localnode_bootstrap5",
         "pkh": "tz1ddb9NMYHZi5UzPdzTZMYQQZoMub195zgv",
         "identity": "bootstrap5"
       }

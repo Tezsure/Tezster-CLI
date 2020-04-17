@@ -6,7 +6,7 @@ export declare namespace TezosNodeWriter {
     function signOperationGroup(forgedOperation: string, keyStore: KeyStore, derivationPath: string): Promise<TezosTypes.SignedOperationGroup>;
     function forgeOperations(branch: string, operations: TezosP2PMessageTypes.Operation[]): string;
     function forgeOperationsRemotely(server: string, blockHead: TezosRPCTypes.TezosBlock, operations: TezosP2PMessageTypes.Operation[], chainid?: string): Promise<string>;
-    function applyOperation(server: string, branch: string, protocol: string, operations: TezosP2PMessageTypes.Operation[], signedOpGroup: TezosTypes.SignedOperationGroup, chainid?: string): Promise<TezosTypes.AlphaOperationsWithMetadata[]>;
+    function preapplyOperation(server: string, branch: string, protocol: string, operations: TezosP2PMessageTypes.Operation[], signedOpGroup: TezosTypes.SignedOperationGroup, chainid?: string): Promise<TezosTypes.AlphaOperationsWithMetadata[]>;
     function injectOperation(server: string, signedOpGroup: TezosTypes.SignedOperationGroup, chainid?: string): Promise<string>;
     function sendOperation(server: string, operations: TezosP2PMessageTypes.Operation[], keyStore: KeyStore, derivationPath: string): Promise<TezosTypes.OperationResult>;
     function queueOperation(server: string, operations: TezosP2PMessageTypes.Operation[], keyStore: KeyStore, derivationPath?: string, batchDelay?: number): void;
@@ -20,5 +20,8 @@ export declare namespace TezosNodeWriter {
     function sendContractPing(server: string, keyStore: KeyStore, to: string, fee: number, derivationPath: string, storageLimit: number, gasLimit: number, entrypoint: string | undefined): Promise<TezosTypes.OperationResult>;
     function sendKeyRevealOperation(server: string, keyStore: KeyStore, fee?: number, derivationPath?: string): Promise<TezosTypes.OperationResult>;
     function sendIdentityActivationOperation(server: string, keyStore: KeyStore, activationCode: string): Promise<TezosTypes.OperationResult>;
-    function testOperation(server: string, operations: TezosP2PMessageTypes.Operation[], keyStore: KeyStore, derivationPath?: string, chainid?: string): Promise<number[]>;
+    function testContractInvocationOperation(server: string, chainid: string, keyStore: KeyStore, to: string, amount: number, fee: number, derivationPath: string, storageLimit: number, gasLimit: number, entrypoint: string | undefined, parameters: string | undefined, parameterFormat?: TezosTypes.TezosParameterFormat): Promise<{
+        gas: number;
+        storageCost: number;
+    }>;
 }
