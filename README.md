@@ -31,10 +31,11 @@ node -v
 
 #### Docker Installation
 For Ubuntu/Linux run :  sudo apt install docker.io <br />
-For Debian : https://docs.docker.com/engine/install/debian/ <br />
-For MAC refer :  <br />
-For Windows (Win-10 enterprise edition) refer :  <br />
-For Windows (Win-10 home edition or older) refer : 
+For Debian refer this [link](https://docs.docker.com/engine/install/debian/).
+For MAC refer this [link](https://docs.docker.com/docker-for-mac/release-notes/#docker-desktop-community-2105). (Docker Desktop v2.1.0.5 or earlier)
+For Windows (Win-10 enterprise edition) refer this [link](https://docs.docker.com/docker-for-windows/release-notes/#docker-desktop-community-2105). (Docker Desktop v2.1.0.5 or earlier)
+For Windows (Win-10 home edition or older) refer this [link](https://docs.docker.com/toolbox/toolbox_install_windows/).
+
 
 #### Post docker installation step
 Make sure after installing docker you have added $USER to the docker group, if not run the following commands:
@@ -170,7 +171,7 @@ Before activating faucet account you need to change the provider to remote nodes
 tezster get-provider
 ````
 
-User has to download file from faucet : https://faucet.tzalpha.net/. After downloading the account file ( tz1***.json) from faucet you need to add the testnet account:
+User has to download file from [faucet](https://faucet.tzalpha.net/). After downloading the account file ( tz1***.json) from faucet you need to add the testnet account:
 
 ```
 add-testnet-account <account-label> <absolute-path-to-json-file> - restores account from faucet json file
@@ -320,11 +321,11 @@ tezster get-storage <contract-label/address>
 eg.- tezster get-storage event
 ````
 
-### Tezster Bundle Integration
+## Tezster Bundle Integration
 
-**Developing DApps? Use Tezster Bundles for better Experience :**
+**Developing DApps? Use [Tezster](https://github.com/Tezsure/Bundle-react) Bundles for better Experience :**
 
-* Clone the repo, you’ll get a React-ready Front-end , with Local compilation of SmartPy Code and Deployment feature.
+* Clone the [repo](https://github.com/Tezsure/Bundle-react), you’ll get a React-ready Front-end , with Local compilation of SmartPy Code and Deployment feature.
 * It comes with 4 Bootstrap Accounts compatible with Tezster-CLI which can be used directly in the DApp.
 
 **How to configure for Tezster-CLI :**
@@ -333,7 +334,7 @@ eg.- tezster get-storage event
 
 *Note : Once Tezster container is down all the deployed contracts & transactions will be lost. Please keep the Tezster-CLI running during the development process.*
 
-### Extra
+## Extra
 
 We’re building a lot of exciting features which will be released soon, So stay tuned with our updates and releases!
 
@@ -341,4 +342,4 @@ We’re building a lot of exciting features which will be released soon, So stay
 keep developing
 ```
 
-For more deatiled description and error guidance [refer this](https://cli.tezster.tech/)
+For more deatiled description and error guidance refer to our detailed [documetation](https://cli.tezster.tech/).
