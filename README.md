@@ -14,7 +14,7 @@ Tezster comes in an npm package with a set of easy commands to kickstart the dev
 1. Linux (Ubuntu and Debian)
 2. Mac OS X
 3. Windows 10 <br />
-Note : There might be some issues with Mac OS & Windows 10. If you face any please report in our [issues section](https://github.com/Tezsure/Tezster-CLI/issues).
+Note : We recommend linux platform for tezster cli. You may encounter some issues in OSX and Windows 10 due to docker. If you face any please report in our [issues section](https://github.com/Tezsure/Tezster-CLI/issues).
 
 #### Node.js Installation
 Run following commands to install Node.js LTS version 
@@ -87,7 +87,7 @@ After building nodes, start tezos nodes:
 ```
 tezster start-nodes
 ```
-*It will activate Tezos alpha on local machine. Now Nodes are running successfully on port 18731.*
+*It will run local network of nodes & baker and activate carthagenet protocol. Now Nodes are running successfully on port 18731.*
 
 #### Stop Local Nodes
 To stop the nodes, run:
@@ -121,9 +121,9 @@ To unzip use command - "tar -xf tezster-node-logs.tar.gz" inside "/tmp/tezster-l
 
 ### Switch Provider
 
-*Node Providers are those who serves Blockchain as a Service and helps to connect to a Node.*
+*Tezos community members run blockchain nodes for different testnets.    No one is running Blockchain-as-a-service. *
 
-A lot of providers are running Tezos Nodes. You can switch to your node provider as per your convenience (local node or remote node). By default we are providing local node - http://localhost:18731.
+A lot of providers are running Tezos Nodes. You can switch to your node provider as per your convenience (local node or remote node). By default we are pointing at local node - http://localhost:18731.
 
 #### Get Provider
 To check your current provider, run:
@@ -158,7 +158,7 @@ https://tezos-dev.cryptonomic-infra.tech
 *We are providing 5 bootstrap accounts which are activated and have sufficient balance. These bootstrap accounts can be used only for local nodes.*
 
 #### List Accounts
-To list down all the generated accounts, run:
+To list all the bootstrapped and activated accounts , run:
 ````
 tezster list-accounts
 ````
@@ -194,7 +194,7 @@ You can create Empty Testnet Account on localnode/remote node without need of fa
 ```
 tezster create-account <account-label>
 ```
-*It will create empty account which is not yet activated. After making transfer value it will activated account on network which is set to active provider.*
+*It will create empty account which is not yet activated. After transferring some balance to this account, it will activated account on network which is set to active provider.*
 
 #### Transfer Amount
 To transfer XTZs from one account to another account, run:
@@ -262,6 +262,16 @@ eg.- tezster get-storage simplecontract
 ````
 *You can check the updated storage after each step when you deploy or call contract.*
 
+#### Add Contract
+This will add a reference to already deployed contract so that you can further interact with it by using a contract label. To add contract, run:
+````
+tezster add-contract <contract-label> <contract-address>
+
+eg.- tezster add-contract swap KT1**********
+````
+
+*After adding contract you can interact with it using call, get-storage commands.*
+
 #### List Contracts
 To list down all the deployed smart contracts using tezster, run
 ````
@@ -276,7 +286,7 @@ tezster remove-contract <contract-label>
 
 #### Complex smart contract
 
-Copy the Michelson code from the [link](https://www.codepile.net/pile/w5OEK2ro) and paste in a file (eg.- event.tz).
+You need to have a michelson smart contract file. You can use this [link](https://www.codepile.net/pile/w5OEK2ro) for reference contract and paste in a file (eg.- event.tz).
 
 #### Extract Entry Points
 To extract all entry points and its corresponding parameters, run:
@@ -325,14 +335,14 @@ eg.- tezster get-storage event
 
 **Developing DApps? Use [Tezster Bundles](https://github.com/Tezsure/Bundle-react) for better Experience :**
 
-* Clone the [repo](https://github.com/Tezsure/Bundle-react), you’ll get a React-ready Front-end , with Local compilation of SmartPy Code and Deployment feature.
-* It comes with 4 Bootstrap Accounts compatible with Tezster-CLI which can be used directly in the DApp.
+* Clone the [Bundle-react](https://github.com/Tezsure/Bundle-react), you’ll get a React-ready Front-end , with Local compilation of SmartPy Code and Deployment feature.
+* It comes with 4 bootstrapped accounts compatible with Tezster-CLI which can be used directly in the DApp.
 
 **How to configure for Tezster-CLI :**
 
 * Change the deploy_config.node : “http://localhost:18731” in the config.json file and the Local Tezster nodes will be used.
 
-*Note : Once Tezster container is down all the deployed contracts & transactions will be lost. Please keep the Tezster-CLI running during the development process.*
+*Note : Once you stop tezster local nodes, you will loose  deployed contracts and transactions will be lost. Please keep the Tezster-CLI running during the development process.*
 
 ## Extra
 
