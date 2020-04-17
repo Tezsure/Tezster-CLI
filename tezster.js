@@ -14,18 +14,25 @@ program
         tezstermanager.setupNodes();
 });
 
-/******* To start tezos nodes */
+/******* To start local tezos nodes on user system*/
 program.command('start-nodes')
     .description('Starts Tezos nodes')
     .action(function(){  
         tezstermanager.startNodes();
 });
 
-/******* To stop tezos nodes */
+/******* To stop local tezos nodes on user system*/
 program.command('stop-nodes')
     .description('Stops Tezos nodes')
     .action(function() {
         tezstermanager.stopNodes();
+});
+
+/******* To get local nodes current status*/
+program.command('node-status')
+    .description('Fetch Tezos local nodes current status')
+    .action(function() {
+        tezstermanager.nodeStatus();
 });
 
 /******* To set the Provider */
@@ -65,7 +72,7 @@ program
 /******* To Create an account */
 program
     .command('create-account')
-    .usage('<identity> <label> <amount>')
+    .usage('<account-label>')
     .description('To create a new account')
     .action(async function(){  
         tezstermanager.createAccount(); 
@@ -87,6 +94,15 @@ program
     .description('Activates a testnet faucet account resored using tezster')
     .action(function(){
         tezstermanager.activateTestnetAccount();
+});
+
+/******* To remove an account */
+program
+    .command('remove-account')
+    .usage('<account-label/identity/hash>')
+    .description('To remove an existing account')
+    .action(async function(){  
+        tezstermanager.removeAccount(); 
 });
 
 /******* TO get the list Contracts */
@@ -135,6 +151,15 @@ program
         tezstermanager.addContract();    
 });
 
+/******* To remove a contract */
+program
+    .command('remove-contract')
+    .usage('<contract-label>')
+    .description('To remove deployed contract from list')
+    .action(async function(){  
+        tezstermanager.removeContract(); 
+});
+
 /******* To transfer the amount */
 program
     .command('transfer')
@@ -180,27 +205,28 @@ if (process.argv.length <= 2){
 
 var commands=process.argv[2];
 const validCommands = [  
-    'extract-entry-points', 
-    'list-Identities',
-    'get-logs',
-    'list-accounts',
-    'list-contracts',
-    'get-balance',
-    'transfer',
-    'set-provider',
-    'get-provider',
-    'stop-nodes',
-    'start-nodes',
     'setup',
-    'call',
+    'start-nodes',
+    'stop-nodes',
+    'node-status',
+    'get-logs',
+    'get-provider',
+    'set-provider',
+    'transfer',
+    'get-balance',
+    'extract-entry-points', 
     'deploy',
-    'help',
-    'create-account',
-    'list-transactions',
+    'call',
     'get-storage',
+    'add-contract',
+    'list-contracts',
+    'remove-contract',
+    'list-accounts',
+    'create-account',
+    'remove-account',
     'add-testnet-account',
     'activate-testnet-account',
-    'add-contract',
+    'list-transactions',
     '-v',
     '--version',
     '--help',

@@ -1,5 +1,5 @@
-# Tezster 2.0
-A personal development blockchain based on Javascript that lives entirely on your local machine.
+# Tezster 2.0 - CLI
+A JavaScript-based private Tezos Blockchain Dev Tool that lives entirely on your local machine.
 
 ## Getting Super Powers
 
@@ -12,13 +12,28 @@ Any Operating System will work !
 1. Node v. 12.x+
 2. Install Docker 
 
+#### Node.js Installation
+Run following commands to install Node.js LTS version 
+```
+sudo apt-get update
+sudo apt-get install curl
+curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+sudo apt-get install nodejs
+```
+After installing verify and check the installed version.
+```
+node -v 
+```
+
 #### Docker Installation
-For Ubuntu/Linux use ``` sudo apt install docker.io ``` <br />
-For MAC refer - https://docs.docker.com/docker-for-mac/install <br />
-For Windows refer - https://docs.docker.com/docker-for-windows
+For Ubuntu/Linux run :  sudo apt install docker.io <br />
+For Debian : https://docs.docker.com/engine/install/debian/ <br />
+ For MAC refer : https://docs.docker.com/docker-for-mac/edge-release-notes/ <br />
+ For Windows (Win-10 enterprise edition) refer : https://docs.docker.com/docker-for-windows/edge-release-notes/ <br />
+For Windows (Win-10 home edition or older) refer : https://docs.docker.com/toolbox/toolbox_install_windows/
 
 #### Post docker installation step:
-Make sure after installing docker you have added \$USER to the docker group, if not follow the following steps:
+Make sure after installing docker you have added $USER to the docker group, if not run the following commands:
 
 ```
 sudo groupadd docker
@@ -28,9 +43,7 @@ newgrp docker
 
 ## Playground Setup :
 
-### Installation
-
-Download tezster npm package using
+### Install NPM package
 
 ```
 sudo npm install -g tezster@latest
@@ -41,7 +54,7 @@ Run ```tezster --version``` to ensure the installed version of tezster.
 tezster --version
 ```
 
-To list down all the tezster commands along with their description, run
+To list down all the tezster commands, run:
 
 ```
 tezster --help
@@ -54,33 +67,40 @@ tezster <command-name> --help
 e.g. tezster deploy --help
 ```
 
-### Node Setup
+### Local Node Setup
 
-After tezster successfully installed, Tezos nodes need to be setup on the machine.
+#### Setup
+Setting up local nodes will create tezos network on your machine along with baker. You always have an option to switch to remote nodes using tezster. After tezster successfully installed, Tezos nodes need to be setup on the local machine.
 
 ```
 tezster setup
 ```
-This will download the docker image containing 'pre-built tezos nodes and baker' on your system. You need to run setup only once.
+*This will download the docker image containing 'pre-built tezos nodes and baker' on your system. You need to run setup only once.*
 
-After building nodes, start tezos nodes
-
+#### Start Local Nodes
+After building nodes, start tezos nodes:
 ```
 tezster start-nodes
 ```
-It will activate Tezos alpha on local machine. Now Nodes are running successfully on port 18731.
+*It will activate Tezos alpha on local machine. Now Nodes are running successfully on port 18731.*
 
-
-To stop the nodes, run
+#### Stop Local Nodes
+To stop the nodes, run:
 
 ```
 tezster stop-nodes
 ```
-It will stop all the tezster nodes running on the system. To restart the nodes run "tezster start-nodes".
+*It will stop all the tezster nodes running on the system. To restart the nodes run "tezster start-nodes".*
 
-#### Logs
+#### Local Node Status
+To know about local node status whether they are in running state or not, run:
+````
+tezster node-status
+````
 
-To get nodes related log files, run
+### Logs
+
+To get the logs of running node & baker, please run ...
 
 ```
 tezster get-logs
@@ -90,161 +110,211 @@ tezster get-logs
 It will save logs as archieve file format at - "/tmp/tezster-logs/tezster-node-logs.tar.gz".
 To unzip use command - "tar -xf tezster-node-logs.tar.gz" inside "/tmp/tezster-logs" folder.
 ```
+*It will collect local node related logs on your system and do collect after starting the local nodes.*
 
 ## Play with Tezster CLI 
 
 ### Switch Provider
 
-To check your active provider, run
+*Node Providers are those who serves Blockchain as a Service and helps to connect to a Node.*
+
+A lot of providers are running Tezos Nodes. You can switch to your node provider as per your convenience (local node or remote node). By default we are providing local node - http://localhost:18731
+
+#### Get Provider
+To check your current provider, run:
 
 ```
 tezster get-provider
-
-```
-Change your provider to localhost by running
-
-```
-tezster set-provider http://localhost:18731 
 ```
 
-Change your provider to carthagenet by running
+#### Set Provider
+Change your provider to local nodes by running:
 
-```
-tezster set-provider http://testnet.tezster.tech
+````
+tezster set-provider http://localhost:18731
+````
 
-OR
+If you want to use remote nodes, switch your provider to Carthagenet by changing provider to - "https://testnet.tezster.tech":
 
-tezster set-provider https://carthagenet.SmartPy.io 
+````
+tezster set-provider https://testnet.tezster.tech
+````
 
-```
+Some other Carthagenet providers are:
+
+````
+https://carthagenet.SmartPy.io
+http://carthagenet.tezos.cryptium.ch:8732
+https://tezos-dev.cryptonomic-infra.tech
+````
 
 ### Faucet Account Activation
 
-To list down ALL generated accounts, run
+*We are providing 5 bootstrap accounts which are activated and have sufficient balance. These bootstrap accounts can be used only for local nodes.*
 
-```
+#### List Accounts
+To list down all the generated accounts, run:
+````
 tezster list-accounts
-``` 
+````
 
-User can also activate and use an carthagenet faucet account with tezster to interact with carthagenet (test network of tezos) user has to download file from faucet : https://faucet.tzalpha.net/ After downloading from faucet you need to change the provider.
+#### Add Testnet Faucet Account
+User can also activate and use their own account with tezster to interact with carthagenet (test network of tezos).
 
+Before activating faucet account you need to change the provider to remote nodes. To check your current provider, run:
+````
+tezster get-provider
+````
+
+User has to download file from faucet : https://faucet.tzalpha.net/. After downloading the account file ( tz1***.json) from faucet you need to add the testnet account:
 
 ```
 add-testnet-account <account-label> <absolute-path-to-json-file> - restores account from faucet json file
-e.g. tezster add-testnet-account alpha4 /home/op/Downloads/tz1Umt3KQUwZYyjFjJrRXjp17qosuxAkmf3n.json
 
+e.g. tezster add-testnet-account alpha4 /home/op/Downloads/tz1Umt3KQUwZYyjFjJrRXjp17qosuxAkmf3n.json
 ```
-Any testnet faucet account requires activation before first use. To activate testnet faucet account, run
+
+#### Activate Testnet Faucet Account
+Any testnet faucet account requires activation before first use. Make sure your current provider is set to remote nodes before activating the account. To activate the account, run:
 
 ```
 activate-testnet-account <account-label>
+
 e.g. tezster activate-testnet-account alpha4
-
 ```
 
-After activating faucet you need to change the provider. To check your current provider run:
+#### Create Testnet Account
+You can create Empty Testnet Account on localnode/remote node without need of faucet file. To create an account, run:
 
 ```
-tezster get-provider
-
+tezster create-account <account-label>
 ```
+*It will create empty account which is not yet activated. After making transfer value it will activated account on network which is set to active provider.*
 
-To transfer tezos from one account to another account
-```
+#### Transfer Amount
+To transfer XTZs from one account to another account, run:
+
+````
 tezster transfer <amount> <from> <to> 
-eg. - tezster transfer 10 bootstrap1 bootstrap2
 
-```
-You don't have to bake your blocks because a baker is running for your local node and it bakes automatically. 
+eg. - tezster transfer 10 bootstrap1 bootstrap2
+````
+
+*Once you do the transaction, the transaction needs to get baked in a block. For this you don't have to bake your blocks because a baker is running for your local node and it bakes automatically.*
+
+#### Get Balance
+
+To fetch balance for any listed account, run:
+````
+tezster get-balance <account-label/pkh/identity>
+````
+
+#### Remove Account
+To remove activated account from the list, run:
+````
+tezster remove-account <account-label/pkh/identity>
+````
 
 ### Smart Contract Operation
 
-To deploy a smart contract, put the michelson code in  a file (eg.- testcontract.tz) Code eg.-
+*Note: Tezster supports smart contracts in Michelson only.*
 
-```
+#### Deploy Contract
+To deploy a smart contract, put the Michelson code in a file (eg.- testcontract.tz) Code e.g.-
+
+````
 parameter string;
 storage string;
 code {CAR; NIL operation; PAIR;};
+````
 
-```
-this code stores any string to the storage
+*Code Description : This code stores a string to the storage.*
 
-To deploy the smart contract on tezos network run,
+To deploy the smart contract on tezos network, run:
 
-```
+````
 tezster deploy <contract label> <absolute path> <initial storage value> <account>
 
 eg.- tezster deploy simplecontract /home/op/testcontract.tz "\"helloworld\"" bootstrap1
 
-```
-if this is successful, you'll receive a contract address.
+````
+*If the operation is successful, you'll receive a contract address (KT1***).*
 
-If you want to make any other trasnactions into already deployed contracts, then call the contract
-
-```
+#### Call Contract
+If you want to make any other transactions into already deployed contracts, then call the contract:
+````
 tezster call <contract label> <argument value> <account>
+
 eg.- tezster call simplecontract "\"goodmorning\"" bootstrap1
+````
 
-```
-
-To see the current storage in a contract, run
-
-```
+#### Get Storage
+To see the current storage in a contract, run:
+````
 tezster get-storage <contract-label/address>
+
 eg.- tezster get-storage simplecontract
+````
+*You can check the updated storage after each step when you deploy or call contract.*
 
-```
-You can check the updated storage after each step when you deploy or call contract.
-
-To list down all deployed smart contracts, run
-
-```
+#### List Contracts
+To list down all the deployed smart contracts using tezster, run
+````
 tezster list-contracts
+````
 
-```
+##### Remove Contract
+To remove previously deployed smart contract from the list, run:
+````
+tezster remove-contract <contract-label>
+````
 
 #### Complex smart contract
 
-Copy the michelson code from the link - https://www.codepile.net/pile/w5OEK2ro and copy in a file (eg.- calculator.tz) - 
+Copy the Michelson code from the link - https://www.codepile.net/pile/w5OEK2ro and paste in a file (eg.- event.tz) -
 
-
-To extract all entry points and initial storage format type, run
-
-```
+#### Extract Entry Points
+To extract all entry points and its corresponding parameters, run:
+````
 tezster extract-entry-points <absolute path>
-```
+````
 
-To deploy contract using initial storage value, run
+#### Deploy Complex Smart Contract
 
-```
+To deploy contract using initial storage value, run:
+
+````
 tezster deploy <contract label> <absolute path> <initial storage value> <account> [options]
 
-eg.- tezster deploy calculator /home/op/calculator.tz "1" bootstrap1
+eg.- tezster deploy event /home/op/event.tz "(Pair {} "\"tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx\"")" bootstrap1
+````
 
-If you are willing to send some tz (Say 2) into contract then, use options as
+If you are willing to send some XTZs (Say 2 XTZs) into contract then, use options as:
+````
+tezster deploy event /home/op/event.tz "(Pair {} "\"tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx\"")" 
+bootstrap1 --amount 2
+````
 
-tezster deploy calculator /home/op/calculator.tz "1" bootstrap1 --amount 2
+*If the operation is successful, you'll receive a contract address (KT1***).*
 
-```
-if contract deploy is successful, you'll receive a contract hash.
+#### Call Complex Smart Contract
 
-Again to call the contract, run
+Again to call the contract, run:
 
-```
+````
 tezster call <contract label> <argument value> <account>
-eg.- tezster call calculator "(Left (Right (Left 5)))" bootstrap1
 
-Note : Argument value input format can be get by running ```tezster extract-entry-points <absolute path>```
+eg.- tezster call event "(Right (Left (Pair "\"event1\"" "\"December\"")))" bootstrap1
+````
 
-```
+*Note : <argument value> for an entry-point can be obtained using : "tezster extract-entry-points <absolute path>"*
 
-To see the current storage in a contract, run
-
-```
+To see the current storage of the contract, run:
+````
 tezster get-storage <contract-label/address>
-eg.- tezster get-storage calculator
 
-```
+eg.- tezster get-storage event
+````
 
 ### Extra
 
@@ -253,3 +323,5 @@ We’re building a lot of exciting features which will be released soon, So stay
 ```
 keep developing
 ```
+
+For more deatiled description and error guidance refer: https://app.gitbook.com/@malviyaop/s/tezster-cli/

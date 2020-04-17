@@ -1,9 +1,7 @@
-const { Variables } = require('../utils/cli-variables');
-
-class Helper{
+class Helper {
     
     static formatMoney(n, c, d, t) {
-        var c = isNaN(c = Math.abs(c)) ? 2 : c, 
+        var c = isNaN(c = Math.abs(c)) ? 6 : c, 
             d = d == undefined ? '.' : d, 
             t = t == undefined ? ',' : t, 
             s = n < 0 ? '-' : '', 
@@ -13,7 +11,7 @@ class Helper{
     }
 
     static formatTez(a){
-        return this.formatMoney(a)+' ꜩ';
+        return this.formatMoney(a/1000000)+' ꜩ';
     }
 
     static findKeyObj(list, t){
@@ -23,6 +21,12 @@ class Helper{
             }
         }
         return false;
+    }
+
+    static confirmNodeProvider(tezosNode) {
+        if(tezosNode.includes('localhost')) {
+            return true;
+        }
     }
 
 }

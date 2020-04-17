@@ -26,6 +26,10 @@ class TezsterManager{
         this.setup.stopNodes();
     }
 
+    nodeStatus(){
+        this.setup.nodeStatus();
+    }
+
     getLogFiles(){
         this.setup.getLogFiles();
     }
@@ -62,6 +66,10 @@ class TezsterManager{
         this.contracts.listContracts();
     }
 
+    removeAccount(){
+        this.accounts.removeAccount(args);
+    }
+
     deployContract(){
         this.contracts.deployContract(args);
     }
@@ -80,6 +88,10 @@ class TezsterManager{
 
     extractEntryPoints(){
         this.contracts.getEntryPoints(args);
+    }
+
+    removeContract(){
+        this.contracts.removeContract(args);
     }
 
     transfer(){

@@ -7,7 +7,7 @@ const child_process = require('child_process'),
       SET_TIMEOUT_TIME = 10000;
 
 const Logger = require('../logger');
-const { Helper } = require('../helper');
+const { RpcRequest } = require('../rpc-util');
 
 class Setup {
 
@@ -18,6 +18,7 @@ class Setup {
         child_process.exec(`docker --version`, (error, _stdout, _stderr) => {
             if (_stdout.includes('Docker version')) {
                     this.checkPermission();
+                    this.pullNodeSetup();
               } else {
                     Logger.error('Docker not detected on the system please install docker....');
               }
@@ -33,7 +34,15 @@ class Setup {
                 child_process.exec(`docker ps -a -q  --filter ancestor=${IMAGE_TAG} --format '{{.Image}}:{{.Names}}'`,
                 (error, _stdout, _stderr) => {
                     if (_stdout.includes(`${IMAGE_TAG}:${CONTAINER_NAME}\n`)) {
-                          Logger.warn('Nodes are already running....');
+                        const container = docker.getContainer(CONTAINER_NAME);
+                        container.start(function (error, data){
+                            if(error) {
+                                Logger.info('Nodes are already running....');
+                                Logger.warn(`If still facing issue run, 'tezster get-logs' or try restarting the nodes after running 'tezster stop-nodes'....`);
+                            } else {
+                                Setup.startNodesProgressBar();
+                            }
+                        });
                     } else {
                           this.runContainer();
                     }
@@ -48,13 +57,13 @@ class Setup {
         Logger.verbose('Command : tezster stop-nodes');
         child_process.exec(`docker ps -a -q --format '{{.Image}}'`,(error, _stdout, _stderr) => {
             if (_stdout.includes(`${IMAGE_TAG}\n`)) {
-                Logger.info(`stopping the nodes....`);
+                Logger.warn(`stopping the nodes....`);
                 const container = docker.getContainer(CONTAINER_NAME);
-                docker.listContainers(function(err, containers) {
-                    container.stop(); 
-                    container.remove({force: true});
-                    Logger.warn(`Nodes have been stopped. Run 'tezster start-nodes' to restart.`);
+                container.stop(function (error, data){
+                    if(error) {}
                 });
+                container.remove({force: true});
+                Logger.info(`Nodes have been stopped. Run 'tezster start-nodes' to restart.`);
             } else {
                Logger.error('No Nodes are running....');
             } 
@@ -85,7 +94,7 @@ class Setup {
                     stream.on('end', () => {
                         writeStream.end();
                         writeStream.close();
-                        Logger.info(`log files stored as archieve format at: \n'/tmp/tezster-logstezster-logs.tar.gz'`);
+                        Logger.info(`log files stored as archieve format at: \n'/tmp/tezster-logs/tezster-logs.tar.gz'`);
                     });
                 });
             } else { 
@@ -95,15 +104,28 @@ class Setup {
         });
     }
 
+    nodeStatus() {
+        Logger.verbose('Command : tezster node-status');
+        RpcRequest.checkNodeStatus().then(function(statusData) {
+            if(statusData.protocol.startsWith('PsCARTHAG')){
+                Logger.info('Local nodes are in running state....');
+            }
+            else {
+                Logger.error('Nodes are not running....');
+            }
+        }).catch(function(error){
+            Logger.error('Nodes are not running....');
+        });
+    }
+
     checkPermission(){
-        child_process.exec(`stat -c '%a %n' ${__dirname}/config.json`,(error, _stdout, _stderr) => {
+        child_process.exec(`stat -c '%a %n' ${__dirname}/../../config.json`,(error, _stdout, _stderr) => {
             if (!error) {
-                if (_stdout !== `777 ${__dirname}/config.json`) {
-                    child_process.exec(`sudo chmod -R 777 ${__dirname}/config.json`);
+                if (_stdout !== `777 ${__dirname}/../../config.json`) {
+                    child_process.exec(`sudo chmod -R 777 ${__dirname}/../../config.json`);
                 }
             }
         });
-        this.pullNodeSetup();
     }
 
     pullNodeSetup () {              
@@ -145,17 +167,25 @@ class Setup {
     }
 
     runContainer(){
-        this.startNodesProgressBar();
+        Setup.startNodesProgressBar();
         docker.createContainer({
             name: `${CONTAINER_NAME}`,
             Image: `${IMAGE_TAG}`,
             Tty: true,
             ExposedPorts: {
-                '18731/tchildprocess:': {}
+                '18731/tchildprocess': {},
+                '18732/tchildprocess': {},
+                '18733/tchildprocess': {},
             },
             PortBindings: {
                 '18731/tchildprocess': [{
-                HostPort: '18731'
+                    HostPort: '18731'
+                }],
+                '18732/tchildprocess': [{
+                    HostPort: '18732'
+                }],
+                '18733/tchildprocess': [{
+                    HostPort: '18733'
                 }]
             },
             NetworkMode: 'host',
@@ -174,9 +204,9 @@ class Setup {
         });
     }
 
-    startNodesProgressBar() {
+    static startNodesProgressBar() {
         const _cliProgress = require('cli-progress');
-        Logger.info('starting the nodes.....');
+        Logger.warn('starting the nodes.....');
         let progress = 0;
         let progressInterval;
         const progressbar = new _cliProgress.Bar({
@@ -197,11 +227,10 @@ class Setup {
             }
             progressbar.update(progress);
         }, SET_INTERVAL_TIME);
-        this.confirmNodeStatus();
+        Setup.confirmNodeStatus();
     }
 
-
-    confirmNodeStatus(){   
+    static confirmNodeStatus(){   
         setTimeout(() => {
             const _cliProgress = require('cli-progress');
             const progressbar = new _cliProgress.Bar({
@@ -210,22 +239,18 @@ class Setup {
                 _cliProgress.Presets.shades_classic
             );
 
-            const interval = setInterval(() =>{
-                const request = require('request');
-                request('http://localhost:18731/chains/main/blocks/head/protocols', function (error, response, body) {
-                    if(error){
-                        Logger.error('\n'+`check log files by using command 'tezster get-logs'...`);
+            const interval = setInterval(() => {
+                RpcRequest.checkNodeStatus().then(function(data) {
+                    if(data.protocol.startsWith('PsCARTHAG')){
+                        progressbar.update(100);
+                        progressbar.stop();
+                        Logger.info('Nodes have been started successfully....');
+                        clearInterval(interval);
                         process.exit();
-                    } else {
-                        var data = JSON.parse(body);
-                        if(data.protocol.startsWith('PsCARTHAG')){
-                            progressbar.update(100);
-                            progressbar.stop();
-                            Logger.info('Nodes have been started successfully....');
-                            clearInterval(interval);
-                            process.exit();
-                        }
                     }
+                }).catch(function(error){
+                    Logger.error('\n'+`check log files by using command 'tezster get-logs'...`);
+                    process.exit();
                 });
             }, SET_INTERVAL_TIME);
         }, SET_TIMEOUT_TIME);

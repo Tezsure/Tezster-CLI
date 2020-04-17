@@ -68,16 +68,27 @@ class Contracts {
         this.extractEntryPoints(args[0]);
     }
 
+    async removeContract(args) {
+        Logger.verbose(`Command : tezster remove-contract ${args}`);
+        if (args.length < 1) {
+            Logger.warn(`Incorrect usage of remove-contract command \nCorrect usage: - tezster remove-contract <contract-label>`);
+            return;
+        }
+        await this.deleteContract(args[0]);
+    }
+
     async extractEntryPoints(contractPath) {
         const fs = require('fs');
         const conseiljs = require(CONSEIL_JS);
+
         try {
             const contractCode = fs.readFileSync(contractPath, 'utf8');
             const entryPoints = await conseiljs.TezosContractIntrospector.generateEntryPointsFromCode(contractCode);
             const storageFormat = await conseiljs.TezosLanguageUtil.preProcessMichelsonScript(contractCode);
-            Logger.info(`Initial Storage input must be of type : ${storageFormat[1].slice(8)}`);
+            Logger.info(`\nInitial Storage input must be of type : ${storageFormat[1].slice(8)}`);
             entryPoints.forEach(p => {
-                Logger.info(`\nName => ${p.name}\nParameters => (${p.parameters.map(pp => (pp.name || '') + pp.type).join(', ')})\nStructure => ${p.structure}\n`);
+                Logger.info('-------------------------------------------------------------------------------------------------------------------------------------');
+                Logger.info(`\nName => ${p.name}\n\nParameters => (${p.parameters.map(pp => (pp.name || '') + pp.type).join(', ')})\n\nStructure => ${p.structure}\n\nExample => ${p.generateSampleInvocation()}\n`);
             });
         }
         catch(error) {
@@ -112,14 +123,14 @@ class Contracts {
         try {
             const contract = fs.readFileSync(contractPath, 'utf8');
             const result = await conseiljs.TezosNodeWriter.sendContractOriginationOperation(
-                                      tezosNode, keystore, amount, undefined,
+                                      tezosNode, keystore, amount*1000000, undefined,
                                       100000, '', 10000, 100000, 
                                       contract, initValue, conseiljs.TezosParameterFormat.Michelson);         
             if (result.results) {
                 switch(result.results.contents[0].metadata.operation_result.status) {
                     case 'applied':
                         let opHash = result.results.contents[0].metadata.operation_result.originated_contracts;
-                        this.addNewContract(contractLabel, opHash[0] , keys.pkh);
+                        this.addNewContract(contractLabel, opHash[0] , keys.pkh , config.provider);
                         return Logger.info(`contract '${contractLabel}' has been deployed at ${opHash}`);
           
                     case 'failed':
@@ -156,14 +167,14 @@ class Contracts {
         }
         
         if (!contractAddress) {
-          return Logger.error(`couldn't find the contract, please make sure contract label or address is correct!`);
+          return Logger.error(`Couldn't find the contract, please make sure contract label or address is correct!`);
         }
 
         amount = amount | 0;
       
         try {
           const result = await conseiljs.TezosNodeWriter.sendContractInvocationOperation(
-                                      tezosNode, keystore, contractAddress, amount, 100000, '', 1000, 100000, undefined, 
+                                      tezosNode, keystore, contractAddress, amount*1000000, 100000, '', 10000, 100000, undefined, 
                                       argument, conseiljs.TezosParameterFormat.Michelson);
           
           if (result.results) {
@@ -213,14 +224,39 @@ class Contracts {
         if (contractObj) {
             return Logger.error('This contract label is already in use. Please use a different one.');
         }
-        this.addNewContract(contractLabel, contractAddr, '');
+        this.addNewContract(contractLabel, contractAddr, '', '');
     }
 
-    addNewContract(label, opHash, pkh) {
+    async deleteContract(contract) {
+        let contractObj = Helper.findKeyObj(config.contracts, contract);
+        if (!contractObj) {
+            return Logger.error(`Please make sure the contract with label '${contract}' exists.`);
+        }
+
+        try {
+            for(var i=0;i<config.contracts.length;i++) {
+                if(config.contracts[i].pkh == contract  || config.contracts[i].label == contract) {
+                    Logger.info(`contract-'${contract}' successfully removed`)
+                    config.contracts.splice(i, 1);
+                    jsonfile.writeFile(confFile, config);
+                }
+            }
+        }
+        catch(error) {
+            Logger.error(`Error occured while removing contract : ${error}`);
+        }
+    }
+
+    addNewContract(label, opHash, pkh, nodeType) {
+        if(nodeType.includes('localhost')) {
+            nodeType = 'localnode';
+        } else {
+            nodeType = 'carthagenet'
+        }
         config.contracts.push({
             label : label,
             pkh : opHash,
-            identity : pkh,
+            identity : `${nodeType} - ` + pkh,
         });
         jsonfile.writeFile(confFile, config);
     }
