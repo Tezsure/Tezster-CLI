@@ -2,7 +2,7 @@ const confFile = __dirname + '/../../config.json';
 const jsonfile = require('jsonfile');
 var config = jsonfile.readFileSync(confFile);
 
-const CONSEIL_JS = '../../lib/conseiljs';
+const CONSEIL_JS = '../../lib/conseiljs',
       TESTNET_NAME = 'carthagenet',
       CONSEIL_SERVER_APIKEY = 'f979f858-1941-4c4b-b231-d40d41df5377',
       CONSEIL_SERVER_URL = 'https://conseil-dev.cryptonomic-infra.tech:443';
@@ -200,12 +200,18 @@ class Accounts{
     }
 
     async deleteAccount(account) {
-        const keys = this.getKeys(account);
+        const keys = this.getKeys(account),
+              bootstrap1 = 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
+              bootstrap2 = 'tz1gjaF81ZRRvdzjobyfVNsAeSC6PScjfQwN',
+              bootstrap3 = 'tz1faswCTDciRzE4oJ9jn2Vm2dvjeyA9fUzU',
+              bootstrap4 = 'tz1b7tUupMgCNw2cCLpKTkSD1NZzB5TkP2sv',
+              bootstrap5 = 'tz1ddb9NMYHZi5UzPdzTZMYQQZoMub195zgv';
+
         if(!keys) {
             return Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster. Run 'tezster list-accounts' to get all accounts`);
         }
 
-        if(keys.label.includes('bootstrap')) {
+        if(keys.pkh.includes(bootstrap1) || keys.pkh.includes(bootstrap2) || keys.pkh.includes(bootstrap3) || keys.pkh.includes(bootstrap4) || keys.pkh.includes(bootstrap5)) {
             return Logger.error(`Bootstrapped accounts Can't deleted.`);
         }
 
