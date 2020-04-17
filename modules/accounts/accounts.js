@@ -205,6 +205,10 @@ class Accounts{
             return Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster. Run 'tezster list-accounts' to get all accounts`);
         }
 
+        if(keys.label.includes('bootstrap')) {
+            return Logger.error(`Bootstrapped accounts Can't deleted.`);
+        }
+
         try {
             for(var i=0;i<config.accounts.length;i++) {
                 if(config.accounts[i].identity == account  || config.accounts[i].label == account || config.accounts[i].pkh == account) {

@@ -278,7 +278,7 @@ To list down all the deployed smart contracts using tezster, run
 tezster list-contracts
 ````
 
-##### Remove Contract
+#### Remove Contract
 To remove previously deployed smart contract from the list, run:
 ````
 tezster remove-contract <contract-label>
