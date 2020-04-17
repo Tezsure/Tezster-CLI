@@ -13,7 +13,7 @@ Tezster comes in an npm package with a set of easy commands to kickstart the dev
 #### OS Support
 1. Linux (Ubuntu and Debian)
 2. Mac OS X
-3. Windows 10 
+3. Windows 10 <br />
 Note : There might be some issues with Mac OS & Windows 10. If you face any please report in our [issues section](https://github.com/Tezsure/Tezster-CLI/issues).
 
 #### Node.js Installation
@@ -123,7 +123,7 @@ To unzip use command - "tar -xf tezster-node-logs.tar.gz" inside "/tmp/tezster-l
 
 *Node Providers are those who serves Blockchain as a Service and helps to connect to a Node.*
 
-A lot of providers are running Tezos Nodes. You can switch to your node provider as per your convenience (local node or remote node). By default we are providing local node - http://localhost:18731
+A lot of providers are running Tezos Nodes. You can switch to your node provider as per your convenience (local node or remote node). By default we are providing local node - http://localhost:18731.
 
 #### Get Provider
 To check your current provider, run:
@@ -139,7 +139,7 @@ Change your provider to local nodes by running:
 tezster set-provider http://localhost:18731
 ````
 
-If you want to use remote nodes, switch your provider to Carthagenet by changing provider to - "https://testnet.tezster.tech":
+If you want to use remote nodes, switch your provider to Carthagenet by changing provider to - https://testnet.tezster.tech
 
 ````
 tezster set-provider https://testnet.tezster.tech
@@ -323,7 +323,7 @@ eg.- tezster get-storage event
 
 ## Tezster Bundle Integration
 
-**Developing DApps? Use [Tezster](https://github.com/Tezsure/Bundle-react) Bundles for better Experience :**
+**Developing DApps? Use [Tezster Bundles](https://github.com/Tezsure/Bundle-react) for better Experience :**
 
 * Clone the [repo](https://github.com/Tezsure/Bundle-react), you’ll get a React-ready Front-end , with Local compilation of SmartPy Code and Deployment feature.
 * It comes with 4 Bootstrap Accounts compatible with Tezster-CLI which can be used directly in the DApp.
@@ -342,4 +342,4 @@ We’re building a lot of exciting features which will be released soon, So stay
 keep developing
 ```
 
-For more deatiled description and error guidance refer to our detailed [documetation](https://cli.tezster.tech/).
+For more deatiled description and error guidance refer to our [detailed documetation](https://cli.tezster.tech/).
