@@ -342,4 +342,4 @@ We’re building a lot of exciting features which will be released soon, So stay
 keep developing
 ```
 
-For more deatiled description and error guidance refer to our [detailed documetation](https://cli.tezster.tech/).
+**For more deatiled description and error guidance refer to our [detailed documetation](https://cli.tezster.tech/).**
