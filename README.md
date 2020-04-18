@@ -46,35 +46,24 @@ sudo usermod -aG docker $USER
 newgrp docker
 ```
 
-## Playground Setup
+## Getting Started
 
-### Install NPM package
+### Clone repository
 
-```
-sudo npm install -g tezster@latest
-```
-Run ```tezster --version``` to ensure the installed version of tezster.
+To clone the repository use the following commands:
 
 ```
-tezster --version
+git clone https://github.com/Tezsure/Tezster-CLI.git
+cd Tezster-CLI
+npm install
+sudo npm link
 ```
 
-To list down all the tezster commands, run:
+Now you can run all the tezster commands. Follow our [documentation](https://docs.tezster.tech/tezster-cli#local-node-setup).
 
-```
-tezster --help
-```
+## Tezster-CLI using NPM Package
 
-To know about usage for any particular command, run
-
-```
-tezster <command-name> --help
-e.g. tezster deploy --help
-```
-
-## Play with Tezster CLI
-
-To explore all the tezster-cli features visit our [documenttaion page](https://docs.tezster.tech/tezster-cli#play-with-tezster-cli).
+To setup tezster-cli using npm package visit our [documenttaion page](https://docs.tezster.tech/tezster-cli#playground-setup) and follow the procedure.
 
 
 ## Extra
@@ -85,4 +74,4 @@ We’re building a lot of exciting features which will be released soon, So stay
 keep developing
 ```
 
-**For error guidance refer to our [detailed documetation](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix).**
+**For error guidance refer to our [error section](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix).**
