@@ -140,7 +140,7 @@ class Accounts{
             Logger.info(`Successfully created wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
             return Logger.warn(`We suggest you to store following Mnemonic Pharase which can be used to restore wallet in case you lost wallet:\n'${mnemonic}'`);
         } catch(error) {
-            return Logger.error(`${error}`);
+            Logger.error(`${error}`);
         }
     }
 
@@ -172,7 +172,7 @@ class Accounts{
             this.addAccount(accountLabel, alphakeys.publicKeyHash, accountLabel, config.provider);
             return Logger.info(`successfully restored testnet faucet account: ${accountLabel}-${alphakeys.publicKeyHash}`);
         } catch(error) {
-            return Logger.error(`Error occured while restroing account : ${error}`);
+            Logger.error(`Error occured while restroing account : ${error}`);
         }
     }
 

@@ -74,7 +74,7 @@ class Transactions {
             return Logger.info(`Transfer complete - operation hash #${JSON.stringify(result.operationGroupID)}`);
         }
         catch(error) {
-            return Logger.error(`${error}`);
+            Logger.error(`${error}`);
         }
     }
 

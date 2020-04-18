@@ -141,7 +141,7 @@ class Contracts {
             return Logger.error(`Contract deployment has failed : ${JSON.stringify(result)}`);
         } catch(error) {
             var parseError = `${error}`.indexOf('Instead, ');
-            return Logger.error(`${error}`.substring(0, parseError != -1  ? parseError : `${error}`.length));
+            Logger.error(`${error}`.substring(0, parseError != -1  ? parseError : `${error}`.length));
         }
     }
 
@@ -193,7 +193,7 @@ class Contracts {
         }
         catch(error) {
             var parseError = `${error}`.indexOf('Instead, ');
-            return Logger.error(`${error}`.substring(0, parseError != -1  ? parseError : `${error}`.length));
+            Logger.error(`${error}`.substring(0, parseError != -1  ? parseError : `${error}`.length));
         }
     }
 
@@ -215,7 +215,7 @@ class Contracts {
             return Logger.info(JSON.stringify(storage));
         }
         catch(error) {
-            return Logger.error(`${error}`);
+            Logger.error(`${error}`);
         }
     }
 
