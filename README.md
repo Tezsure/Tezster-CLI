@@ -1,7 +1,6 @@
 # Tezster-CLI
 
 <img src="https://tezster.s3-ap-southeast-1.amazonaws.com/TEZSTER_GUI/1_jDB5enULQVo2UfeiwD32qA.png" alt="tezster GUI banner" align="center" />
-<br />
 <div align="center"><strong>A complete testing setup to build, deploy and interact with applications on Tezos sandbox and Tezos testnets.</strong></div>
 
 ## Getting Super Powers
