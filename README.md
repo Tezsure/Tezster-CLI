@@ -13,7 +13,8 @@ Tezster comes in an npm package with a set of easy commands to kickstart the dev
 #### OS Support
 1. Linux (Ubuntu and Debian)
 2. Mac OS X
-3. Windows 10 <br />
+3. Windows 10 <br /><br />
+
 *Note : We recommend linux platform for tezster cli. You may encounter some issues in OSX and Windows 10 due to docker. If you face any please report in our [issues section](https://github.com/Tezsure/Tezster-CLI/issues).*
 
 #### Node.js Installation
