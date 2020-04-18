@@ -138,7 +138,7 @@ class Accounts{
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, config.provider);     
             jsonfile.writeFile(confFile, config);
             Logger.info(`Successfully created wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
-            return Logger.warn(`We suggest you to store Mnemonic Pharase which can be used to restore wallet in case you lost wallet:\n${mnemonic}`);
+            return Logger.warn(`We suggest you to store following Mnemonic Pharase which can be used to restore wallet in case you lost wallet:\n'${mnemonic}'`);
         } catch(error) {
             return Logger.error(`${error}`);
         }
