@@ -74,7 +74,7 @@ e.g. tezster deploy --help
 
 ## Play with Tezster CLI
 
-[Follow the instructions for using Tezster-CLI](https://app.gitbook.com/@malviyaop/s/tezster-1/tezster-cli#play-with-tezster-cli).
+To explore all the tezster-cli features visit our [documenttaion page](https://docs.tezster.tech/tezster-cli#play-with-tezster-cli).
 
 
 ## Extra
@@ -85,4 +85,4 @@ We’re building a lot of exciting features which will be released soon, So stay
 keep developing
 ```
 
-**For error guidance refer to our [detailed documetation](https://app.gitbook.com/@malviyaop/s/tezster-1/tezster-cli#common-errors-with-possible-fix).**
+**For error guidance refer to our [detailed documetation](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix).**
