@@ -116,12 +116,12 @@ class Accounts{
             return;
         }
 
-        await RpcRequest.fetchBalance(tezosNode, pkh).then(function(body){
-            var balance = JSON.parse(body);
-            Logger.info(Helper.formatTez(balance));    
-        }).catch(function (error) {
+        try {
+        let balance = await RpcRequest.fetchBalance(tezosNode, pkh);
+        Logger.info(Helper.formatTez(balance));  
+        } catch(error) {
             Logger.error(`${error}`);
-        });
+        }
     }
 
     async createTestnetAccount(args) {

@@ -10,7 +10,8 @@ class RpcRequest {
                 if(error) {
                     reject(error);
                 } else {
-                    resolve(body);
+                    var balance = JSON.parse(body);
+                    resolve(balance);
                 }
             });
         });

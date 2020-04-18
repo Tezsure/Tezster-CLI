@@ -1,7 +1,7 @@
 # Tezster-CLI
 
 <img src="https://tezster.s3-ap-southeast-1.amazonaws.com/TEZSTER_CLI/1_jDB5enULQVo2UfeiwD32qA.png" alt="Tezster CLI banner" align="center" />
-<div align="center"><strong>A complete testing setup to build, deploy and interact with applications on Tezos sandbox and Tezos testnets.</strong></div>
+<div align="center"><strong>A complete toolbox to build, deploy and interact with the applications on Tezos sandbox and Tezos testnets.</strong></div>
 
 # Getting Started
 
@@ -101,4 +101,4 @@ We’re building a lot of exciting features which will be released soon, So stay
 keep developing
 ```
 
-**Reach out to our [Error section](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix) to get walkthrough throughout the known errors. For any help or to report any issues please follow the [link](https://github.com/Tezsure/Tezster-CLI/issues).**
+**Reach out to our [error section](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix) to get walkthrough throughout the known errors. For any help or to report any issues please follow the [link](https://github.com/Tezsure/Tezster-CLI/issues).**

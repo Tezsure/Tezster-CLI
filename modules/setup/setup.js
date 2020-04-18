@@ -3,7 +3,7 @@ var docker = new Docker({ socketPath: '/var/run/docker.sock' });
 const child_process = require('child_process'),
       IMAGE_TAG = 'tezsureinc/tezster:1.0.2',
       CONTAINER_NAME = 'tezster',
-      FUNCTION_CALL_INTERVAL = 1000,
+      PROGRESS_REFRESH_INTERVAL = 1000,
       NODE_CONFIRMATION_TIMEOUT = 10000,
       LOCAL_NODE_URL = 'http://localhost:18731';
 
@@ -34,6 +34,7 @@ class Setup {
 
                 child_process.exec(`docker ps -a -q  --filter ancestor=${IMAGE_TAG} --format '{{.Image}}:{{.Names}}'`,
                 (error, _stdout, _stderr) => {
+                    let self = this;
                     if (_stdout.includes(`${IMAGE_TAG}:${CONTAINER_NAME}\n`)) {
                         const container = docker.getContainer(CONTAINER_NAME);
                         container.start(function (error, data){
@@ -41,7 +42,7 @@ class Setup {
                                 Logger.info('Nodes are already running....');
                                 Logger.warn(`If still facing issue run, 'tezster get-logs' or try restarting the nodes after running 'tezster stop-nodes'....`);
                             } else {
-                                Setup.startNodesProgressBar();
+                                self.startNodesProgressBar();
                             }
                         });
                     } else {
@@ -153,7 +154,7 @@ class Setup {
                         return;
                     }
                     progressbar.update(progress);
-                    }, FUNCTION_CALL_INTERVAL);
+                    }, PROGRESS_REFRESH_INTERVAL);
                     
                     docker.modem.followProgress(dockerPullStream, (_dockerModemError, _dockerModemOutput) => {
                         clearInterval(progress);
@@ -166,7 +167,7 @@ class Setup {
     }
 
     runContainer(){
-        Setup.startNodesProgressBar();
+        this.startNodesProgressBar();
         docker.createContainer({
             name: `${CONTAINER_NAME}`,
             Image: `${IMAGE_TAG}`,
@@ -203,7 +204,7 @@ class Setup {
         });
     }
 
-    static startNodesProgressBar() {
+    startNodesProgressBar() {
         const _cliProgress = require('cli-progress');
         Logger.warn('starting the nodes.....');
         let progress = 0;
@@ -225,11 +226,11 @@ class Setup {
                 return;
             }
             progressbar.update(progress);
-        }, FUNCTION_CALL_INTERVAL);
-        Setup.confirmNodeStatus();
+        }, PROGRESS_REFRESH_INTERVAL);
+        this.confirmNodeStatus();
     }
 
-    static confirmNodeStatus(){   
+    confirmNodeStatus(){   
         setTimeout(() => {
             const _cliProgress = require('cli-progress');
             const progressbar = new _cliProgress.Bar({
@@ -251,7 +252,7 @@ class Setup {
                     Logger.error('\n'+`Error while starting nodes: check logs by using command 'tezster get-logs'...`);
                     process.exit();
                 });
-            }, FUNCTION_CALL_INTERVAL);
+            }, PROGRESS_REFRESH_INTERVAL);
         }, NODE_CONFIRMATION_TIMEOUT);
     }
 
