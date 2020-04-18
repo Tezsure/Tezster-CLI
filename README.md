@@ -3,23 +3,23 @@
 <img src="https://tezster.s3-ap-southeast-1.amazonaws.com/TEZSTER_GUI/1_jDB5enULQVo2UfeiwD32qA.png" alt="tezster GUI banner" align="center" />
 <div align="center"><strong>A complete testing setup to build, deploy and interact with applications on Tezos sandbox and Tezos testnets.</strong></div>
 
-## Getting Super Powers
+# Getting Started
 
-Tezster comes in an npm package with a set of easy commands to kickstart the development or interaction with Tezos. The current version will install and start tezos node on your local machine.
+Tezster comes in an npm package and as github repo with a set of easy commands to kickstart the development or interaction with Tezos. The current version will install and start tezos node on your local machine.
 
-### Prerequisites
+## Prerequisites
 
 1. Node v. 12.x+
 2. Install Docker
 
-#### OS Support
+### OS Support
 1. Linux (Ubuntu and Debian)
 2. Mac OS X
 3. Windows 10 <br />
 
 *Note : We recommend linux platform for tezster cli. You may encounter some issues in OSX and Windows 10 due to docker. If you face any please report in our [issues section](https://github.com/Tezsure/Tezster-CLI/issues).*
 
-#### Node.js Installation
+### Node.js Installation
 Run following commands to install Node.js LTS version 
 ```
 sudo apt-get update
@@ -32,7 +32,7 @@ After installing verify and check the installed version.
 node -v 
 ```
 
-#### Docker Installation
+### Docker Installation
 For Ubuntu/Linux run :  sudo apt install docker.io <br />
 For Debian refer this [link](https://docs.docker.com/engine/install/debian/). <br />
 For MAC refer this [link](https://docs.docker.com/docker-for-mac/release-notes/#docker-desktop-community-2105). (Docker Desktop v2.1.0.5 or earlier) <br />
@@ -40,7 +40,7 @@ For Windows (Win-10 enterprise edition) refer this [link](https://docs.docker.co
 For Windows (Win-10 home edition or older) refer this [link](https://docs.docker.com/toolbox/toolbox_install_windows/).
 
 
-#### Post docker installation step
+### Post docker installation step
 Make sure after installing docker you have added $USER to the docker group, if not run the following commands:
 
 ```
@@ -49,9 +49,7 @@ sudo usermod -aG docker $USER
 newgrp docker
 ```
 
-## Getting Started
-
-### Clone repository
+## Clone repository
 
 To clone the repository use the following commands:
 
@@ -74,7 +72,7 @@ tezster --help
 
 Now you can run all the tezster commands. For usage guidance follow our [documentation page](https://docs.tezster.tech/tezster-cli#local-node-setup).
 
-### NPM Package
+## NPM Package
 
 You can install tezster-cli using npm package as well. To install npm package, run:
 ```
