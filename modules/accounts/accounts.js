@@ -99,7 +99,7 @@ class Accounts{
         } 
     }
 
-    getBalanceAccounts(account) {
+    async getBalanceAccounts(account) {
         var pkh = account, f;
         const tezosNode = config.provider;
         if (f = Helper.findKeyObj(config.identities, pkh)) {
@@ -109,7 +109,18 @@ class Accounts{
         } else if (f = Helper.findKeyObj(config.contracts, pkh)) {
             pkh = f.pkh;
         }
-        RpcRequest.fetchBalance(tezosNode, pkh);
+
+        const keys = this.getKeys(account);
+        if(!keys) {
+            return Logger.error(`Account with this label doesn't exists.`);
+        }
+
+        await RpcRequest.fetchBalance(tezosNode, pkh).then(function(body){
+            var balance = JSON.parse(body);
+            Logger.info(Helper.formatTez(balance));    
+        }).catch(function (error) {
+            Logger.error(`${error}`);
+        });
     }
 
     async createTestnetAccount(args) {
@@ -126,7 +137,8 @@ class Accounts{
             this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, config.provider);     
             jsonfile.writeFile(confFile, config);
-            return Logger.info(`Successfully created testnet faucet account: ${accountLabel}-${keystore.publicKeyHash}`);
+            Logger.info(`Successfully created wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
+            return Logger.warn(`We suggest you to store Mnemonic Pharase which can be used to restore wallet in case you lost wallet:\n${mnemonic}`);
         } catch(error) {
             return Logger.error(`${error}`);
         }
@@ -195,23 +207,18 @@ class Accounts{
             const revealResult = await conseiljs.TezosNodeWriter.sendKeyRevealOperation(tezosNode, keystore);
             return Logger.info(`Testnet faucet account successfully activated: ${keys.label} - ${keys.pkh} \nWith tx hash: ${JSON.stringify(revealResult.operationGroupID)}`);
         } catch(error) {
-            return Logger.error(`Error occured while activating account : ${error}`);
+            Logger.error(`Error occured while activating account : ${error}`);
         }
     }
 
     async deleteAccount(account) {
-        const keys = this.getKeys(account),
-              bootstrap1 = 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
-              bootstrap2 = 'tz1gjaF81ZRRvdzjobyfVNsAeSC6PScjfQwN',
-              bootstrap3 = 'tz1faswCTDciRzE4oJ9jn2Vm2dvjeyA9fUzU',
-              bootstrap4 = 'tz1b7tUupMgCNw2cCLpKTkSD1NZzB5TkP2sv',
-              bootstrap5 = 'tz1ddb9NMYHZi5UzPdzTZMYQQZoMub195zgv';
+        const keys = this.getKeys(account);
 
         if(!keys) {
             return Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster. Run 'tezster list-accounts' to get all accounts`);
         }
 
-        if(keys.pkh.includes(bootstrap1) || keys.pkh.includes(bootstrap2) || keys.pkh.includes(bootstrap3) || keys.pkh.includes(bootstrap4) || keys.pkh.includes(bootstrap5)) {
+        if(keys.label.includes('bootstrap1' || 'bootstrap2') || keys.label.includes('bootstrap3') || keys.label.includes('bootstrap4') || keys.label.includes('bootstrap5')) {
             return Logger.error(`Bootstrapped accounts Can't deleted.`);
         }
 

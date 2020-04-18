@@ -121,7 +121,7 @@ To unzip use command - "tar -xf tezster-node-logs.tar.gz" inside "/tmp/tezster-l
 
 ### Switch Provider
 
-*Tezos community members run blockchain nodes for different testnets.    No one is running Blockchain-as-a-service. *
+*Tezos community members run blockchain nodes for different testnets. No one is running Blockchain-as-a-service.*
 
 A lot of providers are running Tezos Nodes. You can switch to your node provider as per your convenience (local node or remote node). By default we are pointing at local node - http://localhost:18731.
 

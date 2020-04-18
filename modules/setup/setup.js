@@ -3,8 +3,9 @@ var docker = new Docker({ socketPath: '/var/run/docker.sock' });
 const child_process = require('child_process'),
       IMAGE_TAG = 'tezsureinc/tezster:1.0.2',
       CONTAINER_NAME = 'tezster',
-      SET_INTERVAL_TIME = 1000,
-      SET_TIMEOUT_TIME = 10000;
+      FUNCTION_CALL_INTERVAL = 1000,
+      NODE_CONFIRMATION_TIMEOUT = 10000,
+      LOCAL_NODE_URL = 'http://localhost:18731';
 
 const Logger = require('../logger');
 const { RpcRequest } = require('../rpc-util');
@@ -104,9 +105,10 @@ class Setup {
         });
     }
 
-    nodeStatus() {
+    async nodeStatus() {
         Logger.verbose('Command : tezster node-status');
-        RpcRequest.checkNodeStatus().then(function(statusData) {
+        
+        await RpcRequest.checkNodeStatus(LOCAL_NODE_URL).then(function(statusData) {
             if(statusData.protocol.startsWith('PsCARTHAG')){
                 Logger.info('Local nodes are in running state....');
             }
@@ -114,7 +116,7 @@ class Setup {
                 Logger.error('Nodes are not running....');
             }
         }).catch(function(error){
-            Logger.error('Nodes are not running....');
+            Logger.error(`${error}`);
         });
     }
 
@@ -155,7 +157,8 @@ class Setup {
                         return;
                     }
                     progressbar.update(progress);
-                    }, SET_INTERVAL_TIME);
+                    }, FUNCTION_CALL_INTERVAL);
+                    
                     docker.modem.followProgress(dockerPullStream, (_dockerModemError, _dockerModemOutput) => {
                         clearInterval(progress);
                         progressbar.update(100);
@@ -226,7 +229,7 @@ class Setup {
                 return;
             }
             progressbar.update(progress);
-        }, SET_INTERVAL_TIME);
+        }, FUNCTION_CALL_INTERVAL);
         Setup.confirmNodeStatus();
     }
 
@@ -240,8 +243,8 @@ class Setup {
             );
 
             const interval = setInterval(() => {
-                RpcRequest.checkNodeStatus().then(function(data) {
-                    if(data.protocol.startsWith('PsCARTHAG')){
+                RpcRequest.checkNodeStatus(LOCAL_NODE_URL).then(function(statusData) {
+                    if(statusData.protocol.startsWith('PsCARTHAG')){
                         progressbar.update(100);
                         progressbar.stop();
                         Logger.info('Nodes have been started successfully....');
@@ -249,11 +252,11 @@ class Setup {
                         process.exit();
                     }
                 }).catch(function(error){
-                    Logger.error('\n'+`check log files by using command 'tezster get-logs'...`);
+                    Logger.error('\n'+`Error while starting nodes: check logs by using command 'tezster get-logs'...`);
                     process.exit();
                 });
-            }, SET_INTERVAL_TIME);
-        }, SET_TIMEOUT_TIME);
+            }, FUNCTION_CALL_INTERVAL);
+        }, NODE_CONFIRMATION_TIMEOUT);
     }
 
 }
