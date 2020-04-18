@@ -34,7 +34,7 @@ node -v
 ```
 
 ### Docker Installation
-For Ubuntu/Linux run :  sudo apt install docker.io <br />
+For Ubuntu/Linux run :  ```sudo apt install docker.io``` <br />
 For Debian refer this [link](https://docs.docker.com/engine/install/debian/). <br />
 For MAC refer this [link](https://docs.docker.com/docker-for-mac/release-notes/#docker-desktop-community-2105). (Docker Desktop v2.1.0.5 or earlier) <br />
 For Windows (Win-10 enterprise edition) refer this [link](https://docs.docker.com/docker-for-windows/release-notes/#docker-desktop-community-2105). (Docker Desktop v2.1.0.5 or earlier) <br />
