@@ -71,9 +71,24 @@ tezster --help
 
 Now you can run all the tezster commands. For usage guidance follow our [documentation](https://docs.tezster.tech/tezster-cli#local-node-setup).
 
-## Tezster-CLI using NPM Package
+### NPM Package
 
-You can also install tezster-cli npm package. To setup tezster-cli using npm package visit our [documentaion page](https://docs.tezster.tech/tezster-cli#playground-setup) and follow the procedure.
+You can also install tezster-cli using npm package. To install npm package, run:
+```
+sudo npm install -g tezster@latest
+```
+
+Run ```tezster --version``` to ensure the version of tezster.
+```
+tezster --version
+```
+
+To list down all the tezster commands, run:
+```
+tezster --help
+```
+
+To setup tezster-cli and for usage guidance visit our [documentaion page](https://docs.tezster.tech/tezster-cli#playground-setup).
 
 
 ## Extra
