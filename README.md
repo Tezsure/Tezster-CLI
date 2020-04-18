@@ -88,7 +88,7 @@ To list down all the tezster commands, run:
 tezster --help
 ```
 
-To setup tezster-cli and for usage guidance visit our [documentaion page](https://docs.tezster.tech/tezster-cli#playground-setup).
+To setup tezster-cli and for usage guidance visit our [documentation page](https://docs.tezster.tech/tezster-cli#playground-setup).
 
 
 ## Extra
