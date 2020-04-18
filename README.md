@@ -99,4 +99,4 @@ We’re building a lot of exciting features which will be released soon, So stay
 keep developing
 ```
 
-**Reach out to our [Error section](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix)) to get walkthrough throughout the known errors.**
+**Reach out to our [Error section](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix) to get walkthrough throughout the known errors.**
