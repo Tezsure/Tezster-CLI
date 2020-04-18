@@ -5,7 +5,8 @@
 
 # Getting Started
 
-Tezster comes in an npm package and as github repo with a set of easy commands to kickstart the development or interaction with Tezos. The current version will install and start tezos node on your local machine.
+Tezster comes in an npm package with a set of easy commands to kickstart the development or interaction with Tezos. The current version will install and start tezos node on your local machine.
+
 
 ## Prerequisites
 
@@ -100,4 +101,4 @@ We’re building a lot of exciting features which will be released soon, So stay
 keep developing
 ```
 
-**Reach out to our [Error section](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix) to get walkthrough throughout the known errors.**
+**Reach out to our [Error section](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix) to get walkthrough throughout the known errors. For any help or to report any issues please follow the [link](https://github.com/Tezsure/Tezster-CLI/issues).**
