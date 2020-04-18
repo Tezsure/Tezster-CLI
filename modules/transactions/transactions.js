@@ -35,6 +35,10 @@ class Transactions {
         const conseiljs = require(CONSEIL_JS);
         const tezosNode = config.provider;
         var keys = this.getKeys(from);
+        if(!keys) {
+            Logger.error(`Sender account label doesn't exist.`);
+            return;
+        }
 
         const keystore = {
             publicKey: keys.pk,
@@ -54,7 +58,8 @@ class Transactions {
             keys = Helper.findKeyObj(config.identities, f.identity);
             from = f.pkh;
         } else {
-            return Logger.error('No valid identity to send this transaction');
+            Logger.error('No valid identity to send this transaction');
+            return;
         }
         
         if (f = Helper.findKeyObj(config.identities, to)) {
@@ -71,7 +76,7 @@ class Transactions {
         try {
             const result = await conseiljs.TezosNodeWriter.sendTransactionOperation(tezosNode, keystore, to, amount, fees, '');
             this.addTransaction('transfer', `${JSON.stringify(result.operationGroupID)}`, from, to, amount);
-            return Logger.info(`Transfer complete - operation hash #${JSON.stringify(result.operationGroupID)}`);
+            Logger.info(`Transfer complete - operation hash #${JSON.stringify(result.operationGroupID)}`);
         }
         catch(error) {
             Logger.error(`${error}`);

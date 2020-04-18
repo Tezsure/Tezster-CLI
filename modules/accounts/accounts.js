@@ -88,14 +88,14 @@ class Accounts{
     setProviderAccounts(args){    
         config.provider = args[0];
         jsonfile.writeFile(confFile, config);
-        return Logger.info('Provider updated to ' + config.provider);
+        Logger.info('Provider updated to ' + config.provider);
     }
 
     getProviderAccounts(){    
         if (config.provider) {
-            return Logger.info(config.provider);
+            Logger.info(config.provider);
         } else {
-            return Logger.warn('No provider is set');
+            Logger.warn('No provider is set');
         } 
     }
 
@@ -112,7 +112,8 @@ class Accounts{
 
         const keys = this.getKeys(account);
         if(!keys) {
-            return Logger.error(`Account with this label doesn't exists.`);
+            Logger.error(`Account with this label doesn't exists.`);
+            return;
         }
 
         await RpcRequest.fetchBalance(tezosNode, pkh).then(function(body){
@@ -128,7 +129,8 @@ class Accounts{
         const conseiljs = require(CONSEIL_JS);
         const keys = this.getKeys(accountLabel);
         if(keys) {
-            return Logger.error(`Account with this label already exists.`);
+            Logger.error(`Account with this label already exists.`);
+            return;
         }
 
         try {
@@ -138,7 +140,7 @@ class Accounts{
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, config.provider);     
             jsonfile.writeFile(confFile, config);
             Logger.info(`Successfully created wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
-            return Logger.warn(`We suggest you to store following Mnemonic Pharase which can be used to restore wallet in case you lost wallet:\n'${mnemonic}'`);
+            Logger.warn(`We suggest you to store following Mnemonic Pharase which can be used to restore wallet in case you lost wallet:\n'${mnemonic}'`);
         } catch(error) {
             Logger.error(`${error}`);
         }
@@ -149,20 +151,23 @@ class Accounts{
         const conseiljs = require(CONSEIL_JS);
         const keys = this.getKeys(accountLabel);
         if(keys) {
-            return Logger.error(`Account with this label already exists.`);
+            Logger.error(`Account with this label already exists.`);
+            return;
         }
         try {
             let accountJSON = fs.readFileSync(accountFilePath, 'utf8');
             accountJSON = accountJSON && JSON.parse(accountJSON);
             if(!accountJSON) {
-                return Logger.error(`Error occured while restroing account : empty JSON file`);
+                Logger.error(`Error occured while restroing account : empty JSON file`);
+                return;
             }
             let mnemonic = accountJSON.mnemonic;
             let email = accountJSON.email;
             let password = accountJSON.password;
             let pkh = accountJSON.pkh;
             if (!mnemonic || !email || !password) {
-                return Logger.error(`Error occured while restroing account : invalid JSON file`);
+                Logger.error(`Error occured while restroing account : invalid JSON file`);
+                return;
             }
             mnemonic = mnemonic.join(' ');
 
@@ -170,7 +175,7 @@ class Accounts{
 
             this.addIdentity(accountLabel, alphakeys.privateKey, alphakeys.publicKey, alphakeys.publicKeyHash, accountJSON.secret);
             this.addAccount(accountLabel, alphakeys.publicKeyHash, accountLabel, config.provider);
-            return Logger.info(`successfully restored testnet faucet account: ${accountLabel}-${alphakeys.publicKeyHash}`);
+            Logger.info(`successfully restored testnet faucet account: ${accountLabel}-${alphakeys.publicKeyHash}`);
         } catch(error) {
             Logger.error(`Error occured while restroing account : ${error}`);
         }
@@ -183,11 +188,13 @@ class Accounts{
         const keys = this.getKeys(account);
 
         if(Helper.confirmNodeProvider(tezosNode)) {
-            return Logger.error('Make sure your current provider is set to remote node provider.');
+            Logger.error('Make sure your current provider is set to remote node provider.');
+            return;
         }
 
         if(!keys || !keys.secret) {
-            return Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster.`);
+            Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster.`);
+            return;
         }
         const keystore = {
             publicKey: keys.pk,
@@ -205,7 +212,7 @@ class Accounts{
             await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, activationGroupid, 10, 30+1);
 
             const revealResult = await conseiljs.TezosNodeWriter.sendKeyRevealOperation(tezosNode, keystore);
-            return Logger.info(`Testnet faucet account successfully activated: ${keys.label} - ${keys.pkh} \nWith tx hash: ${JSON.stringify(revealResult.operationGroupID)}`);
+            Logger.info(`Testnet faucet account successfully activated: ${keys.label} - ${keys.pkh} \nWith tx hash: ${JSON.stringify(revealResult.operationGroupID)}`);
         } catch(error) {
             Logger.error(`Error occured while activating account : ${error}`);
         }
@@ -215,11 +222,13 @@ class Accounts{
         const keys = this.getKeys(account);
 
         if(!keys) {
-            return Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster. Run 'tezster list-accounts' to get all accounts`);
+            Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster. Run 'tezster list-accounts' to get all accounts`);
+            return;
         }
 
         if(keys.label.includes('bootstrap1' || 'bootstrap2') || keys.label.includes('bootstrap3') || keys.label.includes('bootstrap4') || keys.label.includes('bootstrap5')) {
-            return Logger.error(`Bootstrapped accounts Can't deleted.`);
+            Logger.error(`Bootstrapped accounts Can't deleted.`);
+            return;
         }
 
         try {

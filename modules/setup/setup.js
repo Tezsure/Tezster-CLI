@@ -107,17 +107,13 @@ class Setup {
 
     async nodeStatus() {
         Logger.verbose('Command : tezster node-status');
-        
-        await RpcRequest.checkNodeStatus(LOCAL_NODE_URL).then(function(statusData) {
-            if(statusData.protocol.startsWith('PsCARTHAG')){
-                Logger.info('Local nodes are in running state....');
-            }
-            else {
-                Logger.error('Nodes are not running....');
-            }
-        }).catch(function(error){
-            Logger.error(`${error}`);
-        });
+
+        let response = await RpcRequest.checkNodeStatus(LOCAL_NODE_URL);
+        if(response.protocol.startsWith('PsCARTHAG')){
+            Logger.info('Local nodes are in running state....');
+        } else {
+            Logger.error('Nodes are not running....');
+        }
     }
 
     checkPermission(){

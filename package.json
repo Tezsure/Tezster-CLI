@@ -1,7 +1,7 @@
 {
   "name": "tezster",
   "version": "0.2.1",
-  "description": "A personal development blockchain based on Javascript that lives entirely on your local machine.",
+  "description": "A JavaScript-based private Tezos Blockchain Dev Tool that lives entirely on your local machine.",
   "main": "tezster.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -16,7 +16,15 @@
     "blockchain"
   ],
   "author": "Tezsure Inc.",
+  "contributors": [
+    {
+      "name": "KAPIL AGRAWAL",
+      "email": "kapil@tezsure.com",
+      "url": "https://github.com/kapiltez"
+    }
+  ],
   "license": "MIT",
+  "homepage": "https://docs.tezster.tech/tezster-cli",
   "dependencies": {
     "base-n": "^1.0.0",
     "big-integer": "^1.6.45",

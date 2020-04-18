@@ -55,7 +55,8 @@ class Contracts {
     async addContract(args) {
         Logger.verbose(`Command : tezster add-contract ${args}`);
         if (args.length < 2) {
-            return Logger.warn('Incorrect usage - tezster add-contract <label> <Address>');
+            Logger.warn('Incorrect usage - tezster add-contract <label> <Address>');
+            return;
         }
         this.addContractToConfig(args[0], args[1], '');
     }
@@ -63,7 +64,8 @@ class Contracts {
     async getEntryPoints(args) {
         Logger.verbose(`Command : tezster extract-entry-points ${args}`);
         if (args.length < 1) {
-            return Logger.warn('Incorrect usage - tezster list-entry-points <contract-absolute-path>');
+            Logger.warn('Incorrect usage - tezster list-entry-points <contract-absolute-path>');
+            return;
         }
         this.extractEntryPoints(args[0]);
     }
@@ -103,7 +105,8 @@ class Contracts {
 
         const keys = this.getKeys(account);
         if(!keys) {
-            return Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster. Run 'tezster list-accounts' to get all accounts`);
+            Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster. Run 'tezster list-accounts' to get all accounts`);
+            return;
         }
         const keystore = {
             publicKey: keys.pk,
@@ -115,7 +118,8 @@ class Contracts {
       
         let contractObj = Helper.findKeyObj(config.contracts, contractLabel);
         if (contractObj) {
-            return Logger.error(`This contract label is already in use. Please use a different one.`);
+            Logger.error(`This contract label is already in use. Please use a different one.`);
+            return;
         }
 
         amount = amount | 0;
@@ -131,14 +135,16 @@ class Contracts {
                     case 'applied':
                         let opHash = result.results.contents[0].metadata.operation_result.originated_contracts;
                         this.addNewContract(contractLabel, opHash[0] , keys.pkh , config.provider);
-                        return Logger.info(`contract '${contractLabel}' has been deployed at ${opHash}`);
-          
+                        Logger.info(`contract '${contractLabel}' has been deployed at ${opHash}`);
+                        return;
                     case 'failed':
                     default:
-                        return Logger.error(`Contract deployment has failed : ${JSON.stringify(result.results.contents[0].metadata.operation_result)}`)
+                        Logger.error(`Contract deployment has failed : ${JSON.stringify(result.results.contents[0].metadata.operation_result)}`)
+                        return;
               }
             }
-            return Logger.error(`Contract deployment has failed : ${JSON.stringify(result)}`);
+            Logger.error(`Contract deployment has failed : ${JSON.stringify(result)}`);
+            return;
         } catch(error) {
             var parseError = `${error}`.indexOf('Instead, ');
             Logger.error(`${error}`.substring(0, parseError != -1  ? parseError : `${error}`.length));
@@ -150,7 +156,8 @@ class Contracts {
         const tezosNode = config.provider;
         const keys = this.getKeys(account);
         if(!keys) {
-            return Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster. Run 'tezster list-accounts' to get all accounts`);
+            Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster. Run 'tezster list-accounts' to get all accounts`);
+            return;
         }
         const keystore = {
             publicKey: keys.pk,
@@ -167,7 +174,8 @@ class Contracts {
         }
         
         if (!contractAddress) {
-          return Logger.error(`Couldn't find the contract, please make sure contract label or address is correct!`);
+          Logger.error(`Couldn't find the contract, please make sure contract label or address is correct!`);
+          return;
         }
 
         amount = amount | 0;
@@ -182,14 +190,17 @@ class Contracts {
               case 'applied':
                   let opHash = result.operationGroupID.slice(1,result.operationGroupID.length-2);
                   this.addTransaction('contract-call', opHash, keys.pkh, contractObj.label, 0);
-                  return Logger.info(`Injected operation with hash ${opHash}`);
+                  Logger.info(`Injected operation with hash ${opHash}`);
+                  return;
       
               case 'failed':
               default:
-                  return Logger.error(`Contract calling has failed : ${JSON.stringify(result.results.contents[0].metadata.operation_result)}`)
+                  Logger.error(`Contract calling has failed : ${JSON.stringify(result.results.contents[0].metadata.operation_result)}`)
+                  return;
             }
           }
-          return Logger.error(`Contract calling has failed : ${JSON.stringify(result)}`);
+          Logger.error(`Contract calling has failed : ${JSON.stringify(result)}`);
+          return;
         }
         catch(error) {
             var parseError = `${error}`.indexOf('Instead, ');
@@ -207,12 +218,13 @@ class Contracts {
         }
       
         if (!contractAddress) {
-            return Logger.error(`couldn't find the contract, please make sure contract label or address is correct!`);
+            Logger.error(`couldn't find the contract, please make sure contract label or address is correct!`);
+            return;
         }
       
         try {
             let storage = await conseiljs.TezosNodeReader.getContractStorage(tezosNode, contractAddress);
-            return Logger.info(JSON.stringify(storage));
+            Logger.info(JSON.stringify(storage));
         }
         catch(error) {
             Logger.error(`${error}`);
@@ -222,7 +234,8 @@ class Contracts {
     addContractToConfig(contractLabel, contractAddr) {
         let contractObj = Helper.findKeyObj(config.contracts, contractLabel);
         if (contractObj) {
-            return Logger.error('This contract label is already in use. Please use a different one.');
+            Logger.error('This contract label is already in use. Please use a different one.');
+            return;
         }
         this.addNewContract(contractLabel, contractAddr, '', '');
     }
@@ -230,7 +243,8 @@ class Contracts {
     async deleteContract(contract) {
         let contractObj = Helper.findKeyObj(config.contracts, contract);
         if (!contractObj) {
-            return Logger.error(`Please make sure the contract with label '${contract}' exists.`);
+            Logger.error(`Please make sure the contract with label '${contract}' exists.`);
+            return;
         }
 
         try {

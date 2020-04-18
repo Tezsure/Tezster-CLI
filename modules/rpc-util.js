@@ -9,14 +9,8 @@ class RpcRequest {
             request(URL, function (error, response, body) {
                 if(error) {
                     reject(error);
-                }
-                else {
-                    try {
-                        resolve(body);
-                    }
-                    catch(error) {
-                        reject(error);
-                    }
+                } else {
+                    resolve(body);
                 }
             });
         });
