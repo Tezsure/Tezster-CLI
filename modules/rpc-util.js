@@ -4,14 +4,18 @@ class RpcRequest {
 
     static fetchBalance(provider, accountHash) {
         return new Promise(function(resolve, reject) {
-            var URL = `${provider}/chains/main/blocks/head/context/contracts/${accountHash}/balance`;
+            let URL = `${provider}/chains/main/blocks/head/context/contracts/${accountHash}/balance`;
 
             request(URL, function (error, response, body) {
                 if(error) {
                     reject(error);
                 } else {
-                    var balance = JSON.parse(body);
-                    resolve(balance);
+                    try {
+                        let balance = JSON.parse(body);
+                        resolve(balance);
+                    } catch(error) {
+                        reject(error);
+                    }
                 }
             });
         });
@@ -23,8 +27,12 @@ class RpcRequest {
                 if(error){
                     reject(error);
                 } else {
-                    var statusData = JSON.parse(body);
-                    resolve(statusData);
+                    try {
+                        let statusData = JSON.parse(body);
+                        resolve(statusData);
+                    } catch(error) {
+                        reject(error);
+                    }
                 }
             });
         });

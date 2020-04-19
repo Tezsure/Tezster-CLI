@@ -146,7 +146,7 @@ class Contracts {
             Logger.error(`Contract deployment has failed : ${JSON.stringify(result)}`);
             return;
         } catch(error) {
-            var parseError = `${error}`.indexOf('Instead, ');
+            let parseError = `${error}`.indexOf('Instead, ');
             Logger.error(`${error}`.substring(0, parseError != -1  ? parseError : `${error}`.length));
         }
     }
@@ -203,7 +203,7 @@ class Contracts {
           return;
         }
         catch(error) {
-            var parseError = `${error}`.indexOf('Instead, ');
+            let parseError = `${error}`.indexOf('Instead, ');
             Logger.error(`${error}`.substring(0, parseError != -1  ? parseError : `${error}`.length));
         }
     }
@@ -249,7 +249,7 @@ class Contracts {
 
         try {
             for(var i=0;i<config.contracts.length;i++) {
-                if(config.contracts[i].pkh == contract  || config.contracts[i].label == contract) {
+                if(config.contracts[i].pkh === contract  || config.contracts[i].label === contract) {
                     Logger.info(`contract-'${contract}' successfully removed`)
                     config.contracts.splice(i, 1);
                     jsonfile.writeFile(confFile, config);

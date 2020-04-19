@@ -100,7 +100,7 @@ class Accounts{
     }
 
     async getBalanceAccounts(account) {
-        var pkh = account, f;
+        let pkh = account, f;
         const tezosNode = config.provider;
         if (f = Helper.findKeyObj(config.identities, pkh)) {
             pkh = f.pkh;
@@ -117,15 +117,15 @@ class Accounts{
         }
 
         try {
-        let balance = await RpcRequest.fetchBalance(tezosNode, pkh);
-        Logger.info(Helper.formatTez(balance));  
+            const balance = await RpcRequest.fetchBalance(tezosNode, pkh);
+            Logger.info(Helper.formatTez(balance));  
         } catch(error) {
             Logger.error(`${error}`);
         }
     }
 
     async createTestnetAccount(args) {
-        var accountLabel = args[0];
+        const accountLabel = args[0];
         const conseiljs = require(CONSEIL_JS);
         const keys = this.getKeys(accountLabel);
         if(keys) {
@@ -226,20 +226,20 @@ class Accounts{
             return;
         }
 
-        if(keys.label.includes('bootstrap1' || 'bootstrap2') || keys.label.includes('bootstrap3') || keys.label.includes('bootstrap4') || keys.label.includes('bootstrap5')) {
+        if(keys.label.match(/bootstrap[1-5]/)) {
             Logger.error(`Bootstrapped accounts Can't deleted.`);
             return;
         }
 
         try {
             for(var i=0;i<config.accounts.length;i++) {
-                if(config.accounts[i].identity == account  || config.accounts[i].label == account || config.accounts[i].pkh == account) {
+                if(config.accounts[i].identity === account  || config.accounts[i].label === account || config.accounts[i].pkh === account) {
                     config.accounts.splice(i, 1);
                 }
             }
             for(var i=0;i<config.identities.length;i++) {
-                if(config.identities[i].pkh == account  || config.identities[i].label == account) {
-                    Logger.info(`Account-'${account}' successfully removed`)
+                if(config.identities[i].pkh === account  || config.identities[i].label === account) {
+                    Logger.info(`Account-'${account}' successfully removed`);
                     config.identities.splice(i, 1);
                     jsonfile.writeFile(confFile, config);
                 }

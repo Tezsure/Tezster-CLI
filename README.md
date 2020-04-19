@@ -101,4 +101,4 @@ We’re building a lot of exciting features which will be released soon, So stay
 keep developing
 ```
 
-**Reach out to our [error section](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix) to get walkthrough throughout the known errors. For any help or to report any issues please follow the [link](https://github.com/Tezsure/Tezster-CLI/issues).**
+**Please go through our [error section](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix) to get information about the common errors and fixes. For any help or to report any issues please follow the [link](https://github.com/Tezsure/Tezster-CLI/issues).**

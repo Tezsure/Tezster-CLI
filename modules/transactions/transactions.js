@@ -30,11 +30,11 @@ class Transactions {
     }
 
     async transferAmount(args) {
-        var amount = parseFloat(args[0]), from = args[1], to = args[2], fees = args[3], f;
+        let amount = parseFloat(args[0]), from = args[1], to = args[2], fees = args[3], f;
         
         const conseiljs = require(CONSEIL_JS);
         const tezosNode = config.provider;
-        var keys = this.getKeys(from);
+        let keys = this.getKeys(from);
         if(!keys) {
             Logger.error(`Sender account label doesn't exist.`);
             return;

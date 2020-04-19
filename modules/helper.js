@@ -24,9 +24,7 @@ class Helper {
     }
 
     static confirmNodeProvider(tezosNode) {
-        if(tezosNode.includes('localhost')) {
-            return true;
-        }
+        return tezosNode.includes('localhost');
     }
 
 }
