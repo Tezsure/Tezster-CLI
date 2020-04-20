@@ -11,6 +11,7 @@ export declare namespace TezosConstants {
     const DefaultDelegationFee = 1258;
     const P005ManagerContractWithdrawalGasLimit = 26283;
     const P005ManagerContractDepositGasLimit = 15285;
+    const P005ManagerContractWithdrawalStorageLimit = 300;
     const DefaultBatchDelay: number;
     const DefaultBlockTime: number;
 }
