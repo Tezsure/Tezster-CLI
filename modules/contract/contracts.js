@@ -1,77 +1,112 @@
 const confFile = __dirname + '/../../config.json';
 const jsonfile = require('jsonfile');
-var eztz = {};
 var config = jsonfile.readFileSync(confFile);
-const ConseilJS = '../../lib/conseiljs';
+const CONSEIL_JS = '../../lib/conseiljs';
 const TESTNET_NAME = 'carthagenet';
 
+const Logger = require('../logger');
 const { Helper } = require('../helper');
 
 class Contracts {
 
     async listContracts() {
-        await this.loadTezsterConfig();    
+        Logger.verbose('Command : tezster list-contracts');
         if(Object.keys(config.contracts).length > 0) {        
-            for(var i in config.contracts) {
-                console.log(Helper.output(config.contracts[i].label + ' - ' + config.contracts[i].pkh + ' (' + config.contracts[i].identity + ')'));        
+            for(var i in config.contracts) { 
+                Logger.info(config.contracts[i].label + ' - ' + config.contracts[i].pkh + ' (' + config.contracts[i].identity + ')');
             }
         } else {
-            console.log(Helper.outputError('No Contracts are Available !!'));
+            Logger.error('No Contracts are Available !!');
         }
     }
 
     async deployContract(args) {
+        Logger.verbose(`Command : tezster deploy ${args}`);
         if (args.length < 4) {
-            console.log(Helper.outputInfo('Incorrect usage of deploy command \nCorrect usage: - tezster deploy <contract-label> <contract-absolute-path> <init-storage-value> <account>'));
+            Logger.warn('Incorrect usage of deploy command \nCorrect usage: - tezster deploy <contract-label> <contract-absolute-path> <init-storage-value> <account> [options]');
             return;
         }
-        await this.loadTezsterConfig(); 
     
-        let result = await this.deploy(args[0], args[1], args[2], args[3]);
-        console.log(result);
-        console.log(Helper.outputInfo(`If you're using ${TESTNET_NAME} node, use https://${TESTNET_NAME}.tzstats.com to check contract/transactions`));
+        await this.deploy(args[0], args[1], args[2], args[3], args[5]);
+        Logger.warn(`If you're using ${TESTNET_NAME} node, use https://${TESTNET_NAME}.tzstats.com to check contract/transactions`);
     }
 
-
     async callContract(args) {
+        Logger.verbose(`Command : tezster call ${args}`);
         if (args.length < 3) {
-            console.log(Helper.outputInfo('Incorrect usage of call command \nCorrect usage: - tezster call <contract-name> <argument-value> <account>'));
+            Logger.warn('Incorrect usage of call command \nCorrect usage: - tezster call <contract-name> <argument-value> <account> [options]');
             return;
         }
-        await this.loadTezsterConfig();
         
-        let result = await this.invokeContract(args[0], args[1], args[2]);
-        console.log(result);
-        console.log(Helper.outputInfo(`If you're using ${TESTNET_NAME} node, use https://${TESTNET_NAME}.tzstats.com to check contract/transactions`));
+        await this.invokeContract(args[0], args[1], args[2], args[4]);
+        Logger.warn(`If you're using ${TESTNET_NAME} node, use https://${TESTNET_NAME}.tzstats.com to check contract/transactions`);
     }
 
     async getStorage(args) {
+        Logger.verbose(`Command : tezster get-storage ${args}`);
         if (args.length < 1) {
-            console.log(Helper.outputInfo('Incorrect usage of get-storage command \nCorrect usage: - tezster get-storage <contract-name>'));
+            Logger.warn('Incorrect usage of get-storage command \nCorrect usage: - tezster get-storage <contract-name>');
             return;
         }
-        await this.loadTezsterConfig(); 
         
-        let result = await this.getContractStorage(args[0]);
-        console.log(result);
+        await this.getContractStorage(args[0]);
     }
 
     async addContract(args) {
+        Logger.verbose(`Command : tezster add-contract ${args}`);
         if (args.length < 2) {
-            return console.log(Helper.outputError('Incorrect usage - tezster add-contract <label> <Address>'));
+            Logger.warn('Incorrect usage - tezster add-contract <label> <Address>');
+            return;
         }
-        await this.loadTezsterConfig();
-        console.log(this.addContractToConfig(args[0], args[1], ''));      
+        this.addContractToConfig(args[0], args[1], '');
     }
 
-    async deploy(contractLabel, contractPath, initValue, account) {
+    async getEntryPoints(args) {
+        Logger.verbose(`Command : tezster extract-entry-points ${args}`);
+        if (args.length < 1) {
+            Logger.warn('Incorrect usage - tezster list-entry-points <contract-absolute-path>');
+            return;
+        }
+        this.extractEntryPoints(args[0]);
+    }
+
+    async removeContract(args) {
+        Logger.verbose(`Command : tezster remove-contract ${args}`);
+        if (args.length < 1) {
+            Logger.warn(`Incorrect usage of remove-contract command \nCorrect usage: - tezster remove-contract <contract-label>`);
+            return;
+        }
+        await this.deleteContract(args[0]);
+    }
+
+    async extractEntryPoints(contractPath) {
         const fs = require('fs');
-        const conseiljs = require(ConseilJS);
+        const conseiljs = require(CONSEIL_JS);
+
+        try {
+            const contractCode = fs.readFileSync(contractPath, 'utf8');
+            const entryPoints = await conseiljs.TezosContractIntrospector.generateEntryPointsFromCode(contractCode);
+            const storageFormat = await conseiljs.TezosLanguageUtil.preProcessMichelsonScript(contractCode);
+            Logger.info(`\nInitial Storage input must be of type : ${storageFormat[1].slice(8)}`);
+            entryPoints.forEach(p => {
+                Logger.info('-------------------------------------------------------------------------------------------------------------------------------------');
+                Logger.info(`\nName => ${p.name}\n\nParameters => (${p.parameters.map(pp => (pp.name || '') + pp.type).join(', ')})\n\nStructure => ${p.structure}\n\nExample => ${p.generateSampleInvocation()}\n`);
+            });
+        }
+        catch(error) {
+            Logger.error(`${error}`);
+        }
+    }
+
+    async deploy(contractLabel, contractPath, initValue, account, amount) {
+        const fs = require('fs');
+        const conseiljs = require(CONSEIL_JS);
         const tezosNode = config.provider;  
 
         const keys = this.getKeys(account);
         if(!keys) {
-            return Helper.outputError(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster. Run 'tezster list-accounts' to get all accounts`);
+            Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster. Run 'tezster list-accounts' to get all accounts`);
+            return;
         }
         const keystore = {
             publicKey: keys.pk,
@@ -83,40 +118,46 @@ class Contracts {
       
         let contractObj = Helper.findKeyObj(config.contracts, contractLabel);
         if (contractObj) {
-            return Helper.outputError(`This contract label is already in use. Please use a different one.`);
+            Logger.error(`This contract label is already in use. Please use a different one.`);
+            return;
         }
+
+        amount = amount | 0;
       
         try {
             const contract = fs.readFileSync(contractPath, 'utf8');
             const result = await conseiljs.TezosNodeWriter.sendContractOriginationOperation(
-                                      tezosNode, keystore, 0, undefined,
+                                      tezosNode, keystore, amount*1000000, undefined,
                                       100000, '', 10000, 100000, 
-                                      contract, initValue, conseiljs.TezosParameterFormat.Michelson);
+                                      contract, initValue, conseiljs.TezosParameterFormat.Michelson);         
             if (result.results) {
                 switch(result.results.contents[0].metadata.operation_result.status) {
                     case 'applied':
-                        let opHash = result.operationGroupID.slice(1,result.operationGroupID.length-2);
-                        opHash = eztz.contract.hash(opHash);
-                        this.addNewContract(contractLabel, opHash , keys.pkh);
-                        return Helper.output(`contract '${contractLabel}' has been deployed at ${opHash}`);
-          
+                        let opHash = result.results.contents[0].metadata.operation_result.originated_contracts;
+                        this.addNewContract(contractLabel, opHash[0] , keys.pkh , config.provider);
+                        Logger.info(`contract '${contractLabel}' has been deployed at ${opHash}`);
+                        return;
                     case 'failed':
                     default:
-                        return Helper.outputError(`Contract deployment has failed : ${JSON.stringify(result.results.contents[0].metadata.operation_result)}`)
+                        Logger.error(`Contract deployment has failed : ${JSON.stringify(result.results.contents[0].metadata.operation_result)}`)
+                        return;
               }
             }
-            return Helper.outputError(`Contract deployment has failed : ${JSON.stringify(result)}`);
+            Logger.error(`Contract deployment has failed : ${JSON.stringify(result)}`);
+            return;
         } catch(error) {
-            return Helper.outputError(error);
+            let parseError = `${error}`.indexOf('Instead, ');
+            Logger.error(`${error}`.substring(0, parseError != -1  ? parseError : `${error}`.length));
         }
     }
 
-    async invokeContract(contract, argument, account) {
-        const conseiljs = require(ConseilJS);
+    async invokeContract(contract, argument, account, amount) {
+        const conseiljs = require(CONSEIL_JS);
         const tezosNode = config.provider;
         const keys = this.getKeys(account);
         if(!keys) {
-            return Helper.outputError(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster. Run 'tezster list-accounts' to get all accounts`);
+            Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster. Run 'tezster list-accounts' to get all accounts`);
+            return;
         }
         const keystore = {
             publicKey: keys.pk,
@@ -133,12 +174,15 @@ class Contracts {
         }
         
         if (!contractAddress) {
-          return Helper.outputError(`couldn't find the contract, please make sure contract label or address is correct!`);
+          Logger.error(`Couldn't find the contract, please make sure contract label or address is correct!`);
+          return;
         }
+
+        amount = amount | 0;
       
         try {
           const result = await conseiljs.TezosNodeWriter.sendContractInvocationOperation(
-                                      tezosNode, keystore, contractAddress, 0, 100000, '', 1000, 100000, undefined, 
+                                      tezosNode, keystore, contractAddress, amount*1000000, 100000, '', 10000, 100000, undefined, 
                                       argument, conseiljs.TezosParameterFormat.Michelson);
           
           if (result.results) {
@@ -146,21 +190,27 @@ class Contracts {
               case 'applied':
                   let opHash = result.operationGroupID.slice(1,result.operationGroupID.length-2);
                   this.addTransaction('contract-call', opHash, keys.pkh, contractObj.label, 0);
-                  return Helper.output(`Injected operation with hash ${opHash}`);
+                  Logger.info(`Injected operation with hash ${opHash}`);
+                  return;
       
               case 'failed':
               default:
-                  return Helper.outputError(`Contract calling has failed : ${JSON.stringify(result.results.contents[0].metadata.operation_result)}`)
+                  Logger.error(`Contract calling has failed : ${JSON.stringify(result.results.contents[0].metadata.operation_result)}`)
+                  return;
             }
           }
-          return Helper.outputError(`Contract calling has failed : ${JSON.stringify(result)}`);
+          Logger.error(`Contract calling has failed : ${JSON.stringify(result)}`);
+          return;
         }
         catch(error) {
-            return Helper.outputError(error);
+            let parseError = `${error}`.indexOf('Instead, ');
+            Logger.error(`${error}`.substring(0, parseError != -1  ? parseError : `${error}`.length));
         }
     }
 
     async getContractStorage(contract) {
+        const conseiljs = require(CONSEIL_JS);
+        const tezosNode = config.provider;
         let contractAddress = '';
         let contractObj = Helper.findKeyObj(config.contracts, contract);
         if (contractObj) {
@@ -168,31 +218,59 @@ class Contracts {
         }
       
         if (!contractAddress) {
-            return Helper.outputError(`couldn't find the contract, please make sure contract label or address is correct!`);
+            Logger.error(`couldn't find the contract, please make sure contract label or address is correct!`);
+            return;
         }
       
         try {
-            let storage = await eztz.contract.storage(contractAddress);
-            return Helper.output(JSON.stringify(storage));
+            let storage = await conseiljs.TezosNodeReader.getContractStorage(tezosNode, contractAddress);
+            Logger.info(JSON.stringify(storage));
         }
         catch(error) {
-            return Helper.outputError(error);
+            Logger.error(`${error}`);
         }
     }
 
     addContractToConfig(contractLabel, contractAddr) {
         let contractObj = Helper.findKeyObj(config.contracts, contractLabel);
         if (contractObj) {
-            return Helper.outputError('This contract label is already in use. Please use a different one.');
+            Logger.error('This contract label is already in use. Please use a different one.');
+            return;
         }
-        this.addNewContract(contractLabel, contractAddr, '');
+        this.addNewContract(contractLabel, contractAddr, '', '');
     }
 
-    addNewContract(label, opHash, pkh) {
+    async deleteContract(contract) {
+        let contractObj = Helper.findKeyObj(config.contracts, contract);
+        if (!contractObj) {
+            Logger.error(`Please make sure the contract with label '${contract}' exists.`);
+            return;
+        }
+
+        try {
+            for(var i=0;i<config.contracts.length;i++) {
+                if(config.contracts[i].pkh === contract  || config.contracts[i].label === contract) {
+                    Logger.info(`contract-'${contract}' successfully removed`)
+                    config.contracts.splice(i, 1);
+                    jsonfile.writeFile(confFile, config);
+                }
+            }
+        }
+        catch(error) {
+            Logger.error(`Error occured while removing contract : ${error}`);
+        }
+    }
+
+    addNewContract(label, opHash, pkh, nodeType) {
+        if(nodeType.includes('localhost')) {
+            nodeType = 'localnode';
+        } else {
+            nodeType = 'carthagenet'
+        }
         config.contracts.push({
             label : label,
             pkh : opHash,
-            identity : pkh,
+            identity : `${nodeType} - ` + pkh,
         });
         jsonfile.writeFile(confFile, config);
     }
@@ -218,18 +296,6 @@ class Contracts {
             keys = Helper.findKeyObj(config.identities, f.identity);
         }
         return keys;
-    }
-
-    async loadTezsterConfig() {
-        eztz = require('../../lib/eztz.cli.js').eztz;
-        const jsonfile = require('jsonfile');
-        config=jsonfile.readFileSync(confFile);
-        if (config.provider) {
-            eztz.node.setProvider(config.provider);
-        }  
-        const _sodium = require('libsodium-wrappers');
-        await _sodium.ready;
-        eztz.library.sodium = _sodium;
     }
 
 }

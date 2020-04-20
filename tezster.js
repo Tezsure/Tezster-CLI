@@ -14,18 +14,25 @@ program
         tezstermanager.setupNodes();
 });
 
-/******* To start tezos nodes */
+/******* To start local tezos nodes on user system*/
 program.command('start-nodes')
     .description('Starts Tezos nodes')
     .action(function(){  
         tezstermanager.startNodes();
 });
 
-/******* To stop tezos nodes */
+/******* To stop local tezos nodes on user system*/
 program.command('stop-nodes')
     .description('Stops Tezos nodes')
     .action(function() {
         tezstermanager.stopNodes();
+});
+
+/******* To get local nodes current status*/
+program.command('node-status')
+    .description('Fetch Tezos local nodes current status')
+    .action(function() {
+        tezstermanager.nodeStatus();
 });
 
 /******* To set the Provider */
@@ -65,7 +72,7 @@ program
 /******* To Create an account */
 program
     .command('create-account')
-    .usage('<identity> <label> <amount>')
+    .usage('<account-label>')
     .description('To create a new account')
     .action(async function(){  
         tezstermanager.createAccount(); 
@@ -89,6 +96,15 @@ program
         tezstermanager.activateTestnetAccount();
 });
 
+/******* To remove an account */
+program
+    .command('remove-account')
+    .usage('<account-label/identity/hash>')
+    .description('To remove an existing account')
+    .action(async function(){  
+        tezstermanager.removeAccount(); 
+});
+
 /******* TO get the list Contracts */
 program
     .command('list-contracts')
@@ -102,6 +118,7 @@ program
     .command('deploy')
     .usage('<contract-label> <contract-absolute-path> <init-storage-value> <account>')
     .description('Deploys a smart contract written in Michelson')
+    .option('-a, --amount <amount>', 'Initial funding amount to new account')
     .action(function(){
         tezstermanager.deployContract();
 });
@@ -111,6 +128,7 @@ program
     .command('call')
     .usage('<contract-name/address> <argument-value> <account>')
     .description('Calls a smart contract with given value provided in Michelson format')
+    .option('-a, --amount <amount>', 'Funding amount to deployed contract')
     .action(function(){
         tezstermanager.callContract();
 });
@@ -133,6 +151,15 @@ program
         tezstermanager.addContract();    
 });
 
+/******* To remove a contract */
+program
+    .command('remove-contract')
+    .usage('<contract-label>')
+    .description('To remove deployed contract from list')
+    .action(async function(){  
+        tezstermanager.removeContract(); 
+});
+
 /******* To transfer the amount */
 program
     .command('transfer')
@@ -148,6 +175,15 @@ program
     .description('List down all the transactions')
     .action(function(){  
         tezstermanager.listTransactions();
+});
+
+/* list down all the entry points and initial storage format from smart contract */
+program
+    .command('extract-entry-points')
+    .usage('<contract-absolute-path>')
+    .description('Fetch all entry points and initial storage format from smart contract')
+    .action(function(){
+        tezstermanager.extractEntryPoints();
 });
 
 /* Get all logs file in archive file fromat on user system */
@@ -169,26 +205,28 @@ if (process.argv.length <= 2){
 
 var commands=process.argv[2];
 const validCommands = [  
-    'list-Identities',
-    'get-logs',
-    'list-accounts',
-    'list-contracts',
-    'get-balance',
-    'transfer',
-    'set-provider',
-    'get-provider',
-    'stop-nodes',
-    'start-nodes',
     'setup',
-    'call',
+    'start-nodes',
+    'stop-nodes',
+    'node-status',
+    'get-logs',
+    'get-provider',
+    'set-provider',
+    'transfer',
+    'get-balance',
+    'extract-entry-points', 
     'deploy',
-    'help',
-    'create-account',
-    'list-transactions',
+    'call',
     'get-storage',
+    'add-contract',
+    'list-contracts',
+    'remove-contract',
+    'list-accounts',
+    'create-account',
+    'remove-account',
     'add-testnet-account',
     'activate-testnet-account',
-    'add-contract',
+    'list-transactions',
     '-v',
     '--version',
     '--help',
