@@ -1,5 +1,5 @@
 const Docker = require('dockerode');
-var docker = new Docker({ socketPath: '/var/run/docker.sock' });
+var docker = new Docker({ socketPath: '/var/run/docker.sock', hosts: 'tcp://0.0.0.0:2376' });
 const child_process = require('child_process'),
       IMAGE_TAG = 'tezsureinc/tezster:1.0.2',
       CONTAINER_NAME = 'tezster',
@@ -28,11 +28,11 @@ class Setup {
 
     startNodes() {
         Logger.verbose('Command : tezster start-nodes');
-        child_process.exec(`docker images ${IMAGE_TAG} --format '{{.Repository}}:{{.Tag}}:{{.Size}}'`,
+        child_process.exec(`docker images ${IMAGE_TAG} --format {{.Repository}}:{{.Tag}}:{{.Size}}`,
         (error, _stdout, _stderr) => {
             if (_stdout === `${IMAGE_TAG}:2.96GB\n`) {
 
-                child_process.exec(`docker ps -a -q  --filter ancestor=${IMAGE_TAG} --format '{{.Image}}:{{.Names}}'`,
+                child_process.exec(`docker ps -a -q  --filter ancestor=${IMAGE_TAG} --format {{.Image}}:{{.Names}}`,
                 (error, _stdout, _stderr) => {
                     let self = this;
                     if (_stdout.includes(`${IMAGE_TAG}:${CONTAINER_NAME}\n`)) {
@@ -57,7 +57,7 @@ class Setup {
 
     stopNodes() {
         Logger.verbose('Command : tezster stop-nodes');
-        child_process.exec(`docker ps -a -q --format '{{.Image}}'`,(error, _stdout, _stderr) => {
+        child_process.exec(`docker ps -a -q --format {{.Image}}`,(error, _stdout, _stderr) => {
             if (_stdout.includes(`${IMAGE_TAG}\n`)) {
                 Logger.warn(`stopping the nodes....`);
                 const container = docker.getContainer(CONTAINER_NAME);
@@ -74,7 +74,7 @@ class Setup {
 
     getLogFiles() {
         Logger.verbose('Command : tezster get-logs');
-        child_process.exec(`docker ps -q --format '{{.Image}}'`,(error, _stdout, _stderr) => {
+        child_process.exec(`docker ps -q --format {{.Image}}`,(error, _stdout, _stderr) => {
             if (_stdout.includes(`${IMAGE_TAG}\n`)) {
                 Logger.warn(`getting log file....please wait for some time`);
                 const container = docker.getContainer(CONTAINER_NAME);
