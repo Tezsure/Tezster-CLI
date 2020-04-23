@@ -7,7 +7,7 @@ const tezstermanager = new TezsterManager();
 
 /******* To setup tezos nodes on user system */
 program
-    .version('0.2.1', '-v, --version')
+    .version('0.2.2-beta', '-v, --version')
     .command('setup')
     .description('To set up Tezos nodes')
     .action(function(){  
@@ -179,7 +179,7 @@ program
 
 /* list down all the entry points and initial storage format from smart contract */
 program
-    .command('extract-entry-points')
+    .command('list-entry-points')
     .usage('<contract-absolute-path>')
     .description('Fetch all entry points and initial storage format from smart contract')
     .action(function(){
@@ -214,7 +214,7 @@ const validCommands = [
     'set-provider',
     'transfer',
     'get-balance',
-    'extract-entry-points', 
+    'list-entry-points', 
     'deploy',
     'call',
     'get-storage',

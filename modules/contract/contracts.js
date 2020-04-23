@@ -62,7 +62,7 @@ class Contracts {
     }
 
     async getEntryPoints(args) {
-        Logger.verbose(`Command : tezster extract-entry-points ${args}`);
+        Logger.verbose(`Command : tezster list-entry-points ${args}`);
         if (args.length < 1) {
             Logger.warn('Incorrect usage - tezster list-entry-points <contract-absolute-path>');
             return;
