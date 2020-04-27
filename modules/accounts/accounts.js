@@ -47,13 +47,13 @@ class Accounts{
         }
     }
 
-    async createAccount(args) {   
-        Logger.verbose(`Command : tezster create-account ${args}`);
+    async createWallet(args) {   
+        Logger.verbose(`Command : tezster create-wallet ${args}`);
         if (args.length < 1) {
-            Logger.warn('Incorrect usage - tezster create-account <account-label>');
+            Logger.warn('Incorrect usage - tezster create-wallet <wallet-label>');
             return;
         }
-        this.createTestnetAccount(args);
+        this.createTestnetWallet(args);
     }
 
     async addTestnetAccount(args) {  
@@ -124,7 +124,7 @@ class Accounts{
         }
     }
 
-    async createTestnetAccount(args) {
+    async createTestnetWallet(args) {
         const accountLabel = args[0];
         const conseiljs = require(CONSEIL_JS);
         const keys = this.getKeys(accountLabel);

@@ -71,11 +71,11 @@ program
 
 /******* To Create an account */
 program
-    .command('create-account')
-    .usage('<account-label>')
+    .command('create-wallet')
+    .usage('<wallet-label>')
     .description('To create a new account')
     .action(async function(){  
-        tezstermanager.createAccount(); 
+        tezstermanager.createWallet(); 
 });
 
 /* Restores an testnet faucet account */
@@ -181,9 +181,9 @@ program
 program
     .command('list-entry-points')
     .usage('<contract-absolute-path>')
-    .description('Fetch all entry points and initial storage format from smart contract')
+    .description('List down all entry points and initial storage format from smart contract')
     .action(function(){
-        tezstermanager.extractEntryPoints();
+        tezstermanager.listEntryPoints();
 });
 
 /* Get all logs file in archive file fromat on user system */
@@ -222,7 +222,7 @@ const validCommands = [
     'list-contracts',
     'remove-contract',
     'list-accounts',
-    'create-account',
+    'create-wallet',
     'remove-account',
     'add-testnet-account',
     'activate-testnet-account',
@@ -233,10 +233,13 @@ const validCommands = [
     '-h'];
 
 if (validCommands.indexOf(commands) < 0 && process.argv.length >2 ) {
-    const availableCommands = validCommands.filter(elem => elem.indexOf(commands) > -1);
+    const re = RegExp(`.*${commands.toLowerCase().split('').join('.*')}.*`)
+    const availableCommands = validCommands.filter(elem => elem.match(re));
     console.log('\x1b[31m%s\x1b[0m', 'Error: ' + `Invalid command\nPlease run 'tezster --help' to get info about commands `);    
-    console.log('\nThe most similar commands are:');
-    console.log('\t'+availableCommands.toString().replace(/,/g,'\n\t'));    
+    if(availableCommands.toString()) {
+        console.log('\nThe most similar commands are:');
+        console.log('\t'+availableCommands.toString().replace(/,/g,'\n\t'));   
+    } 
 }
 
 program.parse(process.argv);
