@@ -1,10 +1,6 @@
 {
   "name": "tezster",
-<<<<<<< HEAD
-  "version": "0.2.2-beta",
-=======
   "version": "0.2.3",
->>>>>>> master
   "description": "A JavaScript-based private Tezos Blockchain Dev Tool that lives entirely on your local machine.",
   "main": "tezster.js",
   "scripts": {
