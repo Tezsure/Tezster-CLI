@@ -67,7 +67,7 @@ class Contracts {
             Logger.warn('Incorrect usage - tezster list-entry-points <contract-absolute-path>');
             return;
         }
-        this.extractEntryPoints(args[0]);
+        this.listEntryPoints(args[0]);
     }
 
     async removeContract(args) {
@@ -79,7 +79,7 @@ class Contracts {
         await this.deleteContract(args[0]);
     }
 
-    async extractEntryPoints(contractPath) {
+    async listEntryPoints(contractPath) {
         const fs = require('fs');
         const conseiljs = require(CONSEIL_JS);
 
@@ -128,7 +128,7 @@ class Contracts {
             const contract = fs.readFileSync(contractPath, 'utf8');
             const result = await conseiljs.TezosNodeWriter.sendContractOriginationOperation(
                                       tezosNode, keystore, amount*1000000, undefined,
-                                      100000, '', 10000, 100000, 
+                                      100000, '', 10000, 500000, 
                                       contract, initValue, conseiljs.TezosParameterFormat.Michelson);         
             if (result.results) {
                 switch(result.results.contents[0].metadata.operation_result.status) {

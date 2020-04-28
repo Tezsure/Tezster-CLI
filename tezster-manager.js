@@ -50,8 +50,8 @@ class TezsterManager{
         this.accounts.getBalance(args);
     }
 
-    createAccount(){
-        this.accounts.createAccount(args);
+    createWallet(){
+        this.accounts.createWallet(args);
     }
 
     addTestnetAccount(){
@@ -86,7 +86,7 @@ class TezsterManager{
         this.contracts.addContract(args);
     }
 
-    extractEntryPoints(){
+    listEntryPoints(){
         this.contracts.getEntryPoints(args);
     }
 
