@@ -1,6 +1,6 @@
 {
   "name": "tezster",
-  "version": "0.2.2-beta",
+  "version": "0.2.3",
   "description": "A JavaScript-based private Tezos Blockchain Dev Tool that lives entirely on your local machine.",
   "main": "tezster.js",
   "scripts": {
@@ -9,22 +9,6 @@
   "bin": {
     "tezster": "./tezster.js"
   },
-  "keywords": [
-    "tezster",
-    "tezos",
-    "tezsure",
-    "blockchain"
-  ],
-  "author": "Tezsure Inc.",
-  "contributors": [
-    {
-      "name": "Kapil Agrawal",
-      "email": "kapil@tezsure.com",
-      "url": "https://github.com/kapiltez"
-    }
-  ],
-  "license": "MIT",
-  "homepage": "https://docs.tezster.tech/tezster-cli",
   "dependencies": {
     "base-n": "^1.0.0",
     "big-integer": "^1.6.45",
@@ -55,5 +39,21 @@
     "winston": "^3.2.1",
     "xmlhttprequest": "^1.8.0",
     "zxcvbn": "^4.4.2"
-  }
+  },
+  "keywords": [
+    "tezster",
+    "tezos",
+    "tezsure",
+    "blockchain"
+  ],
+  "author": "Tezsure Inc.",
+  "contributors": [
+    {
+      "name": "Kapil Agrawal",
+      "email": "kapil@tezsure.com",
+      "url": "https://github.com/kapiltez"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://docs.tezster.tech/tezster-cli"
 }
