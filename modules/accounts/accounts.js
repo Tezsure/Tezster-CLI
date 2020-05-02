@@ -176,7 +176,7 @@ class Accounts{
             this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, config.provider);     
             jsonfile.writeFile(confFile, config);
-            Logger.info(`Successfully restored wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
+            Logger.info(`Successfully restored the wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
         } catch(error) {
             Logger.error(`Error occured while restoring the wallet: ${error}`);
         }
