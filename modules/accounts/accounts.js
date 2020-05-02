@@ -62,7 +62,16 @@ class Accounts{
             Logger.warn('Incorrect usage of add-testnet-account command \nCorrect usage: - tezster add-testnet-account <account-label> <absolut-path-to-json-file>');
             return;
         }
-        this.restoreAlphanetAccount(args[0], args[1]);
+        this.addFaucetAccount(args[0], args[1]);
+    }
+
+    async restoreAccount(args) {  
+        Logger.verbose(`Command : tezster restore-account ${args}`);
+        if (args.length < 2) {
+            Logger.warn(`Incorrect usage of restore-account command \nCorrect usage: - tezster restore-account <account-label> <mnemonic-phrase> \n(Note: Mnemonic phrase must be enclose between '')`);
+            return;
+        }
+        this.restoreExistingAccount(args[0], args[1]);
     }
 
     async activateTestnetAccount(args) {  
@@ -111,8 +120,10 @@ class Accounts{
         }
 
         const keys = this.getKeys(account);
-        if(!keys) {
-            Logger.error(`Account with this label doesn't exists.`);
+        const contractObj = Helper.findKeyObj(config.contracts, account);
+
+        if(!keys && !contractObj.label && !contractObj.pkh) {
+            Logger.error(`Account with label '${account}' doesn't exists.`);
             return;
         }
 
@@ -120,7 +131,13 @@ class Accounts{
             const balance = await RpcRequest.fetchBalance(tezosNode, pkh);
             Logger.info(Helper.formatTez(balance));  
         } catch(error) {
-            Logger.error(`${error}`);
+            if(error.toString().includes(`connect ECONNREFUSED`)) {
+                Helper.logsCollection(`Error occured while fetching balance: ${error}`, `Make sure nodes are in running state....`);
+            } else if(error.toString().includes(`Unexpected end of JSON input`)) {
+                Helper.logsCollection(`Error occured while fetching balance: ${error}`, `Make sure account '${account}' is activated on the current provider....`);
+            } else {
+                Logger.error(`Error occured while fetching balance: ${error}`);
+            }
         }
     }
 
@@ -142,11 +159,30 @@ class Accounts{
             Logger.info(`Successfully created wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
             Logger.warn(`We suggest you to store following Mnemonic Pharase which can be used to restore wallet in case you lost wallet:\n'${mnemonic}'`);
         } catch(error) {
-            Logger.error(`${error}`);
+            Logger.error(`Error occured while creating the wallet: ${error}`);
         }
     }
 
-    async restoreAlphanetAccount(accountLabel, accountFilePath) {
+    async restoreExistingAccount(accountLabel, mnemonic) {
+        const conseiljs = require(CONSEIL_JS);
+        const keys = this.getKeys(accountLabel);
+        if(keys) {
+            Logger.error(`Account with this label already exists.`);
+            return;
+        }
+
+        try {
+            const keystore = await conseiljs.TezosWalletUtil.unlockIdentityWithMnemonic(mnemonic, '');
+            this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
+            this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, config.provider);     
+            jsonfile.writeFile(confFile, config);
+            Logger.info(`Successfully restored the account with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
+        } catch(error) {
+            Logger.error(`Error occured while restoring the account: ${error}`);
+        }
+    }
+
+    async addFaucetAccount(accountLabel, accountFilePath) {
         const fs = require('fs');
         const conseiljs = require(CONSEIL_JS);
         const keys = this.getKeys(accountLabel);
@@ -175,9 +211,9 @@ class Accounts{
 
             this.addIdentity(accountLabel, alphakeys.privateKey, alphakeys.publicKey, alphakeys.publicKeyHash, accountJSON.secret);
             this.addAccount(accountLabel, alphakeys.publicKeyHash, accountLabel, config.provider);
-            Logger.info(`successfully restored testnet faucet account: ${accountLabel}-${alphakeys.publicKeyHash}`);
+            Logger.info(`successfully added testnet faucet account: ${accountLabel}-${alphakeys.publicKeyHash}`);
         } catch(error) {
-            Logger.error(`Error occured while restroing account : ${error}`);
+            Logger.error(`Error occured while adding testnet faucet account : ${error}`);
         }
     }
 
@@ -227,7 +263,7 @@ class Accounts{
         }
 
         if(keys.label.match(/bootstrap[1-5]/)) {
-            Logger.error(`Bootstrapped accounts Can't deleted.`);
+            Logger.error(`Bootstrapped accounts can't be deleted.`);
             return;
         }
 

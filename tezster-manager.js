@@ -62,6 +62,10 @@ class TezsterManager{
         this.accounts.activateTestnetAccount(args);
     }
 
+    restoreAccount(){
+        this.accounts.restoreAccount(args);
+    }
+
     listContracts(){
         this.contracts.listContracts();
     }

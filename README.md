@@ -18,7 +18,7 @@ Follow below steps to get started with Tezster-CLI.
 2. Mac OS X
 3. Windows 10 <br />
 
-*Note : We recommend linux platform for tezster cli. You may encounter some issues in OSX and Windows 10 due to docker. If you face any please report in our [issues section](https://github.com/Tezsure/Tezster-CLI/issues).*
+*Note : Currently we are supporting Linux platform for running local nodes. You may encounter local node related issues in Mac OS X and Windows due to docker. If you are using Mac OS X and Windows, you can switch to remote nodes to use our functionalities.*
 
 ### Node.js Installation
 Run following commands to install Node.js LTS version 

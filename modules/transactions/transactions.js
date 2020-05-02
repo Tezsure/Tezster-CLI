@@ -40,6 +40,11 @@ class Transactions {
             return;
         }
 
+        if(!this.getKeys(to)) {
+            Logger.error(`Receiver account doesn't exist.`);
+            return;
+        }
+
         const keystore = {
             publicKey: keys.pk,
             privateKey: keys.sk,
@@ -79,7 +84,13 @@ class Transactions {
             Logger.info(`Transfer complete - operation hash #${JSON.stringify(result.operationGroupID)}`);
         }
         catch(error) {
-            Logger.error(`${error}`);
+            if(error.toString().includes(`checksum`)) {
+                Helper.logsCollection(`Error occured while transferring tez ${error}`, `Account doesn't  exists or not activated on the network.... To list down all accounts run 'tezster list-accounts'`);
+            } else if(error.toString().includes(`empty_implicit_contract`)) {
+                Helper.logsCollection(`Error occured while transferring tez ${error}`, `Account is not activated on the current provider`);
+            } else {
+                Helper.logsCollection(`Error occured while transferring tez ${error}`, `Account doesn't exists or not activated on the current testnet provider....`);
+            }
         }
     }
 

@@ -1,3 +1,5 @@
+const Logger = require('./logger');
+
 class Helper {
     
     static formatMoney(n, c, d, t) {
@@ -25,6 +27,11 @@ class Helper {
 
     static confirmNodeProvider(tezosNode) {
         return tezosNode.includes('localhost');
+    }
+
+    static logsCollection(logsToFile, logsToConsoleAndFile) {
+        Logger.verbose(`${logsToFile}`);
+        Logger.error(`${logsToConsoleAndFile}`);
     }
 
 }
