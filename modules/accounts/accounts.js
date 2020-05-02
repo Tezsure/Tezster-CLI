@@ -65,13 +65,13 @@ class Accounts{
         this.addFaucetAccount(args[0], args[1]);
     }
 
-    async restoreAccount(args) {  
-        Logger.verbose(`Command : tezster restore-account ${args}`);
+    async restoreWallet(args) {  
+        Logger.verbose(`Command : tezster restore-wallet ${args}`);
         if (args.length < 2) {
-            Logger.warn(`Incorrect usage of restore-account command \nCorrect usage: - tezster restore-account <account-label> <mnemonic-phrase> \n(Note: Mnemonic phrase must be enclose between '')`);
+            Logger.warn(`Incorrect usage of restore-wallet command \nCorrect usage: - tezster restore-wallet <wallet-label> <mnemonic-phrase> \n(Note: Mnemonic phrase must be enclose between '')`);
             return;
         }
-        this.restoreExistingAccount(args[0], args[1]);
+        this.restoreExistingWallet(args[0], args[1]);
     }
 
     async activateTestnetAccount(args) {  
@@ -163,7 +163,7 @@ class Accounts{
         }
     }
 
-    async restoreExistingAccount(accountLabel, mnemonic) {
+    async restoreExistingWallet(accountLabel, mnemonic) {
         const conseiljs = require(CONSEIL_JS);
         const keys = this.getKeys(accountLabel);
         if(keys) {
@@ -176,9 +176,9 @@ class Accounts{
             this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, config.provider);     
             jsonfile.writeFile(confFile, config);
-            Logger.info(`Successfully restored the account with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
+            Logger.info(`Successfully restored wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
         } catch(error) {
-            Logger.error(`Error occured while restoring the account: ${error}`);
+            Logger.error(`Error occured while restoring the wallet: ${error}`);
         }
     }
 
