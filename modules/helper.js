@@ -32,7 +32,7 @@ class Helper {
         return tezosNode.includes('localhost');
     }
 
-    static errorHandler(redirctErrorLogsToFile, displayErrorLogsToConsole) {
+    static errorLogHandler(redirctErrorLogsToFile, displayErrorLogsToConsole) {
         Logger.verbose(`${redirctErrorLogsToFile}`);
         Logger.error(`${displayErrorLogsToConsole}`);
     }

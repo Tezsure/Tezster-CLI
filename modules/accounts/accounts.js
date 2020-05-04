@@ -132,9 +132,15 @@ class Accounts{
             Logger.info(Helper.formatTez(balance));  
         } catch(error) {
             if(error.toString().includes(`connect ECONNREFUSED`)) {
-                Helper.errorHandler(`Error occured while fetching balance: ${error}`, `Make sure local nodes are in running state....`);
+                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Make sure local nodes are in running state....`);
             } else if(error.toString().includes(`Unexpected end of JSON input`)) {
-                Helper.errorHandler(`Error occured while fetching balance: ${error}`, `Make sure account '${account}' is activated on the current provider....`);
+                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Make sure account '${account}' is activated on the current provider....`);
+            } else if(error.toString().includes(`Only absolute URLs are supported`)) {
+                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Current provider URL is not supported by network provider....`);
+            } else if(error.toString().includes(`getaddrinfo ENOTFOUND`)) {
+                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Current provider URL is not supported by network provider....`);
+            } else if(error.toString().includes(`Invalid`)) {
+                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Current provider URL is not supported by network provider....`);
             } else {
                 Logger.error(`Error occured while fetching balance:\n${error}`);
             }
@@ -251,7 +257,13 @@ class Accounts{
             const revealResult = await conseiljs.TezosNodeWriter.sendKeyRevealOperation(tezosNode, keystore);
             Logger.info(`Testnet faucet account successfully activated: ${keys.label} - ${keys.pkh} \nWith tx hash: ${JSON.stringify(revealResult.operationGroupID)}`);
         } catch(error) {
-            Logger.error(`Error occured while activating account:\n${error}`);
+            if(error.toString().includes(`Only absolute URLs are supported`)) {
+                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Current provider URL is not supported by network provider....`);
+            } else if(error.toString().includes(`getaddrinfo ENOTFOUND`)) {
+                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Current provider URL is not supported by network provider....`);
+            } else {
+                Logger.error(`Error occured while activating account:\n${error}`);
+            }
         }
     }
 

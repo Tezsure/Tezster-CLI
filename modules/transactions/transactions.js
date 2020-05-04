@@ -85,13 +85,17 @@ class Transactions {
         }
         catch(error) {
             if(error.toString().includes(`checksum`)) {
-                Helper.errorHandler(`Error occured while transferring tez ${error}`, `Account doesn't  exists or not activated on the network.... To list down all accounts run 'tezster list-accounts'`);
+                Helper.errorLogHandler(`Error occured while transferring tez ${error}`, `Account doesn't  exists or not activated on the network.... To list down all accounts run 'tezster list-accounts'`);
             } else if(error.toString().includes(`empty_implicit_contract`)) {
-                Helper.errorHandler(`Error occured while transferring tez ${error}`, `Account is not activated on the current provider`);
+                Helper.errorLogHandler(`Error occured while transferring tez ${error}`, `Account is not activated on the current provider`);
             } else if(error.toString().includes(`connect ECONNREFUSED`)) {
-                Helper.errorHandler(`Error occured while fetching balance: ${error}`, `Make sure local nodes are in running state....`);
+                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Make sure local nodes are in running state....`);
+            } else if(error.toString().includes(`Only absolute URLs are supported`)) {
+                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Current provider URL is not supported by network provider....`);
+            } else if(error.toString().includes(`getaddrinfo ENOTFOUND`)) {
+                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Current provider URL is not supported by network provider....`);
             } else {
-                Helper.errorHandler(`Error occured while transferring tez ${error}`, `Account doesn't exists or not activated on the current testnet provider....`);
+                Helper.errorLogHandler(`Error occured while transferring tez ${error}`, `Account doesn't exists or not activated on the current testnet provider....`);
             }
         }
     }
