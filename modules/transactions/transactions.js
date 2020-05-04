@@ -85,11 +85,11 @@ class Transactions {
         }
         catch(error) {
             if(error.toString().includes(`checksum`)) {
-                Helper.errorLogging(`Error occured while transferring tez ${error}`, `Account doesn't  exists or not activated on the network.... To list down all accounts run 'tezster list-accounts'`);
+                Helper.errorLogger(`Error occured while transferring tez ${error}`, `Account doesn't  exists or not activated on the network.... To list down all accounts run 'tezster list-accounts'`);
             } else if(error.toString().includes(`empty_implicit_contract`)) {
-                Helper.errorLogging(`Error occured while transferring tez ${error}`, `Account is not activated on the current provider`);
+                Helper.errorLogger(`Error occured while transferring tez ${error}`, `Account is not activated on the current provider`);
             } else {
-                Helper.errorLogging(`Error occured while transferring tez ${error}`, `Account doesn't exists or not activated on the current testnet provider....`);
+                Helper.errorLogger(`Error occured while transferring tez ${error}`, `Account doesn't exists or not activated on the current testnet provider....`);
             }
         }
     }
