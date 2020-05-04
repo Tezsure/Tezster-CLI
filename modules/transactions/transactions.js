@@ -80,14 +80,16 @@ class Transactions {
 
         try {
             const result = await conseiljs.TezosNodeWriter.sendTransactionOperation(tezosNode, keystore, to, amount, fees, '');
-            this.addTransaction('transfer', `${JSON.stringify(result.operationGroupID)}`, from, to, amount);
-            Logger.info(`Transfer complete - operation hash #${JSON.stringify(result.operationGroupID)}`);
+            this.addTransaction('transfer', `${result.operationGroupID}`, from, to, amount);
+            Logger.info(`Transfer complete - operation hash ${result.operationGroupID}`);
         }
         catch(error) {
             if(error.toString().includes(`checksum`)) {
                 Helper.errorHandler(`Error occured while transferring tez ${error}`, `Account doesn't  exists or not activated on the network.... To list down all accounts run 'tezster list-accounts'`);
             } else if(error.toString().includes(`empty_implicit_contract`)) {
                 Helper.errorHandler(`Error occured while transferring tez ${error}`, `Account is not activated on the current provider`);
+            } else if(error.toString().includes(`connect ECONNREFUSED`)) {
+                Helper.errorHandler(`Error occured while fetching balance: ${error}`, `Make sure local nodes are in running state....`);
             } else {
                 Helper.errorHandler(`Error occured while transferring tez ${error}`, `Account doesn't exists or not activated on the current testnet provider....`);
             }

@@ -132,11 +132,11 @@ class Accounts{
             Logger.info(Helper.formatTez(balance));  
         } catch(error) {
             if(error.toString().includes(`connect ECONNREFUSED`)) {
-                Helper.errorHandler(`Error occured while fetching balance: ${error}`, `Make sure nodes are in running state....`);
+                Helper.errorHandler(`Error occured while fetching balance: ${error}`, `Make sure local nodes are in running state....`);
             } else if(error.toString().includes(`Unexpected end of JSON input`)) {
                 Helper.errorHandler(`Error occured while fetching balance: ${error}`, `Make sure account '${account}' is activated on the current provider....`);
             } else {
-                Logger.error(`Error occured while fetching balance: ${error}`);
+                Logger.error(`Error occured while fetching balance:\n${error}`);
             }
         }
     }
@@ -159,7 +159,7 @@ class Accounts{
             Logger.info(`Successfully created wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
             Logger.warn(`We suggest you to store following Mnemonic Pharase which can be used to restore wallet in case you lost wallet:\n'${mnemonic}'`);
         } catch(error) {
-            Logger.error(`Error occured while creating the wallet: ${error}`);
+            Logger.error(`Error occured while creating the wallet:\n${error}`);
         }
     }
 
@@ -178,7 +178,7 @@ class Accounts{
             jsonfile.writeFile(confFile, config);
             Logger.info(`Successfully restored the wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
         } catch(error) {
-            Logger.error(`Error occured while restoring the wallet: ${error}`);
+            Logger.error(`Error occured while restoring the wallet:\n${error}`);
         }
     }
 
@@ -213,7 +213,7 @@ class Accounts{
             this.addAccount(accountLabel, alphakeys.publicKeyHash, accountLabel, config.provider);
             Logger.info(`successfully added testnet faucet account: ${accountLabel}-${alphakeys.publicKeyHash}`);
         } catch(error) {
-            Logger.error(`Error occured while adding testnet faucet account : ${error}`);
+            Logger.error(`Error occured while adding testnet faucet account:\n${error}`);
         }
     }
 
@@ -223,15 +223,16 @@ class Accounts{
         let conseilServer = { 'url': CONSEIL_SERVER_URL, 'apiKey': CONSEIL_SERVER_APIKEY, 'network': TESTNET_NAME };
         const keys = this.getKeys(account);
 
+        if(!keys || !keys.secret) {
+            Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster.`);
+            return;
+        }
+
         if(Helper.confirmNodeProvider(tezosNode)) {
             Logger.error('Make sure your current provider is set to remote node provider.');
             return;
         }
 
-        if(!keys || !keys.secret) {
-            Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster.`);
-            return;
-        }
         const keystore = {
             publicKey: keys.pk,
             privateKey: keys.sk,
@@ -250,7 +251,7 @@ class Accounts{
             const revealResult = await conseiljs.TezosNodeWriter.sendKeyRevealOperation(tezosNode, keystore);
             Logger.info(`Testnet faucet account successfully activated: ${keys.label} - ${keys.pkh} \nWith tx hash: ${JSON.stringify(revealResult.operationGroupID)}`);
         } catch(error) {
-            Logger.error(`Error occured while activating account : ${error}`);
+            Logger.error(`Error occured while activating account:\n${error}`);
         }
     }
 
@@ -282,7 +283,7 @@ class Accounts{
             }
         }
         catch(error) {
-            Logger.error(`Error occured while removing account : ${error}`);
+            Logger.error(`Error occured while removing account:\n${error}`);
         }
     }
 

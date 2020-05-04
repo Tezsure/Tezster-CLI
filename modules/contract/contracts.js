@@ -94,7 +94,7 @@ class Contracts {
             });
         }
         catch(error) {
-            Logger.error(`Error occured while fetching entry points: ${error}`);
+            Logger.error(`Error occured while fetching entry points:\n${error}`);
         }
     }
 
@@ -151,8 +151,10 @@ class Contracts {
                 Logger.error(`${error}`.substring(0, parseError != -1  ? parseError : `${error}`.length));
             } else if(error.toString().includes(`empty_implicit_contract`)) {
                 Helper.errorHandler(`Error occured while deploying the smart contract: ${error}`, `Account is having zero balance or not activated on the current provider.... To list down available accounts run 'tezster list-accounts'`);
+            } else if(error.toString().includes(`connect ECONNREFUSED`)) {
+                Helper.errorHandler(`Error occured while fetching balance: ${error}`, `Make sure local nodes are in running state....`);
             } else {
-                Logger.error(`Error occured while deploying the smart contract: ${error}`);
+                Logger.error(`Error occured while deploying the smart contract:\n${error}`);
             }
         }
     }
@@ -216,8 +218,10 @@ class Contracts {
                 Helper.errorHandler(`Error occured while calling the contract: ${error}`, `Account is having zero balance or not activated on the current provider.... To list down available accounts run 'tezster list-accounts'.`);
             } else if(error.toString().includes(`empty_transaction`)) {
                 Helper.errorHandler(`Error occured while calling the contract: ${error}`, `please wait.... contract '${contractAddress}' might take some time to get deployed on the tezos network`);;
+            } else if(error.toString().includes(`connect ECONNREFUSED`)) {
+                Helper.errorHandler(`Error occured while fetching balance: ${error}`, `Make sure local nodes are in running state....`);
             } else {
-                Logger.error(`Error occured while calling the contract: ${error}`);
+                Logger.error(`Error occured while calling the contract:\n${error}`);
             }
         }
     }
@@ -232,7 +236,7 @@ class Contracts {
         }
       
         if (!contractAddress) {
-            Logger.error(`couldn't find the contract, please make sure contract label or address is correct!`);
+            Logger.error(`Couldn't find the contract, please make sure contract label or address is correct!`);
             return;
         }
       
@@ -243,8 +247,10 @@ class Contracts {
         catch(error) {
             if(error.toString().includes('with 404 and Not Found')) {
                 Helper.errorHandler(`Error occured while fetching contract storage value ${error}`, `please wait.... contract '${contractAddress}' might take some time to get deployed on the tezos network`);
+            } else if(error.toString().includes(`connect ECONNREFUSED`)) {
+                Helper.errorHandler(`Error occured while fetching balance: ${error}`, `Make sure local nodes are in running state....`);
             } else {
-                Helper.errorHandler(`Error occured while fetching contract storage value ${error}`, `Error occured while fetching contract- '${contractAddress}' storage`);
+                Helper.errorHandler(`Error occured while fetching contract storage value ${error}`, `Error occured while fetching contract-'${contractAddress}' storage`);
             }
         }
     }
