@@ -150,7 +150,7 @@ class Contracts {
                 let parseError = `${error}`.indexOf('Instead, ');
                 Logger.error(`${error}`.substring(0, parseError != -1  ? parseError : `${error}`.length));
             } else if(error.toString().includes(`empty_implicit_contract`)) {
-                Helper.errorLogger(`Error occured while deploying the smart contract: ${error}`, `Account is not activated on the current provider.... To list down accounts run 'tezster list-accounts'`);
+                Helper.errorHandler(`Error occured while deploying the smart contract: ${error}`, `Account is having zero balance or not activated on the current provider.... To list down available accounts run 'tezster list-accounts'`);
             } else {
                 Logger.error(`Error occured while deploying the smart contract: ${error}`);
             }
@@ -213,9 +213,9 @@ class Contracts {
                 let parseError = `${error}`.indexOf('Instead, ');
                 Logger.error(`${error}`.substring(0, parseError != -1  ? parseError : `${error}`.length));
             } else if(error.toString().includes(`empty_implicit_contract`)) {
-                Helper.errorLogger(`Error occured while calling the contract: ${error}`, `Account is not activated on the current provider.... To list down accounts run 'tezster list-accounts'`);
+                Helper.errorHandler(`Error occured while calling the contract: ${error}`, `Account is having zero balance or not activated on the current provider.... To list down available accounts run 'tezster list-accounts'.`);
             } else if(error.toString().includes(`empty_transaction`)) {
-                Helper.errorLogger(`Error occured while calling the contract: ${error}`, `Please wait .... contract might take some time to get deployed on the network`);;
+                Helper.errorHandler(`Error occured while calling the contract: ${error}`, `please wait.... contract '${contractAddress}' might take some time to get deployed on the tezos network`);;
             } else {
                 Logger.error(`Error occured while calling the contract: ${error}`);
             }
@@ -242,9 +242,9 @@ class Contracts {
         }
         catch(error) {
             if(error.toString().includes('with 404 and Not Found')) {
-                Helper.errorLogger(`Error occured while fetching contract storage value ${error}`, `please wait .... contract '${contractAddress}' might take some time to get deployed on the network`);
+                Helper.errorHandler(`Error occured while fetching contract storage value ${error}`, `please wait.... contract '${contractAddress}' might take some time to get deployed on the tezos network`);
             } else {
-                Helper.errorLogger(`Error occured while fetching contract storage value ${error}`, `Error occured while fetching contract- '${contractAddress}' storage`);
+                Helper.errorHandler(`Error occured while fetching contract storage value ${error}`, `Error occured while fetching contract- '${contractAddress}' storage`);
             }
         }
     }

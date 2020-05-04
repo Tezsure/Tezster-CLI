@@ -1,3 +1,6 @@
+const confFile = __dirname + '/../config.json';
+const jsonfile = require('jsonfile');
+var config = jsonfile.readFileSync(confFile);
 const Logger = require('./logger');
 
 class Helper {
@@ -29,9 +32,20 @@ class Helper {
         return tezosNode.includes('localhost');
     }
 
-    static errorLogger(logsToFile, logsToConsoleAndFile) {
-        Logger.verbose(`${logsToFile}`);
-        Logger.error(`${logsToConsoleAndFile}`);
+    static errorHandler(redirctErrorLogsToFile, displayErrorLogsToConsole) {
+        Logger.verbose(`${redirctErrorLogsToFile}`);
+        Logger.error(`${displayErrorLogsToConsole}`);
+    }
+
+    static clearContractDataForLocalNode() {
+        for(var i=0;i<config.contracts.length;i++) {
+            if(config.contracts[i].identity.includes('localnode')) {
+                {
+                    config.contracts.splice(i, 1);
+                    jsonfile.writeFile(confFile, config);
+                }
+            }
+        }
     }
 
 }
