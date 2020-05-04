@@ -40,10 +40,8 @@ class Helper {
     static clearContractDataForLocalNode() {
         for(var i=0;i<config.contracts.length;i++) {
             if(config.contracts[i].identity.includes('localnode')) {
-                {
-                    config.contracts.splice(i, 1);
-                    jsonfile.writeFile(confFile, config);
-                }
+                config.contracts.splice(i, 1);
+                jsonfile.writeFile(confFile, config);
             }
         }
     }
