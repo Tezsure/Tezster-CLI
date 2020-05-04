@@ -150,7 +150,7 @@ class Contracts {
                 let parseError = `${error}`.indexOf('Instead, ');
                 Logger.error(`${error}`.substring(0, parseError != -1  ? parseError : `${error}`.length));
             } else if(error.toString().includes(`empty_implicit_contract`)) {
-                Helper.logsCollection(`Error occured while deploying the smart contract: ${error}`, `Account is not activated on the current provider.... To list down accounts run 'tezster list-accounts'`);
+                Helper.errorLogging(`Error occured while deploying the smart contract: ${error}`, `Account is not activated on the current provider.... To list down accounts run 'tezster list-accounts'`);
             } else {
                 Logger.error(`Error occured while deploying the smart contract: ${error}`);
             }
@@ -213,9 +213,9 @@ class Contracts {
                 let parseError = `${error}`.indexOf('Instead, ');
                 Logger.error(`${error}`.substring(0, parseError != -1  ? parseError : `${error}`.length));
             } else if(error.toString().includes(`empty_implicit_contract`)) {
-                Helper.logsCollection(`Error occured while calling the contract: ${error}`, `Account is not activated on the current provider.... To list down accounts run 'tezster list-accounts'`);
+                Helper.errorLogging(`Error occured while calling the contract: ${error}`, `Account is not activated on the current provider.... To list down accounts run 'tezster list-accounts'`);
             } else if(error.toString().includes(`empty_transaction`)) {
-                Helper.logsCollection(`Error occured while calling the contract: ${error}`, `Please wait .... contract might take some time to get deployed on the network`);;
+                Helper.errorLogging(`Error occured while calling the contract: ${error}`, `Please wait .... contract might take some time to get deployed on the network`);;
             } else {
                 Logger.error(`Error occured while calling the contract: ${error}`);
             }
@@ -242,9 +242,9 @@ class Contracts {
         }
         catch(error) {
             if(error.toString().includes('with 404 and Not Found')) {
-                Helper.logsCollection(`Error occured while fetching contract storage value ${error}`, 'Please wait .... contract might take some time to get deployed on the network');
+                Helper.errorLogging(`Error occured while fetching contract storage value ${error}`, 'Please wait .... contract might take some time to get deployed on the network');
             } else {
-                Helper.logsCollection(`Error occured while fetching contract storage value ${error}`, `Error occured while fetching contract- '${contractAddress}' storage`);
+                Helper.errorLogging(`Error occured while fetching contract storage value ${error}`, `Error occured while fetching contract- '${contractAddress}' storage`);
             }
         }
     }

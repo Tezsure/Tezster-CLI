@@ -29,7 +29,7 @@ class Helper {
         return tezosNode.includes('localhost');
     }
 
-    static logsCollection(logsToFile, logsToConsoleAndFile) {
+    static errorLogging(logsToFile, logsToConsoleAndFile) {
         Logger.verbose(`${logsToFile}`);
         Logger.error(`${logsToConsoleAndFile}`);
     }

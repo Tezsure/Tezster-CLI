@@ -132,9 +132,9 @@ class Accounts{
             Logger.info(Helper.formatTez(balance));  
         } catch(error) {
             if(error.toString().includes(`connect ECONNREFUSED`)) {
-                Helper.logsCollection(`Error occured while fetching balance: ${error}`, `Make sure nodes are in running state....`);
+                Helper.errorLogging(`Error occured while fetching balance: ${error}`, `Make sure nodes are in running state....`);
             } else if(error.toString().includes(`Unexpected end of JSON input`)) {
-                Helper.logsCollection(`Error occured while fetching balance: ${error}`, `Make sure account '${account}' is activated on the current provider....`);
+                Helper.errorLogging(`Error occured while fetching balance: ${error}`, `Make sure account '${account}' is activated on the current provider....`);
             } else {
                 Logger.error(`Error occured while fetching balance: ${error}`);
             }

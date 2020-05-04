@@ -22,9 +22,9 @@ class Setup {
                     this.checkPermission();
                     this.pullNodeSetup();
               } else if (error) {
-                    Helper.logsCollection(`Error while setting up docker image: ${error}`, 'Docker not detected on the system please install docker....');
+                    Helper.errorLogging(`Error while setting up docker image: ${error}`, 'Docker not detected on the system please install docker....');
               } else {
-                    Helper.logsCollection(`Error while setting up docker image: ${_stderr}`, 'Docker not detected on the system please install docker....');
+                    Helper.errorLogging(`Error while setting up docker image: ${_stderr}`, 'Docker not detected on the system please install docker....');
               }
         });
     }
@@ -41,16 +41,16 @@ class Setup {
                     if (_stdout.includes(`${IMAGE_TAG}:${CONTAINER_NAME}\n`)) {
                         this.startExistingContainer();
                     } else if (error) {
-                        Helper.logsCollection(`Error occured while starting the nodes ${error}`, `Error while starting the nodes, restart the nodes after running 'tezster stop-nodes'`);
+                        Helper.errorLogging(`Error occured while starting the nodes ${error}`, `Error while starting the nodes, restart the nodes after running 'tezster stop-nodes'`);
                     } else {                         
                         this.runContainer();
                     }
                 });
 
             } else if(error){
-                Helper.logsCollection(`Error while starting the nodes: ${error}`, `No inbuilt nodes found on system. Run 'tezster setup' comamnd for build the nodes.`);
+                Helper.errorLogging(`Error while starting the nodes: ${error}`, `No inbuilt nodes found on system. Run 'tezster setup' comamnd for build the nodes.`);
             } else {
-                Helper.logsCollection(`Error while starting the nodes: ${_stderr}`, `No inbuilt nodes found on system. Run 'tezster setup' comamnd for build the nodes.`);
+                Helper.errorLogging(`Error while starting the nodes: ${_stderr}`, `No inbuilt nodes found on system. Run 'tezster setup' comamnd for build the nodes.`);
             }
         });
     }
@@ -63,13 +63,13 @@ class Setup {
                 const container = docker.getContainer(CONTAINER_NAME);
                 container.stop(function (error, data){
                     if(error) {
-                        Helper.logsCollection(`Error while stopping the nodes: ${error}`, 'Error occured while stopping the nodes');
+                        Helper.errorLogging(`Error while stopping the nodes: ${error}`, 'Error occured while stopping the nodes');
                     }
                 });
                 container.remove({force: true});
                 Logger.info(`Nodes have been stopped. Run 'tezster start-nodes' to restart.`);
             } else if (error) {
-                Helper.logsCollection(`Error occured while stopping the nodes, error: ${error}`, 'Error occured while stopping the nodes');
+                Helper.errorLogging(`Error occured while stopping the nodes, error: ${error}`, 'Error occured while stopping the nodes');
             } else {
                 Logger.error('No Nodes are running....');
             }
@@ -88,7 +88,7 @@ class Setup {
                     let writeStream = fs.createWriteStream('/tmp/tezster-logs/tezster-node-logs.tar.gz', { encoding: 'utf8' });
 
                     if (error) {
-                        Helper.logsCollection(`Error occured while fetching log archive: ${error}`, 'Error while fetching the logs archive on system');
+                        Helper.errorLogging(`Error occured while fetching log archive: ${error}`, 'Error while fetching the logs archive on system');
                         writeStream.end();
                         writeStream.close();
                     }
@@ -105,7 +105,7 @@ class Setup {
                     });
                 });
             } else { 
-                Helper.logsCollection(`Error while fetching log files on system: ${error}`, `No container is in running state.... to get logs run 'tezster start-nodes' first.`);
+                Helper.errorLogging(`Error while fetching log files on system: ${error}`, `No container is in running state.... to get logs run 'tezster start-nodes' first.`);
                 Logger.warn(`Run 'tezster start-nodes' to start nodes `);
             }
         });
@@ -122,7 +122,7 @@ class Setup {
                 Logger.error('Nodes are not running....');
             }
         } catch (error) {
-            Helper.logsCollection(`Error occured while confirming node status: ${error}`, 'Nodes are not running....');
+            Helper.errorLogging(`Error occured while confirming node status: ${error}`, 'Nodes are not running....');
         }
     }
 
@@ -133,10 +133,10 @@ class Setup {
                     child_process.exec(`sudo chmod -R 777 ${__dirname}/../../config.json`);
                 }
             } else if(error){
-                Helper.logsCollection(`Error while changing config.json file permission: ${error}`, 'Error occured while setting up node due to permission issue');
+                Helper.errorLogging(`Error while changing config.json file permission: ${error}`, 'Error occured while setting up node due to permission issue');
             } 
             else {
-                Helper.logsCollection(`Error while changing config.json file permission: ${_stderr}`, 'Error occured while setting up node due to permission issue');
+                Helper.errorLogging(`Error while changing config.json file permission: ${_stderr}`, 'Error occured while setting up node due to permission issue');
             }
         });
     }
@@ -153,7 +153,7 @@ class Setup {
 
         docker.pull(IMAGE_TAG, (dockerPullError, dockerPullStream) => {
             if (dockerPullError) {
-                Helper.logsCollection(`Error while pulling the docker image: ${dockerPullError}`, 'Make sure you have added docker to the USER group');
+                Helper.errorLogging(`Error while pulling the docker image: ${dockerPullError}`, 'Make sure you have added docker to the USER group');
                 process.exit();
             } else {
                 Logger.info('setting up tezos node, this could take a while....');      
@@ -172,7 +172,7 @@ class Setup {
                     
                     docker.modem.followProgress(dockerPullStream, (_dockerModemError, _dockerModemOutput) => {
                         if(_dockerModemError) {
-                            Helper.logsCollection(`Error occured while pulling docker image: ${_dockerModemError}`, 'Error occured while pulling the docker image');
+                            Helper.errorLogging(`Error occured while pulling docker image: ${_dockerModemError}`, 'Error occured while pulling the docker image');
                         } else {
                             clearInterval(progress);
                             progressbar.update(100);
@@ -198,7 +198,7 @@ class Setup {
                         Logger.error (`Error occured in previously started nodes, restart nodes after running 'tezster stop-nodes'.`);
                     }
                 } catch (error) {
-                    Helper.logsCollection(`Error occured while starting the nodes${error}`, `Error occured in previously started nodes, restart nodes after running 'tezster stop-nodes'.`);
+                    Helper.errorLogging(`Error occured while starting the nodes${error}`, `Error occured in previously started nodes, restart nodes after running 'tezster stop-nodes'.`);
                 }
 
                 Logger.warn(`If facing any issue, fetch logs on your system using 'tezster get-logs' or try restarting the nodes after running 'tezster stop-nodes'.`);
@@ -240,11 +240,11 @@ class Setup {
         },
         function(err, container) {
             if(err) {
-                Helper.logsCollection(`Error while starting the container: ${err}`, 'Error while starting the nodes....');
+                Helper.errorLogging(`Error while starting the container: ${err}`, 'Error while starting the nodes....');
             } else {
                 container.start({}, function(err, data) {
                     if (err) {
-                        Helper.logsCollection(`Error while starting nodes: ${err}`, 'Error while starting the nodes....');
+                        Helper.errorLogging(`Error while starting nodes: ${err}`, 'Error while starting the nodes....');
                     }
                 });
             }
@@ -296,7 +296,7 @@ class Setup {
                         process.exit();
                     }
                 }).catch(function(error){
-                    Helper.logsCollection(`Error while confirming node status: ${error}`, `\nError occured while starting the local nodes, to check logs please run 'tezster get-logs'.`);
+                    Helper.errorLogging(`Error while confirming node status: ${error}`, `\nError occured while starting the local nodes, to check logs please run 'tezster get-logs'.`);
                     process.exit();
                 });
             }, PROGRESS_REFRESH_INTERVAL);
