@@ -37,13 +37,19 @@ class Helper {
         Logger.error(`${displayErrorLogsToConsole}`);
     }
 
-    static clearContractDataForLocalNode() {
+    static clearContractAndAccountForLocalNode() {
         for(var i=0;i<config.contracts.length;i++) {
             if(config.contracts[i].identity.includes('localnode')) {
                 config.contracts.splice(i, 1);
-                jsonfile.writeFile(confFile, config);
             }
         }
+        for(var i=0;i<config.accounts.length;i++) {
+            if(config.accounts[i].label.includes('localnode') && !config.accounts[i].label.match(/bootstrap[1-5]/)) {
+                config.accounts.splice(i, 1);
+                config.identities.splice(i, 1);
+            }
+        }
+        jsonfile.writeFile(confFile, config);
     }
 
 }

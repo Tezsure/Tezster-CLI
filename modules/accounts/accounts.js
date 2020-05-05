@@ -283,12 +283,8 @@ class Accounts{
         try {
             for(var i=0;i<config.accounts.length;i++) {
                 if(config.accounts[i].identity === account  || config.accounts[i].label === account || config.accounts[i].pkh === account) {
-                    config.accounts.splice(i, 1);
-                }
-            }
-            for(var i=0;i<config.identities.length;i++) {
-                if(config.identities[i].pkh === account  || config.identities[i].label === account) {
                     Logger.info(`Account-'${account}' successfully removed`);
+                    config.accounts.splice(i, 1);
                     config.identities.splice(i, 1);
                     jsonfile.writeFile(confFile, config);
                 }

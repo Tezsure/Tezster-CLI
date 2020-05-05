@@ -270,7 +270,7 @@ class Setup {
                 clearInterval(progressInterval);
                 progressbar.update(100);
                 progressbar.stop();
-                Helper.clearContractDataForLocalNode();
+                Helper.clearContractAndAccountForLocalNode();
                 return;
             }
             progressbar.update(progress);

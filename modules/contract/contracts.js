@@ -273,7 +273,7 @@ class Contracts {
             Logger.error('This contract label is already in use. Please use a different one.');
             return;
         }
-        this.addNewContract(contractLabel, contractAddr, '', '');
+        this.addNewContract(contractLabel, contractAddr, '', config.provider);
     }
 
     async deleteContract(contract) {
@@ -286,7 +286,7 @@ class Contracts {
         try {
             for(var i=0;i<config.contracts.length;i++) {
                 if(config.contracts[i].pkh === contract  || config.contracts[i].label === contract) {
-                    Logger.info(`contract-'${contract}' successfully removed`)
+                    Logger.info(`Contract-'${contract}' successfully removed`);
                     config.contracts.splice(i, 1);
                     jsonfile.writeFile(confFile, config);
                 }
