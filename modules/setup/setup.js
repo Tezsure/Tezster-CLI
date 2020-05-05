@@ -187,7 +187,6 @@ class Setup {
     startExistingContainer() {
         const container = docker.getContainer(CONTAINER_NAME);
         container.start(async (error, data) => {
-            Helper.clearContractDataForLocalNode();
             if(error) {
                 Logger.verbose(`Error occured while starting the nodes: ${error}`);
 
@@ -244,7 +243,6 @@ class Setup {
                 Helper.errorLogHandler(`Error while starting the container: ${err}`, 'Error while starting the nodes....');
             } else {
                 container.start({}, function(err, data) {
-                    Helper.clearContractDataForLocalNode();
                     if (err) {
                         Helper.errorLogHandler(`Error while starting nodes: ${err}`, 'Error while starting the nodes....');
                     }
@@ -272,6 +270,7 @@ class Setup {
                 clearInterval(progressInterval);
                 progressbar.update(100);
                 progressbar.stop();
+                Helper.clearContractDataForLocalNode();
                 return;
             }
             progressbar.update(progress);
