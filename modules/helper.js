@@ -37,16 +37,20 @@ class Helper {
         Logger.error(`${displayErrorLogsToConsole}`);
     }
 
-    static clearContractAndAccountForLocalNode() {
-        for(var i=0;i<config.contracts.length;i++) {
+    static clearContractAndAccountForLocalNode() {   
+        let i=0;
+        while(i<config.contracts.length) {
             if(config.contracts[i].identity.includes('localnode')) {
                 config.contracts.splice(i, 1);
+            } else {
+                i++;
             }
         }
-        for(var i=0;i<config.accounts.length;i++) {
+        while(i<config.accounts.length) {
             if(config.accounts[i].label.includes('localnode') && !config.accounts[i].label.match(/bootstrap[1-5]/)) {
                 config.accounts.splice(i, 1);
-                config.identities.splice(i, 1);
+            } else {
+                i++;
             }
         }
         jsonfile.writeFile(confFile, config);

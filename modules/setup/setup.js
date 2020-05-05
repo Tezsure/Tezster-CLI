@@ -57,8 +57,8 @@ class Setup {
 
     stopNodes() {
         Logger.verbose('Command : tezster stop-nodes');
-        child_process.exec(`docker ps -a -q --format {{.Image}}`,(error, _stdout, _stderr) => {
-            if (_stdout.includes(`${IMAGE_TAG}\n`)) {
+        child_process.exec(`docker ps -a -q --format {{.Names}}`,(error, _stdout, _stderr) => {
+            if (_stdout.includes(`${CONTAINER_NAME}\n`)) {
                 Logger.warn(`stopping the nodes....`);
                 const container = docker.getContainer(CONTAINER_NAME);
                 container.stop(function (error, data){
