@@ -49,6 +49,7 @@ class Helper {
         while(i<config.accounts.length) {
             if(config.accounts[i].label.includes('localnode') && !config.accounts[i].label.match(/bootstrap[1-5]/)) {
                 config.accounts.splice(i, 1);
+                config.identities.splice(i, 1);
             } else {
                 i++;
             }
