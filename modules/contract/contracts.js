@@ -274,6 +274,7 @@ class Contracts {
             return;
         }
         this.addNewContract(contractLabel, contractAddr, '', config.provider);
+        Logger.info(`Contract '${contractAddr} has been added successfully with label '${contractLabel}'`)
     }
 
     async deleteContract(contract) {
