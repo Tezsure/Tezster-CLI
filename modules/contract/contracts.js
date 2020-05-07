@@ -6,15 +6,16 @@ const TESTNET_NAME = 'carthagenet';
 
 const Logger = require('../logger');
 const { Helper } = require('../helper');
+const { ExceptionHandler } = require('../exceptionHandler');
 
 class Contracts {
 
     async listContracts() {
         Logger.verbose('Command : tezster list-contracts');
-        if(Object.keys(config.contracts).length > 0) {        
-            for(var i in config.contracts) { 
-                Logger.info(config.contracts[i].label + ' - ' + config.contracts[i].pkh + ' (' + config.contracts[i].identity + ')');
-            }
+        if(Object.keys(config.contracts).length > 0) {  
+            config.contracts.forEach(function (contracts){
+                Logger.info(contracts.label + ' - ' +contracts.pkh + ' (' + contracts.identity + ')');
+            });
         } else {
             Logger.error('No Contracts are Available !!');
         }
@@ -94,7 +95,7 @@ class Contracts {
             });
         }
         catch(error) {
-            Logger.error(`${error}`);
+            Logger.error(`Error occurred while fetching entry points:\n${error}`);
         }
     }
 
@@ -146,8 +147,7 @@ class Contracts {
             Logger.error(`Contract deployment has failed : ${JSON.stringify(result)}`);
             return;
         } catch(error) {
-            let parseError = `${error}`.indexOf('Instead, ');
-            Logger.error(`${error}`.substring(0, parseError != -1  ? parseError : `${error}`.length));
+            ExceptionHandler.contractException('deploy', error);
         }
     }
 
@@ -203,8 +203,7 @@ class Contracts {
           return;
         }
         catch(error) {
-            let parseError = `${error}`.indexOf('Instead, ');
-            Logger.error(`${error}`.substring(0, parseError != -1  ? parseError : `${error}`.length));
+            ExceptionHandler.contractException('invoke', error);
         }
     }
 
@@ -218,7 +217,7 @@ class Contracts {
         }
       
         if (!contractAddress) {
-            Logger.error(`couldn't find the contract, please make sure contract label or address is correct!`);
+            Logger.error(`Couldn't find the contract, please make sure contract label or address is correct!`);
             return;
         }
       
@@ -227,7 +226,7 @@ class Contracts {
             Logger.info(JSON.stringify(storage));
         }
         catch(error) {
-            Logger.error(`${error}`);
+            ExceptionHandler.contractException('getStorage', error);
         }
     }
 
@@ -237,7 +236,8 @@ class Contracts {
             Logger.error('This contract label is already in use. Please use a different one.');
             return;
         }
-        this.addNewContract(contractLabel, contractAddr, '', '');
+        this.addNewContract(contractLabel, contractAddr, '', config.provider);
+        Logger.info(`Contract '${contractAddr} has been added successfully with label '${contractLabel}'`)
     }
 
     async deleteContract(contract) {
@@ -248,16 +248,16 @@ class Contracts {
         }
 
         try {
-            for(var i=0;i<config.contracts.length;i++) {
-                if(config.contracts[i].pkh === contract  || config.contracts[i].label === contract) {
-                    Logger.info(`contract-'${contract}' successfully removed`)
-                    config.contracts.splice(i, 1);
+            for(var contractIndex=0; contractIndex<config.contracts.length; contractIndex++) {
+                if(config.contracts[contractIndex].pkh === contract  || config.contracts[contractIndex].label === contract) {
+                    Logger.info(`Contract-'${contract}' successfully removed`);
+                    config.contracts.splice(contractIndex, 1);
                     jsonfile.writeFile(confFile, config);
                 }
             }
         }
         catch(error) {
-            Logger.error(`Error occured while removing contract : ${error}`);
+            Logger.error(`Error occurred while removing contract : ${error}`);
         }
     }
 

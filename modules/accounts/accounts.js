@@ -10,6 +10,7 @@ const CONSEIL_JS = '../../lib/conseiljs',
 const Logger = require('../logger');
 const { Helper } = require('../helper');
 const { RpcRequest } = require('../rpc-util');
+const { ExceptionHandler } = require('../exceptionHandler');
 
 class Accounts{
 
@@ -39,9 +40,9 @@ class Accounts{
     async listAccounts() {  
         Logger.verbose(`Command : tezster list-accounts`);
         if(Object.keys(config.accounts).length > 0) {
-            for(var i in config.accounts) {
-                Logger.info(config.accounts[i].label + ' - ' + config.accounts[i].pkh + '(' + config.accounts[i].identity + ')');
-            }
+            config.accounts.forEach(function (accounts){
+                Logger.info(accounts.label + ' - ' +accounts.pkh + ' (' + accounts.identity + ')');
+            });
         } else {    
             Logger.error('No Account is available !!');
         }
@@ -62,7 +63,16 @@ class Accounts{
             Logger.warn('Incorrect usage of add-testnet-account command \nCorrect usage: - tezster add-testnet-account <account-label> <absolut-path-to-json-file>');
             return;
         }
-        this.restoreAlphanetAccount(args[0], args[1]);
+        this.addFaucetAccount(args[0], args[1]);
+    }
+
+    async restoreWallet(args) {  
+        Logger.verbose(`Command : tezster restore-wallet ${args}`);
+        if (args.length < 2) {
+            Logger.warn(`Incorrect usage of restore-wallet command \nCorrect usage: - tezster restore-wallet <wallet-label> <mnemonic-phrase> \n(Note: Mnemonic phrase must be enclose between '')`);
+            return;
+        }
+        this.restoreExistingWallet(args[0], args[1]);
     }
 
     async activateTestnetAccount(args) {  
@@ -111,8 +121,10 @@ class Accounts{
         }
 
         const keys = this.getKeys(account);
-        if(!keys) {
-            Logger.error(`Account with this label doesn't exists.`);
+        const contractObj = Helper.findKeyObj(config.contracts, account);
+
+        if(!keys && !contractObj.label && !contractObj.pkh) {
+            Logger.error(`Account with label '${account}' doesn't exists.`);
             return;
         }
 
@@ -120,7 +132,7 @@ class Accounts{
             const balance = await RpcRequest.fetchBalance(tezosNode, pkh);
             Logger.info(Helper.formatTez(balance));  
         } catch(error) {
-            Logger.error(`${error}`);
+            ExceptionHandler.transactionException('getBalance', error);
         }
     }
 
@@ -142,11 +154,30 @@ class Accounts{
             Logger.info(`Successfully created wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
             Logger.warn(`We suggest you to store following Mnemonic Pharase which can be used to restore wallet in case you lost wallet:\n'${mnemonic}'`);
         } catch(error) {
-            Logger.error(`${error}`);
+            Logger.error(`Error occurred while creating the wallet:\n${error}`);
         }
     }
 
-    async restoreAlphanetAccount(accountLabel, accountFilePath) {
+    async restoreExistingWallet(accountLabel, mnemonic) {
+        const conseiljs = require(CONSEIL_JS);
+        const keys = this.getKeys(accountLabel);
+        if(keys) {
+            Logger.error(`Account with this label already exists.`);
+            return;
+        }
+
+        try {
+            const keystore = await conseiljs.TezosWalletUtil.unlockIdentityWithMnemonic(mnemonic, '');
+            this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
+            this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, config.provider);     
+            jsonfile.writeFile(confFile, config);
+            Logger.info(`Successfully restored the wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
+        } catch(error) {
+            Logger.error(`Error occurred while restoring the wallet:\n${error}`);
+        }
+    }
+
+    async addFaucetAccount(accountLabel, accountFilePath) {
         const fs = require('fs');
         const conseiljs = require(CONSEIL_JS);
         const keys = this.getKeys(accountLabel);
@@ -158,7 +189,7 @@ class Accounts{
             let accountJSON = fs.readFileSync(accountFilePath, 'utf8');
             accountJSON = accountJSON && JSON.parse(accountJSON);
             if(!accountJSON) {
-                Logger.error(`Error occured while restroing account : empty JSON file`);
+                Logger.error(`Error occurred while restoring account : empty JSON file`);
                 return;
             }
             let mnemonic = accountJSON.mnemonic;
@@ -166,7 +197,7 @@ class Accounts{
             let password = accountJSON.password;
             let pkh = accountJSON.pkh;
             if (!mnemonic || !email || !password) {
-                Logger.error(`Error occured while restroing account : invalid JSON file`);
+                Logger.error(`Error occurred while restoring account : invalid JSON file`);
                 return;
             }
             mnemonic = mnemonic.join(' ');
@@ -175,9 +206,9 @@ class Accounts{
 
             this.addIdentity(accountLabel, alphakeys.privateKey, alphakeys.publicKey, alphakeys.publicKeyHash, accountJSON.secret);
             this.addAccount(accountLabel, alphakeys.publicKeyHash, accountLabel, config.provider);
-            Logger.info(`successfully restored testnet faucet account: ${accountLabel}-${alphakeys.publicKeyHash}`);
+            Logger.info(`successfully added testnet faucet account: ${accountLabel}-${alphakeys.publicKeyHash}`);
         } catch(error) {
-            Logger.error(`Error occured while restroing account : ${error}`);
+            Logger.error(`Error occurred while adding testnet faucet account:\n${error}`);
         }
     }
 
@@ -187,15 +218,16 @@ class Accounts{
         let conseilServer = { 'url': CONSEIL_SERVER_URL, 'apiKey': CONSEIL_SERVER_APIKEY, 'network': TESTNET_NAME };
         const keys = this.getKeys(account);
 
+        if(!keys || !keys.secret) {
+            Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster.`);
+            return;
+        }
+
         if(Helper.confirmNodeProvider(tezosNode)) {
             Logger.error('Make sure your current provider is set to remote node provider.');
             return;
         }
 
-        if(!keys || !keys.secret) {
-            Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster.`);
-            return;
-        }
         const keystore = {
             publicKey: keys.pk,
             privateKey: keys.sk,
@@ -214,7 +246,7 @@ class Accounts{
             const revealResult = await conseiljs.TezosNodeWriter.sendKeyRevealOperation(tezosNode, keystore);
             Logger.info(`Testnet faucet account successfully activated: ${keys.label} - ${keys.pkh} \nWith tx hash: ${JSON.stringify(revealResult.operationGroupID)}`);
         } catch(error) {
-            Logger.error(`Error occured while activating account : ${error}`);
+            ExceptionHandler.transactionException('activateAccount', error);
         }
     }
 
@@ -227,26 +259,22 @@ class Accounts{
         }
 
         if(keys.label.match(/bootstrap[1-5]/)) {
-            Logger.error(`Bootstrapped accounts Can't deleted.`);
+            Logger.error(`Bootstrapped accounts can't be deleted.`);
             return;
         }
 
         try {
-            for(var i=0;i<config.accounts.length;i++) {
-                if(config.accounts[i].identity === account  || config.accounts[i].label === account || config.accounts[i].pkh === account) {
-                    config.accounts.splice(i, 1);
-                }
-            }
-            for(var i=0;i<config.identities.length;i++) {
-                if(config.identities[i].pkh === account  || config.identities[i].label === account) {
+            for(var accountIndex=0; accountIndex<config.accounts.length; accountIndex++) {
+                if(config.accounts[accountIndex].identity === account  || config.accounts[accountIndex].label === account || config.accounts[accountIndex].pkh === account) {
                     Logger.info(`Account-'${account}' successfully removed`);
-                    config.identities.splice(i, 1);
+                    config.accounts.splice(accountIndex, 1);
+                    config.identities.splice(accountIndex, 1);
                     jsonfile.writeFile(confFile, config);
                 }
             }
         }
         catch(error) {
-            Logger.error(`Error occured while removing account : ${error}`);
+            Logger.error(`Error occurred while removing account:\n${error}`);
         }
     }
 
