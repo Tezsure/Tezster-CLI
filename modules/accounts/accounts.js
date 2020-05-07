@@ -40,9 +40,9 @@ class Accounts{
     async listAccounts() {  
         Logger.verbose(`Command : tezster list-accounts`);
         if(Object.keys(config.accounts).length > 0) {
-            for(var objIndex in config.accounts) {
-                Logger.info(config.accounts[objIndex].label + ' - ' + config.accounts[objIndex].pkh + '(' + config.accounts[objIndex].identity + ')');
-            }
+            config.accounts.forEach(function (accounts){
+                Logger.info(accounts.label + ' - ' +accounts.pkh + ' (' + accounts.identity + ')');
+            });
         } else {    
             Logger.error('No Account is available !!');
         }
@@ -264,11 +264,11 @@ class Accounts{
         }
 
         try {
-            for(var objIndex=0; objIndex<config.accounts.length; objIndex++) {
-                if(config.accounts[objIndex].identity === account  || config.accounts[objIndex].label === account || config.accounts[objIndex].pkh === account) {
+            for(var accountIndex=0; accountIndex<config.accounts.length; accountIndex++) {
+                if(config.accounts[accountIndex].identity === account  || config.accounts[accountIndex].label === account || config.accounts[accountIndex].pkh === account) {
                     Logger.info(`Account-'${account}' successfully removed`);
-                    config.accounts.splice(objIndex, 1);
-                    config.identities.splice(objIndex, 1);
+                    config.accounts.splice(accountIndex, 1);
+                    config.identities.splice(accountIndex, 1);
                     jsonfile.writeFile(confFile, config);
                 }
             }

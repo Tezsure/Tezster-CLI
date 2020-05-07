@@ -47,10 +47,11 @@ class Helper {
         }
 
         for (accountObjectIndex=0; accountObjectIndex<config.accounts.length; accountObjectIndex++) {
-            if(config.accounts[accountObjectIndex].label.includes('localnode') && !config.accounts[accountObjectIndex].label.match(/bootstrap[1-5]/)) {
-                config.accounts.splice(accountObjectIndex, 1);
-                config.identities.splice(accountObjectIndex, 1);
-                accountObjectIndex--;
+            if(config.accounts[accountObjectIndex].label.includes('localnode') 
+                && !config.accounts[accountObjectIndex].label.match(/bootstrap[1-5]/)) {
+                    config.accounts.splice(accountObjectIndex, 1);
+                    config.identities.splice(accountObjectIndex, 1);
+                    accountObjectIndex--;
             }
         }
         jsonfile.writeFile(confFile, config);

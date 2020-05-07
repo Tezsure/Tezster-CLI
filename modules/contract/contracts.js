@@ -12,10 +12,10 @@ class Contracts {
 
     async listContracts() {
         Logger.verbose('Command : tezster list-contracts');
-        if(Object.keys(config.contracts).length > 0) {        
-            for(var objIndex in config.contracts) { 
-                Logger.info(config.contracts[objIndex].label + ' - ' + config.contracts[objIndex].pkh + ' (' + config.contracts[objIndex].identity + ')');
-            }
+        if(Object.keys(config.contracts).length > 0) {  
+            config.contracts.forEach(function (contracts){
+                Logger.info(contracts.label + ' - ' +contracts.pkh + ' (' + contracts.identity + ')');
+            });
         } else {
             Logger.error('No Contracts are Available !!');
         }
@@ -248,10 +248,10 @@ class Contracts {
         }
 
         try {
-            for(var objIndex=0; objIndex<config.contracts.length; objIndex++) {
-                if(config.contracts[objIndex].pkh === contract  || config.contracts[objIndex].label === contract) {
+            for(var contractIndex=0; contractIndex<config.contracts.length; contractIndex++) {
+                if(config.contracts[contractIndex].pkh === contract  || config.contracts[contractIndex].label === contract) {
                     Logger.info(`Contract-'${contract}' successfully removed`);
-                    config.contracts.splice(objIndex, 1);
+                    config.contracts.splice(contractIndex, 1);
                     jsonfile.writeFile(confFile, config);
                 }
             }
