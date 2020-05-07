@@ -2,7 +2,7 @@
 
 <img src="https://tezster.s3-ap-southeast-1.amazonaws.com/TEZSTER_CLI/1_jDB5enULQVo2UfeiwD32qA.png" alt="Tezster CLI banner" align="center" />
 <div align="center"><strong>A complete toolbox to build, deploy and interact with the applications on Tezos sandbox and Tezos testnets.</strong></div>
-<div align="center">Tezster-CLI comes in an npm package with a set of easy commands to kickstart the development or interaction with Tezos blockchain. It allows you to interact with local nodes as well as remore testnet nodes and deploy or call smart contracts. To get complete understanding of components usage and visual demo follow <a href="https://docs.tezster.tech/tezster-cli"><strong>Tezster-CLI Guide</strong></a>.
+<div align="center">Tezster-CLI comes in an npm package with a set of easy commands to kickstart the development or interaction with Tezos blockchain. It allows you to interact with local nodes as well as remote testnet nodes and deploy or call smart contracts. To get complete understanding of components usage and visual demo follow <a href="https://docs.tezster.tech/tezster-cli"><strong>Tezster-CLI Guide</strong></a>.
 </div>
 
 # Getting Started
@@ -18,7 +18,7 @@ Follow below steps to get started with Tezster-CLI.
 2. Mac OS X
 3. Windows 10 <br />
 
-*Note : We recommend linux platform for tezster cli. You may encounter some issues in OSX and Windows 10 due to docker. If you face any please report in our [issues section](https://github.com/Tezsure/Tezster-CLI/issues).*
+*Note : Currently we are supporting Linux platform for running local nodes. You may encounter local node related issues in Mac OS X and Windows due to docker. If you are on Mac OS X and Windows, you can switch to remote nodes to use our functionalities.*
 
 ### Node.js Installation
 Run following commands to install Node.js LTS version 

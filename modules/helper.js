@@ -1,3 +1,8 @@
+const confFile = __dirname + '/../config.json';
+const jsonfile = require('jsonfile');
+var config = jsonfile.readFileSync(confFile);
+const Logger = require('./logger');
+
 class Helper {
     
     static formatMoney(n, c, d, t) {
@@ -25,6 +30,31 @@ class Helper {
 
     static confirmNodeProvider(tezosNode) {
         return tezosNode.includes('localhost');
+    }
+
+    static errorLogHandler(redirctErrorLogsToFile, displayErrorLogsToConsole) {
+        Logger.verbose(`${redirctErrorLogsToFile}`);
+        Logger.error(`${displayErrorLogsToConsole}`);
+    }
+
+    static clearContractAndAccountForLocalNode() {   
+        let contractObjectIndex , accountObjectIndex;
+        for (contractObjectIndex=0; contractObjectIndex<config.contracts.length; contractObjectIndex++) {
+            if(config.contracts[contractObjectIndex].identity.includes('localnode')) {
+                config.contracts.splice(contractObjectIndex, 1);
+                contractObjectIndex--;
+            }
+        }
+
+        for (accountObjectIndex=0; accountObjectIndex<config.accounts.length; accountObjectIndex++) {
+            if(config.accounts[accountObjectIndex].label.includes('localnode') 
+                && !config.accounts[accountObjectIndex].label.match(/bootstrap[1-5]/)) {
+                    config.accounts.splice(accountObjectIndex, 1);
+                    config.identities.splice(accountObjectIndex, 1);
+                    accountObjectIndex--;
+            }
+        }
+        jsonfile.writeFile(confFile, config);
     }
 
 }

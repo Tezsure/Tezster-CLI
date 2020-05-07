@@ -5,6 +5,7 @@ const CONSEIL_JS = '../../lib/conseiljs';
 const TESTNET_NAME = 'carthagenet';
 const Logger = require('../logger');
 const { Helper } = require('../helper');
+const { ExceptionHandler } = require('../exceptionHandler');
 
 class Transactions {
 
@@ -37,6 +38,11 @@ class Transactions {
         let keys = this.getKeys(from);
         if(!keys) {
             Logger.error(`Sender account label doesn't exist.`);
+            return;
+        }
+
+        if(!this.getKeys(to)) {
+            Logger.error(`Receiver account doesn't exist.`);
             return;
         }
 
@@ -75,11 +81,11 @@ class Transactions {
 
         try {
             const result = await conseiljs.TezosNodeWriter.sendTransactionOperation(tezosNode, keystore, to, amount, fees, '');
-            this.addTransaction('transfer', `${JSON.stringify(result.operationGroupID)}`, from, to, amount);
-            Logger.info(`Transfer complete - operation hash #${JSON.stringify(result.operationGroupID)}`);
+            this.addTransaction('transfer', `${result.operationGroupID}`, from, to, amount);
+            Logger.info(`Transfer complete - operation hash ${result.operationGroupID}`);
         }
         catch(error) {
-            Logger.error(`${error}`);
+            ExceptionHandler.transactionException('transfer', error);
         }
     }
 

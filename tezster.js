@@ -96,6 +96,15 @@ program
         tezstermanager.activateTestnetAccount();
 });
 
+/******* To restore an existing wallet */
+program
+    .command('restore-wallet')
+    .usage(`<wallet-label/identity/hash> <mnemonic-phrase> \n(Note: Mnemonic phrase must be enclose between '')`)
+    .description('To restore an existing wallet using mnemonic')
+    .action(async function(){  
+        tezstermanager.restoreWallet(); 
+});
+
 /******* To remove an account */
 program
     .command('remove-account')
@@ -223,6 +232,7 @@ const validCommands = [
     'remove-contract',
     'list-accounts',
     'create-wallet',
+    'restore-wallet',
     'remove-account',
     'add-testnet-account',
     'activate-testnet-account',
