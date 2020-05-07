@@ -10,6 +10,7 @@ const CONSEIL_JS = '../../lib/conseiljs',
 const Logger = require('../logger');
 const { Helper } = require('../helper');
 const { RpcRequest } = require('../rpc-util');
+const { ExceptionHandler } = require('../exceptionHandler');
 
 class Accounts{
 
@@ -39,8 +40,8 @@ class Accounts{
     async listAccounts() {  
         Logger.verbose(`Command : tezster list-accounts`);
         if(Object.keys(config.accounts).length > 0) {
-            for(var i in config.accounts) {
-                Logger.info(config.accounts[i].label + ' - ' + config.accounts[i].pkh + '(' + config.accounts[i].identity + ')');
+            for(var objIndex in config.accounts) {
+                Logger.info(config.accounts[objIndex].label + ' - ' + config.accounts[objIndex].pkh + '(' + config.accounts[objIndex].identity + ')');
             }
         } else {    
             Logger.error('No Account is available !!');
@@ -131,19 +132,7 @@ class Accounts{
             const balance = await RpcRequest.fetchBalance(tezosNode, pkh);
             Logger.info(Helper.formatTez(balance));  
         } catch(error) {
-            if(error.toString().includes(`connect ECONNREFUSED`)) {
-                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Make sure local nodes are in running state....`);
-            } else if(error.toString().includes(`Unexpected end of JSON input`)) {
-                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Make sure account '${account}' is activated on the current provider....`);
-            } else if(error.toString().includes(`Only absolute URLs are supported`)) {
-                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Current provider URL is not supported by network provider....`);
-            } else if(error.toString().includes(`getaddrinfo ENOTFOUND`)) {
-                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Current provider URL is not supported by network provider....`);
-            } else if(error.toString().includes(`Invalid`)) {
-                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Current provider URL is not supported by network provider....`);
-            } else {
-                Logger.error(`Error occured while fetching balance:\n${error}`);
-            }
+            ExceptionHandler.transactionException('getBalance', error);
         }
     }
 
@@ -165,7 +154,7 @@ class Accounts{
             Logger.info(`Successfully created wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
             Logger.warn(`We suggest you to store following Mnemonic Pharase which can be used to restore wallet in case you lost wallet:\n'${mnemonic}'`);
         } catch(error) {
-            Logger.error(`Error occured while creating the wallet:\n${error}`);
+            Logger.error(`Error occurred while creating the wallet:\n${error}`);
         }
     }
 
@@ -184,7 +173,7 @@ class Accounts{
             jsonfile.writeFile(confFile, config);
             Logger.info(`Successfully restored the wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
         } catch(error) {
-            Logger.error(`Error occured while restoring the wallet:\n${error}`);
+            Logger.error(`Error occurred while restoring the wallet:\n${error}`);
         }
     }
 
@@ -200,7 +189,7 @@ class Accounts{
             let accountJSON = fs.readFileSync(accountFilePath, 'utf8');
             accountJSON = accountJSON && JSON.parse(accountJSON);
             if(!accountJSON) {
-                Logger.error(`Error occured while restroing account : empty JSON file`);
+                Logger.error(`Error occurred while restoring account : empty JSON file`);
                 return;
             }
             let mnemonic = accountJSON.mnemonic;
@@ -208,7 +197,7 @@ class Accounts{
             let password = accountJSON.password;
             let pkh = accountJSON.pkh;
             if (!mnemonic || !email || !password) {
-                Logger.error(`Error occured while restroing account : invalid JSON file`);
+                Logger.error(`Error occurred while restoring account : invalid JSON file`);
                 return;
             }
             mnemonic = mnemonic.join(' ');
@@ -219,7 +208,7 @@ class Accounts{
             this.addAccount(accountLabel, alphakeys.publicKeyHash, accountLabel, config.provider);
             Logger.info(`successfully added testnet faucet account: ${accountLabel}-${alphakeys.publicKeyHash}`);
         } catch(error) {
-            Logger.error(`Error occured while adding testnet faucet account:\n${error}`);
+            Logger.error(`Error occurred while adding testnet faucet account:\n${error}`);
         }
     }
 
@@ -257,13 +246,7 @@ class Accounts{
             const revealResult = await conseiljs.TezosNodeWriter.sendKeyRevealOperation(tezosNode, keystore);
             Logger.info(`Testnet faucet account successfully activated: ${keys.label} - ${keys.pkh} \nWith tx hash: ${JSON.stringify(revealResult.operationGroupID)}`);
         } catch(error) {
-            if(error.toString().includes(`Only absolute URLs are supported`)) {
-                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Current provider URL is not supported by network provider....`);
-            } else if(error.toString().includes(`getaddrinfo ENOTFOUND`)) {
-                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Current provider URL is not supported by network provider....`);
-            } else {
-                Logger.error(`Error occured while activating account:\n${error}`);
-            }
+            ExceptionHandler.transactionException('activateAccount', error);
         }
     }
 
@@ -281,17 +264,17 @@ class Accounts{
         }
 
         try {
-            for(var i=0;i<config.accounts.length;i++) {
-                if(config.accounts[i].identity === account  || config.accounts[i].label === account || config.accounts[i].pkh === account) {
+            for(var objIndex=0; objIndex<config.accounts.length; objIndex++) {
+                if(config.accounts[objIndex].identity === account  || config.accounts[objIndex].label === account || config.accounts[objIndex].pkh === account) {
                     Logger.info(`Account-'${account}' successfully removed`);
-                    config.accounts.splice(i, 1);
-                    config.identities.splice(i, 1);
+                    config.accounts.splice(objIndex, 1);
+                    config.identities.splice(objIndex, 1);
                     jsonfile.writeFile(confFile, config);
                 }
             }
         }
         catch(error) {
-            Logger.error(`Error occured while removing account:\n${error}`);
+            Logger.error(`Error occurred while removing account:\n${error}`);
         }
     }
 

@@ -6,14 +6,15 @@ const TESTNET_NAME = 'carthagenet';
 
 const Logger = require('../logger');
 const { Helper } = require('../helper');
+const { ExceptionHandler } = require('../exceptionHandler');
 
 class Contracts {
 
     async listContracts() {
         Logger.verbose('Command : tezster list-contracts');
         if(Object.keys(config.contracts).length > 0) {        
-            for(var i in config.contracts) { 
-                Logger.info(config.contracts[i].label + ' - ' + config.contracts[i].pkh + ' (' + config.contracts[i].identity + ')');
+            for(var objIndex in config.contracts) { 
+                Logger.info(config.contracts[objIndex].label + ' - ' + config.contracts[objIndex].pkh + ' (' + config.contracts[objIndex].identity + ')');
             }
         } else {
             Logger.error('No Contracts are Available !!');
@@ -94,7 +95,7 @@ class Contracts {
             });
         }
         catch(error) {
-            Logger.error(`Error occured while fetching entry points:\n${error}`);
+            Logger.error(`Error occurred while fetching entry points:\n${error}`);
         }
     }
 
@@ -146,20 +147,7 @@ class Contracts {
             Logger.error(`Contract deployment has failed : ${JSON.stringify(result)}`);
             return;
         } catch(error) {
-            if(error.toString().includes('Unexpected word token')) {
-                let parseError = `${error}`.indexOf('Instead, ');
-                Logger.error(`${error}`.substring(0, parseError != -1  ? parseError : `${error}`.length));
-            } else if(error.toString().includes(`empty_implicit_contract`)) {
-                Helper.errorLogHandler(`Error occured while deploying the smart contract: ${error}`, `Account is having zero balance or not activated on the current provider.... To list down available accounts run 'tezster list-accounts'`);
-            } else if(error.toString().includes(`connect ECONNREFUSED`)) {
-                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Make sure local nodes are in running state....`);
-            } else if(error.toString().includes(`Only absolute URLs are supported`)) {
-                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Current provider URL is not supported by network provider....`);
-            } else if(error.toString().includes(`getaddrinfo ENOTFOUND`)) {
-                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Current provider URL is not supported by network provider....`);
-            } else {
-                Logger.error(`Error occured while deploying the smart contract:\n${error}`);
-            }
+            ExceptionHandler.contractException('deploy', error);
         }
     }
 
@@ -215,22 +203,7 @@ class Contracts {
           return;
         }
         catch(error) {
-            if(error.toString().includes('Unexpected word token')) {
-                let parseError = `${error}`.indexOf('Instead, ');
-                Logger.error(`${error}`.substring(0, parseError != -1  ? parseError : `${error}`.length));
-            } else if(error.toString().includes(`empty_implicit_contract`)) {
-                Helper.errorLogHandler(`Error occured while calling the contract: ${error}`, `Account is having zero balance or not activated on the current provider.... To list down available accounts run 'tezster list-accounts'.`);
-            } else if(error.toString().includes(`empty_transaction`)) {
-                Helper.errorLogHandler(`Error occured while calling the contract: ${error}`, `please wait.... contract '${contractAddress}' might take some time to get deployed on the tezos network`);;
-            } else if(error.toString().includes(`connect ECONNREFUSED`)) {
-                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Make sure local nodes are in running state....`);
-            } else if(error.toString().includes(`Only absolute URLs are supported`)) {
-                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Current provider URL is not supported by network provider....`);
-            } else if(error.toString().includes(`getaddrinfo ENOTFOUND`)) {
-                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Current provider URL is not supported by network provider....`);
-            } else {
-                Logger.error(`Error occured while calling the contract:\n${error}`);
-            }
+            ExceptionHandler.contractException('invoke', error);
         }
     }
 
@@ -253,17 +226,7 @@ class Contracts {
             Logger.info(JSON.stringify(storage));
         }
         catch(error) {
-            if(error.toString().includes('with 404 and Not Found')) {
-                Helper.errorLogHandler(`Error occured while fetching contract storage value ${error}`, `please wait.... contract '${contractAddress}' might take some time to get deployed on the tezos network`);
-            } else if(error.toString().includes(`connect ECONNREFUSED`)) {
-                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Make sure local nodes are in running state....`);
-            } else if(error.toString().includes(`Only absolute URLs are supported`)) {
-                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Current provider URL is not supported by network provider....`);
-            } else if(error.toString().includes(`getaddrinfo ENOTFOUND`)) {
-                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Current provider URL is not supported by network provider....`);
-            } else {
-                Helper.errorLogHandler(`Error occured while fetching contract storage value ${error}`, `Error occured while fetching contract-'${contractAddress}' storage`);
-            }
+            ExceptionHandler.contractException('getStorage', error);
         }
     }
 
@@ -285,16 +248,16 @@ class Contracts {
         }
 
         try {
-            for(var i=0;i<config.contracts.length;i++) {
-                if(config.contracts[i].pkh === contract  || config.contracts[i].label === contract) {
+            for(var objIndex=0; objIndex<config.contracts.length; objIndex++) {
+                if(config.contracts[objIndex].pkh === contract  || config.contracts[objIndex].label === contract) {
                     Logger.info(`Contract-'${contract}' successfully removed`);
-                    config.contracts.splice(i, 1);
+                    config.contracts.splice(objIndex, 1);
                     jsonfile.writeFile(confFile, config);
                 }
             }
         }
         catch(error) {
-            Logger.error(`Error occured while removing contract : ${error}`);
+            Logger.error(`Error occurred while removing contract : ${error}`);
         }
     }
 

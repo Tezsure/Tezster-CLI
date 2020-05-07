@@ -38,20 +38,19 @@ class Helper {
     }
 
     static clearContractAndAccountForLocalNode() {   
-        let i=0;
-        while(i<config.contracts.length) {
-            if(config.contracts[i].identity.includes('localnode')) {
-                config.contracts.splice(i, 1);
-            } else {
-                i++;
+        let contractObjectIndex , accountObjectIndex;
+        for (contractObjectIndex=0; contractObjectIndex<config.contracts.length; contractObjectIndex++) {
+            if(config.contracts[contractObjectIndex].identity.includes('localnode')) {
+                config.contracts.splice(contractObjectIndex, 1);
+                contractObjectIndex--;
             }
         }
-        while(i<config.accounts.length) {
-            if(config.accounts[i].label.includes('localnode') && !config.accounts[i].label.match(/bootstrap[1-5]/)) {
-                config.accounts.splice(i, 1);
-                config.identities.splice(i, 1);
-            } else {
-                i++;
+
+        for (accountObjectIndex=0; accountObjectIndex<config.accounts.length; accountObjectIndex++) {
+            if(config.accounts[accountObjectIndex].label.includes('localnode') && !config.accounts[accountObjectIndex].label.match(/bootstrap[1-5]/)) {
+                config.accounts.splice(accountObjectIndex, 1);
+                config.identities.splice(accountObjectIndex, 1);
+                accountObjectIndex--;
             }
         }
         jsonfile.writeFile(confFile, config);

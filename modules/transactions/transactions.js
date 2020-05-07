@@ -5,6 +5,7 @@ const CONSEIL_JS = '../../lib/conseiljs';
 const TESTNET_NAME = 'carthagenet';
 const Logger = require('../logger');
 const { Helper } = require('../helper');
+const { ExceptionHandler } = require('../exceptionHandler');
 
 class Transactions {
 
@@ -84,19 +85,7 @@ class Transactions {
             Logger.info(`Transfer complete - operation hash ${result.operationGroupID}`);
         }
         catch(error) {
-            if(error.toString().includes(`checksum`)) {
-                Helper.errorLogHandler(`Error occured while transferring tez ${error}`, `Account doesn't  exists or not activated on the network.... To list down all accounts run 'tezster list-accounts'`);
-            } else if(error.toString().includes(`empty_implicit_contract`)) {
-                Helper.errorLogHandler(`Error occured while transferring tez ${error}`, `Account is not activated on the current provider`);
-            } else if(error.toString().includes(`connect ECONNREFUSED`)) {
-                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Make sure local nodes are in running state....`);
-            } else if(error.toString().includes(`Only absolute URLs are supported`)) {
-                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Current provider URL is not supported by network provider....`);
-            } else if(error.toString().includes(`getaddrinfo ENOTFOUND`)) {
-                Helper.errorLogHandler(`Error occured while fetching balance: ${error}`, `Current provider URL is not supported by network provider....`);
-            } else {
-                Helper.errorLogHandler(`Error occured while transferring tez ${error}`, `Account doesn't exists or not activated on the current testnet provider....`);
-            }
+            ExceptionHandler.transactionException('transfer', error);
         }
     }
 
