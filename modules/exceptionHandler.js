@@ -3,7 +3,7 @@ const { Helper } = require('./helper');
 
 const EMPTY_IMPLICIT_CONTRACT = 'Account is not yet revealed on the blockchain. You can reveal the account by sending some tezos to the account.',
       EMPTY_TRANSACTION = `please wait.... contract might take some time to get deployed on the tezos network`,
-      NOT_FOUND_404 = `please wait.... contract might take some time to get deployed on the tezos network`,
+      NOT_FOUND_404 = `make sure current network is same as the network smart contract got deployed....`,
       CONNECT_ECONNREFUSED = 'Error occurred while establishing the connection with node provider....',
       ABSOLUTE_URL_ARE_SUPPORTED = 'Current provider URL is not supported by network provider....',
       GETADDRINFO_ENOTFOUND = 'Current provider URL is not supported by network provider....',
@@ -28,7 +28,7 @@ class ExceptionHandler {
                 commandType = 'fetching contract storage value';
         }
 
-        if(error.toString().includes('Unexpected word token')) {
+        if(error.toString().includes('Instead, I was expecting to see one of the following:')) {
             let parseError = `${error}`.indexOf('Instead, ');
             Logger.error(`${error}`.substring(0, parseError != -1  ? parseError : `${error}`.length));
         } 
