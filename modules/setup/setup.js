@@ -123,15 +123,11 @@ class Setup {
     }
 
     checkPermission(){
-        child_process.exec(`stat -c '%a %n' ${__dirname}/../../config.json`,(error, stdout, stderr) => {
-            if (!error) {
-                if (stdout !== `777 ${__dirname}/../../config.json`) {
-                    child_process.exec(`sudo chmod -R 777 ${__dirname}/../../config.json`);
-                }
-            } else if(error = error || stderr){
-                Helper.errorLogHandler(`Error occurred while changing config.json file permission: ${error}`, 'Error occurred while setting up node due to permission issue');
-            } 
-        });
+        try {
+            child_process.exec(`sudo chmod -R 777 ${__dirname}/../../config.json`);
+        } catch(error) {
+            Helper.errorLogHandler(`Error occurred while changing config.json file permission: ${error}`, 'Error occurred while setting up node due to permission issue');
+        }
     }
 
     pullNodeSetup () {              
