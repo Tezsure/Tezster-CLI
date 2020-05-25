@@ -73,24 +73,11 @@ describe('Faucet Account', async () => {
 
 describe('Smart Contract Operations', async () => {
     it('deploy-contract', async () => {
-            //spy = sinon.spy(contract, 'deployContract');
             var mock = sinon.mock(contract);
             var expectation = mock.expects('deploy');
-            //var expectation = mock.expects('conseiljs.TezosNodeWriter.sendContractOriginationOperation');
             expectation.exactly(1);
             contract.deployContract([CONTRACT_LABEL, '', CONTRACT_INITIAL_STORAGE, BOOTSTRAPPED_ACCOUNT]);
             mock.verify();
-
-        // await contract.deployContract([CONTRACT_LABEL, '', CONTRACT_INITIAL_STORAGE, BOOTSTRAPPED_ACCOUNT])
-        //     const fs = require('fs');
-        //     fs.readFile(confFile, (err, data) => {
-        //         if (err) {
-        //             throw err;
-        //         }
-        //         let config = JSON.parse(data);
-        //         const contractObj = Helper.findKeyObj(config.contracts, CONTRACT_LABEL);
-        //         expect(contractObj).to.not.equal(false);
-        //     });
     });
 
     it('invoke-contract', async () => {
