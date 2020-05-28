@@ -28,7 +28,7 @@ class ExceptionHandler {
                 commandType = 'fetching contract storage value';
         }
 
-        if(error.toString().includes('Instead, I was expecting to see one of the following:')) {
+        if(error.toString().includes('Unexpected word token')) {
             let parseError = `${error}`.indexOf('Instead, ');
             Logger.error(`${error}`.substring(0, parseError != -1  ? parseError : `${error}`.length));
         } 
