@@ -1,11 +1,10 @@
 {
   "name": "tezster",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "A JavaScript-based private Tezos Blockchain Dev Tool that lives entirely on your local machine.",
   "main": "tezster.js",
   "scripts": {
-    "test": "mocha",
-    "test-with-coverage": "nyc mocha"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
     "tezster": "./tezster.js"
@@ -18,7 +17,6 @@
     "blakejs": "^1.1.0",
     "bs58check": "^2.1.2",
     "buffer": "^5.1.0",
-    "chai": "^4.2.0",
     "cli-progress": "^2.1.1",
     "commander": "^2.20.0",
     "crypto": "^1.0.1",
@@ -32,15 +30,12 @@
     "libsodium-wrappers": "^0.7.4",
     "libsodium-wrappers-sumo": "^0.7.6",
     "loglevel": "^1.6.4",
-    "mocha": "^7.2.0",
     "moo": "^0.5.0",
     "nearley": "^2.19.0",
     "node-cmd": "^3.0.0",
     "node-fetch": "^2.6.0",
-    "nyc": "^15.0.1",
     "pbkdf2": "^3.0.17",
     "request": "^2.81.0",
-    "sinon": "^9.0.2",
     "winston": "^3.2.1",
     "xmlhttprequest": "^1.8.0",
     "zxcvbn": "^4.4.2"
