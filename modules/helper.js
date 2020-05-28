@@ -1,7 +1,6 @@
-const confFile = '/tmp/tezster/config.json';
-const jsonfile = require('jsonfile');
-var config = jsonfile.readFileSync(confFile);
-const Logger = require('./logger');
+const confFile = '/tmp/tezster/config.json',
+      jsonfile = require('jsonfile'),
+      Logger = require('./logger');
 
 class Helper {
     
@@ -38,6 +37,7 @@ class Helper {
     }
 
     static clearContractAndAccountForLocalNode() {   
+        var config = jsonfile.readFileSync(confFile);
         let contractObjectIndex , accountObjectIndex;
         for (contractObjectIndex=0; contractObjectIndex<config.contracts.length; contractObjectIndex++) {
             if(config.contracts[contractObjectIndex].identity.includes('localnode')) {

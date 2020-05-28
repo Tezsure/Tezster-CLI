@@ -1,5 +1,5 @@
-const Logger = require('./logger');
-const { Helper } = require('./helper');
+const Logger = require('./logger'),
+      { Helper } = require('./helper');
 
 const EMPTY_IMPLICIT_CONTRACT = 'Account is not yet revealed on the blockchain. You can reveal the account by sending some tezos to the account.',
       EMPTY_TRANSACTION = `please wait.... contract might take some time to get deployed on the tezos network`,
