@@ -1,4 +1,4 @@
-const confFile = __dirname + '/../../config.json';
+const confFile = '/tmp/tezster/config.json';
 const jsonfile = require('jsonfile');
 var config = jsonfile.readFileSync(confFile);
 const CONSEIL_JS = '../../lib/conseiljs',

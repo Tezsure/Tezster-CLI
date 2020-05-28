@@ -15,67 +15,67 @@ class Setup {
 
     setup() {
         Logger.verbose('Command : tezster setup');
-        Logger.warn('We may need your password for write permission in config file....');
 
-        child_process.exec(`docker --version`, (error, stdout, stderr) => {
-            if (stdout.includes('Docker version')) {
-                    this.checkPermission();
-                    this.pullNodeSetup();
-              } else if (error = error || stderr) {
-                    Helper.errorLogHandler(`Error occurred while setting up docker image: ${error}`, 'Docker not detected on the system please install docker....');
-              }
-        });
+        this.copyConfigToTempFolder();
+
+        docker.version().then((result) => {
+            this.pullNodeSetup();
+        })
+        .catch(error => Helper.errorLogHandler(`Error occurred while setting up docker image: ${error}`,
+                                               'Docker not detected on the system please install docker....'));
+
     }
 
     startNodes() {
         Logger.verbose('Command : tezster start-nodes');
-        child_process.exec(`docker images ${IMAGE_TAG} --format {{.Repository}}:{{.Tag}}:{{.Size}}`,
-        (error, stdout, stderr) => {
-            if (stdout === `${IMAGE_TAG}:2.96GB\n`) {
+        docker.getImage(IMAGE_TAG).inspect().then((result) => {
 
-                child_process.exec(`docker ps -a -q  --filter ancestor=${IMAGE_TAG} --format {{.Image}}:{{.Names}}`,
-                (error, stdout, stderr) => {
-
-                    if (stdout.includes(`${IMAGE_TAG}:${CONTAINER_NAME}\n`)) {
-                        this.startExistingContainer();
-                    } else if (error) {
-                        Helper.errorLogHandler(`Error occurred while starting the nodes ${error}`, `Error occurred while starting the nodes, try restarting the nodes after running 'tezster stop-nodes'`);
-                    } else {                         
-                        this.runContainer();
-                    }
-                });
-
-            } else if(error = error || stderr){
-                Helper.errorLogHandler(`Error occurred while starting the nodes: ${error}`, `No inbuilt nodes found on system. Run 'tezster setup' command for build the nodes.`);
-            }
-        });
+            docker.getContainer(CONTAINER_NAME).inspect().then((result) => {
+                if(result.State.Status === 'exited' || result.State.Status === 'running') {
+                    this.startExistingContainer();
+                } else {
+                    Helper.errorLogHandler(`Error occurred while starting the nodes: ${error}`,
+                                           `Error occurred while starting the nodes....`);
+                }
+            })
+            .catch(error => {
+                this.runContainer();
+                Logger.verbose(`Error occurred while starting the nodes: ${error}`);
+            });
+        })
+        .catch(error => Helper.errorLogHandler(`Error occurred while starting the nodes: ${error}`,
+                                               `No inbuilt nodes found on system. Run 'tezster setup' command for build the nodes.`));
     }
 
     stopNodes() {
         Logger.verbose('Command : tezster stop-nodes');
-        child_process.exec(`docker ps -a -q --format {{.Names}}`,(error, stdout, stderr) => {
-            if (stdout.includes(`${CONTAINER_NAME}\n`)) {
-                Logger.warn(`stopping the nodes....`);
-                const container = docker.getContainer(CONTAINER_NAME);
-                container.stop(function (error, data){
-                    if(error) {
-                        Logger.error(`Error occurred while stopping the nodes: ${error}`);
-                    }
-                });
-                container.remove({force: true});
-                Logger.info(`Nodes have been stopped. Run 'tezster start-nodes' to restart.`);
-            } else if (error) {
-                Helper.errorLogHandler(`Error occurred while stopping the nodes, error: ${error}`, 'Error occurred while stopping the nodes');
-            } else {
-                Logger.error('No Nodes are running....');
-            }
-        });
+
+            docker.getContainer(CONTAINER_NAME).inspect().then((result) => {
+                if(result.State.Status === 'exited' || result.State.Status === 'running') {
+                    Logger.warn(`stopping the nodes....`);
+                    const container = docker.getContainer(CONTAINER_NAME);
+                    container.stop(function (error, data){
+                        if(error) {
+                            Helper.errorLogHandler(`Error occurred while stopping the nodes: ${error}`,
+                                                   'Error occurred while stopping the nodes');
+                        }
+                    });
+                    container.remove({force: true});
+                    Logger.info(`Nodes have been stopped. Run 'tezster start-nodes' to restart.`);
+                } else {
+                    Logger.error('No Nodes are running....');
+                }
+            })
+            .catch(error => Helper.errorLogHandler(`Error occurred while stopping the nodes: ${error}`,
+                                                   'No Nodes are running....'));
+
     }
 
     getLogFiles() {
         Logger.verbose('Command : tezster get-logs');
-        child_process.exec(`docker ps -q --format {{.Image}}`,(error, stdout, stderr) => {
-            if (stdout.includes(`${IMAGE_TAG}\n`)) {
+        
+        docker.getContainer(CONTAINER_NAME).inspect().then((result) => {
+            if(result.State.Status === 'exited' || result.State.Status === 'running') {
                 Logger.info(`getting log files....`);
                 const container = docker.getContainer(CONTAINER_NAME);
 
@@ -84,7 +84,8 @@ class Setup {
                     let writeStream = fs.createWriteStream('/tmp/tezster-logs/tezster-node-logs.tar.gz', { encoding: 'utf8' });
 
                     if (error) {
-                        Helper.errorLogHandler(`Error occurred while fetching log archive: ${error}`, 'Error occurred while fetching the logs archive on system');
+                        Helper.errorLogHandler(`Error occurred while fetching log archive: ${error}`,
+                                               'Error occurred while fetching the logs archive on system');
                         writeStream.end();
                         writeStream.close();
                     }
@@ -100,11 +101,10 @@ class Setup {
                         Logger.warn(`To unzip file, run 'tar -xf tezster-node-logs.tar.gz'.`);
                     });
                 });
-            } else { 
-                Helper.errorLogHandler(`Error occurred while fetching log files on system: ${error}`, `No container is in running state.... to get logs run 'tezster start-nodes' first.`);
-                Logger.warn(`Run 'tezster start-nodes' to start nodes `);
             }
-        });
+        })
+        .catch(error => Helper.errorLogHandler(`Error occurred while fetching log files on system: ${error}`,
+                                               `No container is in running state.... Run 'tezster start-nodes' to start the container.`));
     }
 
     async nodeStatus() {
@@ -118,16 +118,40 @@ class Setup {
                 Logger.error('Nodes are not running....');
             }
         } catch (error) {
-            Helper.errorLogHandler(`Error occurred while confirming node status: ${error}`, 'Nodes are not running....');
+            Helper.errorLogHandler(`Error occurred while confirming node status: ${error}`,
+                                   'Nodes are not running....');
         }
     }
 
-    checkPermission(){
-        try {
-            child_process.exec(`sudo chmod -R 777 ${__dirname}/../../config.json`);
-        } catch(error) {
-            Helper.errorLogHandler(`Error occurred while changing config.json file permission: ${error}`, 'Error occurred while setting up node due to permission issue');
+    copyConfigToTempFolder(){
+        const fs = require('fs'),
+              path = require('path'),
+              mkdirp = require('mkdirp');
+
+        const pathToFile = path.join(__dirname, '../../config.json');
+        const pathToNewDestination = path.join('/tmp/tezster/', 'config.json') ;
+
+        if(fs.existsSync('/tmp/tezster/')) {
+            if(fs.existsSync('/tmp/tezster/config.json')) {
+                return;
+            }
         }
+
+        mkdirp('/tmp/tezster', function (mkdirError) {
+            if (mkdirError) {
+                Helper.errorLogHandler(`Error occurred while creating the 'tmp/tezster' dir: ${mkdirError}`,
+                                       'Error occurred while moving the config file....');
+            }
+            else {
+                fs.copyFileSync(pathToFile, pathToNewDestination, function(cpError) {
+                    if (cpError) {
+                        Helper.errorLogHandler(`Error occurred while copying the config file to temp folder: ${cpError}`,
+                                               'Error occurred while moving the config file....');
+                    } 
+                });
+            }
+        });
+
     }
 
     pullNodeSetup () {              
@@ -142,7 +166,8 @@ class Setup {
 
         docker.pull(IMAGE_TAG, (dockerPullError, dockerPullStream) => {
             if (dockerPullError) {
-                Helper.errorLogHandler(`Error occurred while pulling the docker image: ${dockerPullError}`, 'Make sure you have added docker to the USER group');
+                Helper.errorLogHandler(`Error occurred while pulling the docker image: ${dockerPullError}`,
+                                       'Make sure you have added docker to the USER group');
                 process.exit();
             } else {
                 Logger.info('setting up tezos node, this could take a while....');      
@@ -161,7 +186,8 @@ class Setup {
                     
                     docker.modem.followProgress(dockerPullStream, (_dockerModemError, _dockerModemOutput) => {
                         if(_dockerModemError) {
-                            Helper.errorLogHandler(`Error occurred while pulling docker image: ${_dockerModemError}`, 'Error occurred while pulling the docker image');
+                            Helper.errorLogHandler(`Error occurred while pulling docker image: ${_dockerModemError}`,
+                                                   'Error occurred while pulling the docker image');
                         } else {
                             clearInterval(progress);
                             progressbar.update(100);
@@ -187,7 +213,8 @@ class Setup {
                         Logger.error (`Error occurred in previously started nodes, try restarting the nodes after running 'tezster stop-nodes'.`);
                     }
                 } catch (error) {
-                    Helper.errorLogHandler(`Error occurred while starting the nodes${error}`, `Error occurred in previously started nodes, try restarting the nodes after running 'tezster stop-nodes'.`);
+                    Helper.errorLogHandler(`Error occurred while starting the nodes${error}`,
+                                           `Error occurred in previously started nodes, try restarting the nodes after running 'tezster stop-nodes'.`);
                 }
 
                 Logger.warn(`If facing any issue, fetch logs on your system using 'tezster get-logs' or try restarting the nodes after running 'tezster stop-nodes'.`);
@@ -229,11 +256,13 @@ class Setup {
         },
         function(err, container) {
             if(err) {
-                Helper.errorLogHandler(`Error occurred while starting the container: ${err}`, 'Error occurred while starting the nodes....');
+                Helper.errorLogHandler(`Error occurred while starting the container: ${err}`,
+                                       'Error occurred while starting the nodes....');
             } else {
                 container.start({}, function(err, data) {
                     if (err) {
-                        Helper.errorLogHandler(`Error occurred while starting nodes: ${err}`, 'Error occurred while starting the nodes....');
+                        Helper.errorLogHandler(`Error occurred while starting nodes: ${err}`,
+                                               'Error occurred while starting the nodes....');
                     }
                 });
             }
@@ -286,7 +315,8 @@ class Setup {
                         process.exit();
                     }
                 }).catch(function(error){
-                    Helper.errorLogHandler(`Error occurred while confirming node status: ${error}`, `\nError occurred while starting the local nodes, to check logs please run 'tezster get-logs'.`);
+                    Helper.errorLogHandler(`Error occurred while confirming node status: ${error}`,
+                                           `\nError occurred while starting the local nodes, to check logs please run 'tezster get-logs'.`);
                     process.exit();
                 });
             }, PROGRESS_REFRESH_INTERVAL);

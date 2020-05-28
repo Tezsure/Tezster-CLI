@@ -4,7 +4,8 @@
   "description": "A JavaScript-based private Tezos Blockchain Dev Tool that lives entirely on your local machine.",
   "main": "tezster.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "test-with-coverage": "nyc mocha"
   },
   "bin": {
     "tezster": "./tezster.js"
@@ -36,6 +37,7 @@
     "nearley": "^2.19.0",
     "node-cmd": "^3.0.0",
     "node-fetch": "^2.6.0",
+    "nyc": "^15.0.1",
     "pbkdf2": "^3.0.17",
     "request": "^2.81.0",
     "sinon": "^9.0.2",
