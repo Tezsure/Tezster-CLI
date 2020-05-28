@@ -1,16 +1,14 @@
-const confFile = '/tmp/tezster/config.json';
-const jsonfile = require('jsonfile');
-var config = jsonfile.readFileSync(confFile);
-
-const CONSEIL_JS = '../../lib/conseiljs',
+const confFile = '/tmp/tezster/config.json',
+      jsonfile = require('jsonfile'),
+      CONSEIL_JS = '../../lib/conseiljs',
       TESTNET_NAME = 'carthagenet',
       CONSEIL_SERVER_APIKEY = 'f979f858-1941-4c4b-b231-d40d41df5377',
-      CONSEIL_SERVER_URL = 'https://conseil-dev.cryptonomic-infra.tech:443';
+      CONSEIL_SERVER_URL = 'https://conseil-dev.cryptonomic-infra.tech:443',
 
-const Logger = require('../logger');
-const { Helper } = require('../helper');
-const { RpcRequest } = require('../rpc-util');
-const { ExceptionHandler } = require('../exceptionHandler');
+      Logger = require('../logger'),
+      { Helper } = require('../helper'),
+      { RpcRequest } = require('../rpc-util'),
+      { ExceptionHandler } = require('../exceptionHandler');
 
 class Accounts{
 
@@ -38,6 +36,7 @@ class Accounts{
     }
 
     async listAccounts() {  
+        var config = jsonfile.readFileSync(confFile);
         Logger.verbose(`Command : tezster list-accounts`);
         if(Object.keys(config.accounts).length > 0) {
             config.accounts.forEach(function (accounts){
@@ -96,12 +95,14 @@ class Accounts{
     }
 
     setProviderAccounts(args){    
+        var config = jsonfile.readFileSync(confFile);
         config.provider = args[0];
         jsonfile.writeFile(confFile, config);
         Logger.info('Provider updated to ' + config.provider);
     }
 
     getProviderAccounts(){    
+        var config = jsonfile.readFileSync(confFile);
         if (config.provider) {
             Logger.info(config.provider);
         } else {
@@ -110,6 +111,7 @@ class Accounts{
     }
 
     async getBalanceAccounts(account) {
+        var config = jsonfile.readFileSync(confFile);
         let pkh = account, f;
         const tezosNode = config.provider;
         if (f = Helper.findKeyObj(config.identities, pkh)) {
@@ -139,6 +141,8 @@ class Accounts{
     async createTestnetWallet(args) {
         const accountLabel = args[0];
         const conseiljs = require(CONSEIL_JS);
+        var config = jsonfile.readFileSync(confFile);
+
         const keys = this.getKeys(accountLabel);
         if(keys) {
             Logger.error(`Account with this label already exists.`);
@@ -160,6 +164,8 @@ class Accounts{
 
     async restoreExistingWallet(accountLabel, mnemonic) {
         const conseiljs = require(CONSEIL_JS);
+        var config = jsonfile.readFileSync(confFile);
+
         const keys = this.getKeys(accountLabel);
         if(keys) {
             Logger.error(`Account with this label already exists.`);
@@ -180,11 +186,14 @@ class Accounts{
     async addFaucetAccount(accountLabel, accountFilePath) {
         const fs = require('fs');
         const conseiljs = require(CONSEIL_JS);
+        var config = jsonfile.readFileSync(confFile);
+
         const keys = this.getKeys(accountLabel);
         if(keys) {
             Logger.error(`Account with this label already exists.`);
             return;
         }
+
         try {
             let accountJSON = fs.readFileSync(accountFilePath, 'utf8');
             accountJSON = accountJSON && JSON.parse(accountJSON);
@@ -214,6 +223,7 @@ class Accounts{
 
     async activateAlphanetAccount(account) {
         const conseiljs = require(CONSEIL_JS);
+        var config = jsonfile.readFileSync(confFile);
         const tezosNode = config.provider;
         let conseilServer = { 'url': CONSEIL_SERVER_URL, 'apiKey': CONSEIL_SERVER_APIKEY, 'network': TESTNET_NAME };
         const keys = this.getKeys(account);
@@ -251,6 +261,7 @@ class Accounts{
     }
 
     async deleteAccount(account) {
+        var config = jsonfile.readFileSync(confFile);
         const keys = this.getKeys(account);
 
         if(!keys) {
@@ -283,6 +294,7 @@ class Accounts{
     }
 
     getKeys(account) {
+        var config = jsonfile.readFileSync(confFile);
         let keys,f;
         if (f = Helper.findKeyObj(config.identities, account)) {
             keys = f;
@@ -295,6 +307,7 @@ class Accounts{
     }
 
     addIdentity(label, sk, pk, pkh, secret) {
+        var config = jsonfile.readFileSync(confFile);
         config.identities.push({
             sk : sk,
             pk: pk,
@@ -306,6 +319,7 @@ class Accounts{
     }
 
     addAccount(label, pkh, identity, nodeType) {
+        var config = jsonfile.readFileSync(confFile);
         if(nodeType.includes('localhost')) {
             nodeType = 'localnode';
         } else {

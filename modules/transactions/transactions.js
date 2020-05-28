@@ -1,11 +1,11 @@
-const confFile = '/tmp/tezster/config.json';
-const jsonfile = require('jsonfile');
-var config = jsonfile.readFileSync(confFile);
-const CONSEIL_JS = '../../lib/conseiljs';
-const TESTNET_NAME = 'carthagenet';
-const Logger = require('../logger');
-const { Helper } = require('../helper');
-const { ExceptionHandler } = require('../exceptionHandler');
+const confFile = '/tmp/tezster/config.json',
+      jsonfile = require('jsonfile'),
+      CONSEIL_JS = '../../lib/conseiljs',
+      TESTNET_NAME = 'carthagenet',
+      
+      Logger = require('../logger'),
+      { Helper } = require('../helper'),
+      { ExceptionHandler } = require('../exceptionHandler');
 
 class Transactions {
 
@@ -18,7 +18,8 @@ class Transactions {
         this.transferAmount(args);
     }
 
-    async listTransactions() {       
+    async listTransactions() {      
+        var config = jsonfile.readFileSync(confFile); 
         Logger.verbose(`Command : tezster list-transactions`);
         Logger.warn(`For transactions done on ${TESTNET_NAME} node ,you can visit https://${TESTNET_NAME}.tzstats.com for more information`);
         if(Object.keys(config.transactions).length > 0) {        
@@ -31,6 +32,7 @@ class Transactions {
     }
 
     async transferAmount(args) {
+        var config = jsonfile.readFileSync(confFile);
         let amount = parseFloat(args[0]), from = args[1], to = args[2], fees = args[3], f;
         
         const conseiljs = require(CONSEIL_JS);
@@ -90,6 +92,7 @@ class Transactions {
     }
 
     addTransaction(operation, opHash, from, to, amount) {
+        var config = jsonfile.readFileSync(confFile);
         config.transactions.push({
           operation : operation,
           hash : opHash,
@@ -101,6 +104,7 @@ class Transactions {
     }
 
     getKeys(account) {
+        var config = jsonfile.readFileSync(confFile);
         let keys,f;
         if (f = Helper.findKeyObj(config.identities, account)) {
             keys = f;

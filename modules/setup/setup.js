@@ -5,11 +5,11 @@ const child_process = require('child_process'),
       CONTAINER_NAME = 'tezster',
       PROGRESS_REFRESH_INTERVAL = 1000,
       NODE_CONFIRMATION_TIMEOUT = 40000,
-      LOCAL_NODE_URL = 'http://localhost:18731';
+      LOCAL_NODE_URL = 'http://localhost:18731',
 
-const Logger = require('../logger');
-const { Helper } = require('../helper');
-const { RpcRequest } = require('../rpc-util');
+      Logger = require('../logger'),
+      { Helper } = require('../helper'),
+      { RpcRequest } = require('../rpc-util');
 
 class Setup {
 
@@ -81,7 +81,7 @@ class Setup {
 
                 const fs = require('fs');
                 container.getArchive( { path: `/usr/local/bin/tezster-logs` }, (error, stream) => {
-                    let writeStream = fs.createWriteStream('/tmp/tezster-logs/tezster-node-logs.tar.gz', { encoding: 'utf8' });
+                    let writeStream = fs.createWriteStream('/tmp/tezster/tezster-logs/tezster-node-logs.tar.gz', { encoding: 'utf8' });
 
                     if (error) {
                         Helper.errorLogHandler(`Error occurred while fetching log archive: ${error}`,
@@ -97,7 +97,7 @@ class Setup {
                     stream.on('end', () => {
                         writeStream.end();
                         writeStream.close();
-                        Logger.info(`Log files has been stored at following folder location as archive format: \n'/tmp/tezster-logs/tezster-node-logs.tar.gz'`);
+                        Logger.info(`Log files has been stored at following folder location as archive format: \n'/tmp/tezster/tezster-logs/tezster-node-logs.tar.gz'`);
                         Logger.warn(`To unzip file, run 'tar -xf tezster-node-logs.tar.gz'.`);
                     });
                 });

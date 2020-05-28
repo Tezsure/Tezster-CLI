@@ -1,5 +1,5 @@
-const winston = require('winston');
-const { format } = require('winston');
+const winston = require('winston'),
+      { format } = require('winston');
 
 let silent;
 
@@ -32,7 +32,7 @@ const options = {
         ),
     },
     file: {
-        filename: '/tmp/tezster-logs/tezster-command-logs.log',
+        filename: '/tmp/tezster/tezster-logs/tezster-command-logs.log',
         level : 'verbose',
         silent,
         handleExceptions: true,
