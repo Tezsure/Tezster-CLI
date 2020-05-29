@@ -1,9 +1,10 @@
-const { confFile, config, CONSEIL_JS, TESTNET_NAME } = require('../cli-variables');
+const { confFile, CONSEIL_JS, TESTNET_NAME } = require('../cli-constants');
 
 const jsonfile = require('jsonfile'),      
       Logger = require('../logger'),
       { Helper } = require('../helper'),
-      { ExceptionHandler } = require('../exceptionHandler');
+      { ExceptionHandler } = require('../exceptionHandler'),
+      config = jsonfile.readFileSync(confFile);
 
 class Transactions {
 

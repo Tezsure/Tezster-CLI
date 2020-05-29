@@ -1,7 +1,7 @@
 const Docker = require('dockerode');
 var docker = new Docker({ socketPath: '/var/run/docker.sock', hosts: 'tcp://0.0.0.0:2376' });
 
-const { IMAGE_TAG, CONTAINER_NAME, LOCAL_NODE_URL, PROGRESS_REFRESH_INTERVAL, NODE_CONFIRMATION_TIMEOUT} = require('../cli-variables');
+const { confFile, IMAGE_TAG, CONTAINER_NAME, LOCAL_NODE_URL, PROGRESS_REFRESH_INTERVAL, NODE_CONFIRMATION_TIMEOUT, LOG_FOLDER_PATH_INSIDE_DOCKER, LOGS_ZIPFILE_PATH, LOGS_ZIPFILE_NAME } = require('../cli-constants');
 const Logger = require('../logger'),
       { Helper } = require('../helper'),
       { RpcRequest } = require('../rpc-util');
@@ -10,9 +10,6 @@ class Setup {
 
     setup() {
         Logger.verbose('Command : tezster setup');
-
-        this.copyConfigToTempFolder();
-
         docker.version().then((result) => {
             this.pullNodeSetup();
         })
@@ -74,8 +71,8 @@ class Setup {
                 const container = docker.getContainer(CONTAINER_NAME);
 
                 const fs = require('fs');
-                container.getArchive( { path: `/usr/local/bin/tezster-logs` }, (error, stream) => {
-                    let writeStream = fs.createWriteStream('/tmp/tezster/tezster-logs/tezster-node-logs.tar.gz', { encoding: 'utf8' });
+                container.getArchive( { path: LOG_FOLDER_PATH_INSIDE_DOCKER }, (error, stream) => {
+                    let writeStream = fs.createWriteStream(LOGS_ZIPFILE_PATH, { encoding: 'utf8' });
 
                     if (error) {
                         Helper.errorLogHandler(`Error occurred while fetching log archive: ${error}`,
@@ -91,8 +88,8 @@ class Setup {
                     stream.on('end', () => {
                         writeStream.end();
                         writeStream.close();
-                        Logger.info(`Log files has been stored at following folder location as archive format: \n'/tmp/tezster/tezster-logs/tezster-node-logs.tar.gz'`);
-                        Logger.warn(`To unzip file, run 'tar -xf tezster-node-logs.tar.gz'.`);
+                        Logger.info(`Log files has been stored at following folder location as archive format: \n'${LOGS_ZIPFILE_PATH}'`);
+                        Logger.warn(`To unzip file, run 'tar -xf ${LOGS_ZIPFILE_NAME}'.`);
                     });
                 });
             }
@@ -115,26 +112,6 @@ class Setup {
             Helper.errorLogHandler(`Error occurred while confirming node status: ${error}`,
                                    'Nodes are not running....');
         }
-    }
-
-    copyConfigToTempFolder(){
-        const fs = require('fs'),
-              path = require('path');
-
-        const pathToFile = path.join(__dirname, '../../config.json');
-        const pathToNewDestination = path.join('/tmp/tezster/', 'config.json') ;
-
-        if(fs.existsSync('/tmp/tezster/config.json')) {
-            return;
-        }
-
-        fs.copyFileSync(pathToFile, pathToNewDestination, function(cpError) {
-            if (cpError) {
-                Helper.errorLogHandler(`Error occurred while copying the config file to temp folder: ${cpError}`,
-                                        'Error occurred while copying the config file....');
-            } 
-        });
-
     }
 
     pullNodeSetup () {              

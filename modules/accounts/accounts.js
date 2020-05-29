@@ -1,10 +1,11 @@
-const { confFile, config, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL } = require('../cli-variables');
+const { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL } = require('../cli-constants');
 
 const jsonfile = require('jsonfile'),
       Logger = require('../logger'),
       { Helper } = require('../helper'),
       { RpcRequest } = require('../rpc-util'),
-      { ExceptionHandler } = require('../exceptionHandler');
+      { ExceptionHandler } = require('../exceptionHandler'),
+      config = jsonfile.readFileSync(confFile);
 
 class Accounts{
 
@@ -155,7 +156,6 @@ class Accounts{
 
     async restoreExistingWallet(accountLabel, mnemonic) {
         const conseiljs = require(CONSEIL_JS);
-
         const keys = this.getKeys(accountLabel);
         if(keys) {
             Logger.error(`Account with this label already exists.`);
@@ -176,7 +176,6 @@ class Accounts{
     async addFaucetAccount(accountLabel, accountFilePath) {
         const fs = require('fs');
         const conseiljs = require(CONSEIL_JS);
-
         const keys = this.getKeys(accountLabel);
         if(keys) {
             Logger.error(`Account with this label already exists.`);

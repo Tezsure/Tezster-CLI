@@ -1,9 +1,10 @@
-const { confFile, config, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL } = require('../cli-variables');
+const { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL } = require('../cli-constants');
       
 const jsonfile = require('jsonfile'),
       Logger = require('../logger'),
       { Helper } = require('../helper'),
-      { ExceptionHandler } = require('../exceptionHandler');
+      { ExceptionHandler } = require('../exceptionHandler'),
+      config = jsonfile.readFileSync(confFile);
       
 class Contracts {
 
@@ -82,7 +83,6 @@ class Contracts {
         const conseiljs = require(CONSEIL_JS);
         let conseilServer = { 'url': CONSEIL_SERVER_URL, 'apiKey': CONSEIL_SERVER_APIKEY, 'network': TESTNET_NAME };
         let contractCode, contractAddress;
-
         let contractObj = Helper.findKeyObj(config.contracts, contractPath);
         if (contractObj) {
             contractAddress = contractObj.pkh;
