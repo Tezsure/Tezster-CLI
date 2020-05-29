@@ -1,4 +1,4 @@
-const { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL } = require('../cli-variables');
+const { confFile, config, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL } = require('../cli-variables');
       
 const jsonfile = require('jsonfile'),
       Logger = require('../logger'),
@@ -8,7 +8,6 @@ const jsonfile = require('jsonfile'),
 class Contracts {
 
     async listContracts() {
-        var config = jsonfile.readFileSync(confFile);
         Logger.verbose('Command : tezster list-contracts');
         if(Object.keys(config.contracts).length > 0) {  
             config.contracts.forEach(function (contracts){
@@ -81,7 +80,6 @@ class Contracts {
     async listEntryPoints(contractPath) {
         const fs = require('fs');
         const conseiljs = require(CONSEIL_JS);
-        var config = jsonfile.readFileSync(confFile);
         let conseilServer = { 'url': CONSEIL_SERVER_URL, 'apiKey': CONSEIL_SERVER_APIKEY, 'network': TESTNET_NAME };
         let contractCode, contractAddress;
 
@@ -119,7 +117,6 @@ class Contracts {
     async deploy(contractLabel, contractPath, initValue, account, amount) {
         const fs = require('fs');
         const conseiljs = require(CONSEIL_JS);
-        var config = jsonfile.readFileSync(confFile);
         const tezosNode = config.provider;  
         let conseilServer = { 'url': CONSEIL_SERVER_URL, 'apiKey': CONSEIL_SERVER_APIKEY, 'network': TESTNET_NAME };
 
@@ -179,7 +176,6 @@ class Contracts {
 
     async invokeContract(contract, argument, account, amount) {
         const conseiljs = require(CONSEIL_JS);
-        var config = jsonfile.readFileSync(confFile);
         const tezosNode = config.provider;
         const keys = this.getKeys(account);
         if(!keys) {
@@ -236,7 +232,6 @@ class Contracts {
 
     async getContractStorage(contract) {
         const conseiljs = require(CONSEIL_JS);
-        var config = jsonfile.readFileSync(confFile);
         const tezosNode = config.provider;
         let contractAddress = '';
         let contractObj = Helper.findKeyObj(config.contracts, contract);
@@ -263,7 +258,6 @@ class Contracts {
     }
 
     addContractToConfig(contractLabel, contractAddr) {
-        var config = jsonfile.readFileSync(confFile);
         let contractObj = Helper.findKeyObj(config.contracts, contractLabel);
         if (contractObj) {
             Logger.error('This contract label is already in use. Please use a different one.');
@@ -274,7 +268,6 @@ class Contracts {
     }
 
     async deleteContract(contract) {
-        var config = jsonfile.readFileSync(confFile);
         let contractObj = Helper.findKeyObj(config.contracts, contract);
         if (!contractObj) {
             Logger.error(`Please make sure the contract with label '${contract}' exists.`);
@@ -296,7 +289,6 @@ class Contracts {
     }
 
     addNewContract(label, opHash, pkh, nodeType) {
-        var config = jsonfile.readFileSync(confFile);
         if(nodeType.includes('localhost')) {
             nodeType = 'localnode';
         } else {
@@ -311,7 +303,6 @@ class Contracts {
     }
 
     addTransaction(operation, opHash, from, to, amount) {
-        var config = jsonfile.readFileSync(confFile);
         config.transactions.push({
             operation : operation,
             hash : opHash,
@@ -324,7 +315,6 @@ class Contracts {
 
     getKeys(account) {
         let keys,f;
-        var config = jsonfile.readFileSync(confFile);
         if (f = Helper.findKeyObj(config.identities, account)) {
             keys = f;
         } else if (f = Helper.findKeyObj(config.accounts, account)) {

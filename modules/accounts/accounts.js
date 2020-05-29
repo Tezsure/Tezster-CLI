@@ -1,4 +1,4 @@
-const { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL } = require('../cli-variables');
+const { confFile, config, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL } = require('../cli-variables');
 
 const jsonfile = require('jsonfile'),
       Logger = require('../logger'),
@@ -32,7 +32,6 @@ class Accounts{
     }
 
     async listAccounts() {  
-        var config = jsonfile.readFileSync(confFile);
         Logger.verbose(`Command : tezster list-accounts`);
         if(Object.keys(config.accounts).length > 0) {
             config.accounts.forEach(function (accounts){
@@ -91,14 +90,12 @@ class Accounts{
     }
 
     setProviderAccounts(args){    
-        var config = jsonfile.readFileSync(confFile);
         config.provider = args[0];
         jsonfile.writeFile(confFile, config);
         Logger.info('Provider updated to ' + config.provider);
     }
 
     getProviderAccounts(){    
-        var config = jsonfile.readFileSync(confFile);
         if (config.provider) {
             Logger.info(config.provider);
         } else {
@@ -107,7 +104,6 @@ class Accounts{
     }
 
     async getBalanceAccounts(account) {
-        var config = jsonfile.readFileSync(confFile);
         let pkh = account, f;
         const tezosNode = config.provider;
         if (f = Helper.findKeyObj(config.identities, pkh)) {
@@ -137,7 +133,6 @@ class Accounts{
     async createTestnetWallet(args) {
         const accountLabel = args[0];
         const conseiljs = require(CONSEIL_JS);
-        var config = jsonfile.readFileSync(confFile);
 
         const keys = this.getKeys(accountLabel);
         if(keys) {
@@ -160,7 +155,6 @@ class Accounts{
 
     async restoreExistingWallet(accountLabel, mnemonic) {
         const conseiljs = require(CONSEIL_JS);
-        var config = jsonfile.readFileSync(confFile);
 
         const keys = this.getKeys(accountLabel);
         if(keys) {
@@ -182,7 +176,6 @@ class Accounts{
     async addFaucetAccount(accountLabel, accountFilePath) {
         const fs = require('fs');
         const conseiljs = require(CONSEIL_JS);
-        var config = jsonfile.readFileSync(confFile);
 
         const keys = this.getKeys(accountLabel);
         if(keys) {
@@ -219,7 +212,6 @@ class Accounts{
 
     async activateAlphanetAccount(account) {
         const conseiljs = require(CONSEIL_JS);
-        var config = jsonfile.readFileSync(confFile);
         const tezosNode = config.provider;
         let conseilServer = { 'url': CONSEIL_SERVER_URL, 'apiKey': CONSEIL_SERVER_APIKEY, 'network': TESTNET_NAME };
         const keys = this.getKeys(account);
@@ -257,7 +249,6 @@ class Accounts{
     }
 
     async deleteAccount(account) {
-        var config = jsonfile.readFileSync(confFile);
         const keys = this.getKeys(account);
 
         if(!keys) {
@@ -290,7 +281,6 @@ class Accounts{
     }
 
     getKeys(account) {
-        var config = jsonfile.readFileSync(confFile);
         let keys,f;
         if (f = Helper.findKeyObj(config.identities, account)) {
             keys = f;
@@ -303,7 +293,6 @@ class Accounts{
     }
 
     addIdentity(label, sk, pk, pkh, secret) {
-        var config = jsonfile.readFileSync(confFile);
         config.identities.push({
             sk : sk,
             pk: pk,
@@ -315,7 +304,6 @@ class Accounts{
     }
 
     addAccount(label, pkh, identity, nodeType) {
-        var config = jsonfile.readFileSync(confFile);
         if(nodeType.includes('localhost')) {
             nodeType = 'localnode';
         } else {
