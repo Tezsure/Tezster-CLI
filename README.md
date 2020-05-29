@@ -94,14 +94,6 @@ tezster --help
 To setup tezster-cli and for usage guidance visit our [documentation page](https://docs.tezster.tech/tezster-cli#playground-setup).
 
 
-## Extra
-
-We’re building a lot of exciting features which will be released soon, So stay tuned with our updates and releases!
-
-```
-keep developing
-```
-
 ## Contributing
 
 Tezster-CLI is open source and we love to receive contributions from our community - you!
@@ -113,3 +105,12 @@ There are many ways to contribute, from writing tutorials or blog posts, improvi
 To know about common errors and fixes follow our [error section](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix). To report bugs, please create an issue on [issue page](https://github.com/Tezsure/Tezster-CLI/issues).
 
 **You can get in touch with us for any open discussion and 24*7 support through our [telegram channel](https://t.me/tezster).**
+
+
+## Extra
+
+We’re building a lot of exciting features which will be released soon, So stay tuned with our updates and releases!
+
+```
+keep developing
+```
