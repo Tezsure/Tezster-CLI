@@ -124,9 +124,9 @@ class Setup {
         const pathToFile = path.join(__dirname, '../../config.json');
         const pathToNewDestination = path.join('/tmp/tezster/', 'config.json') ;
 
-        //     if(fs.existsSync('/tmp/tezster/config.json')) {
-        //         return;
-        //     }
+        if(fs.existsSync('/tmp/tezster/config.json')) {
+            return;
+        }
 
         fs.copyFileSync(pathToFile, pathToNewDestination, function(cpError) {
             if (cpError) {
