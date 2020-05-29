@@ -1,4 +1,4 @@
-const { confFile } = require('./cli-variables');
+const { confFile, config } = require('./cli-variables');
 const jsonfile = require('jsonfile'),
       Logger = require('./logger');
 
@@ -37,7 +37,6 @@ class Helper {
     }
 
     static clearContractAndAccountForLocalNode() {   
-        var config = jsonfile.readFileSync(confFile);
         let contractObjectIndex , accountObjectIndex;
         for (contractObjectIndex=0; contractObjectIndex<config.contracts.length; contractObjectIndex++) {
             if(config.contracts[contractObjectIndex].identity.includes('localnode')) {

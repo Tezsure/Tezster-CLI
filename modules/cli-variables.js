@@ -1,4 +1,6 @@
 const confFile = '/tmp/tezster/config.json',
+      jsonfile = require('jsonfile'),
+      config = jsonfile.readFileSync(confFile),
       CONSEIL_JS = '../../lib/conseiljs',
       TESTNET_NAME = 'carthagenet',
       CONSEIL_SERVER_APIKEY = 'f979f858-1941-4c4b-b231-d40d41df5377',
@@ -9,7 +11,7 @@ const confFile = '/tmp/tezster/config.json',
       NODE_CONFIRMATION_TIMEOUT = 40000,
       LOCAL_NODE_URL = 'http://localhost:18731';
 
-module.exports = { confFile, CONSEIL_JS, TESTNET_NAME,
+module.exports = { confFile, config, CONSEIL_JS, TESTNET_NAME,
                    CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL,
                    IMAGE_TAG, CONTAINER_NAME, LOCAL_NODE_URL,
                    PROGRESS_REFRESH_INTERVAL, NODE_CONFIRMATION_TIMEOUT };
