@@ -131,7 +131,7 @@ class Setup {
         fs.copyFileSync(pathToFile, pathToNewDestination, function(cpError) {
             if (cpError) {
                 Helper.errorLogHandler(`Error occurred while copying the config file to temp folder: ${cpError}`,
-                                        'Error occurred while moving the config file....');
+                                        'Error occurred while copying the config file....');
             } 
         });
 
