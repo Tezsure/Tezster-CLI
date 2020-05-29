@@ -96,9 +96,9 @@ To setup tezster-cli and for usage guidance visit our [documentation page](https
 
 ## Contributing
 
-Tezster-CLI is open source and we love to receive contributions from our community - you!
+Tezster-CLI is open source and we love to receive contributions from whosoever passionate with the technology.
 
-There are many ways to contribute, from writing tutorials or blog posts, improving the documentation, submitting bug reports and feature requests or writing code. We certainly welcome pull requests as well.
+There are many ways to contribute, from writing tutorials or blog posts, improving the documentation, bug reports and feature requests or writing code. We certainly welcome pull requests as well.
 
 ## Reporting bugs and Support
 
