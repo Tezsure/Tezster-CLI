@@ -1,5 +1,5 @@
-const confFile = '/tmp/tezster/config.json',
-      jsonfile = require('jsonfile'),
+const { confFile } = require('./cli-variables');
+const jsonfile = require('jsonfile'),
       Logger = require('./logger');
 
 class Helper {

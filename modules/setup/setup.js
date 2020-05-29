@@ -1,13 +1,8 @@
 const Docker = require('dockerode');
 var docker = new Docker({ socketPath: '/var/run/docker.sock', hosts: 'tcp://0.0.0.0:2376' });
-const child_process = require('child_process'),
-      IMAGE_TAG = 'tezsureinc/tezster:1.0.2',
-      CONTAINER_NAME = 'tezster',
-      PROGRESS_REFRESH_INTERVAL = 1000,
-      NODE_CONFIRMATION_TIMEOUT = 40000,
-      LOCAL_NODE_URL = 'http://localhost:18731',
 
-      Logger = require('../logger'),
+const { IMAGE_TAG, CONTAINER_NAME, LOCAL_NODE_URL, PROGRESS_REFRESH_INTERVAL, NODE_CONFIRMATION_TIMEOUT} = require('../cli-variables');
+const Logger = require('../logger'),
       { Helper } = require('../helper'),
       { RpcRequest } = require('../rpc-util');
 
