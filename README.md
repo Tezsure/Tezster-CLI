@@ -102,8 +102,6 @@ We’re building a lot of exciting features which will be released soon, So stay
 keep developing
 ```
 
-**Please go through our [error section](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix) to get information about the common errors and fixes. For any help or to report any issues please follow the [
-
 ## Contributing
 
 Tezster-CLI is open source and we love to receive contributions from our community - you!
