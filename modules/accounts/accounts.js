@@ -1,10 +1,6 @@
-const confFile = '/tmp/tezster/config.json',
-      jsonfile = require('jsonfile'),
-      CONSEIL_JS = '../../lib/conseiljs',
-      TESTNET_NAME = 'carthagenet',
-      CONSEIL_SERVER_APIKEY = 'f979f858-1941-4c4b-b231-d40d41df5377',
-      CONSEIL_SERVER_URL = 'https://conseil-dev.cryptonomic-infra.tech:443',
+const { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL } = require('../cli-variables');
 
+const jsonfile = require('jsonfile'),
       Logger = require('../logger'),
       { Helper } = require('../helper'),
       { RpcRequest } = require('../rpc-util'),

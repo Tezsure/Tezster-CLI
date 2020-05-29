@@ -1,8 +1,6 @@
-const confFile = '/tmp/tezster/config.json',
-      jsonfile = require('jsonfile'),
-      CONSEIL_JS = '../../lib/conseiljs',
-      TESTNET_NAME = 'carthagenet',
-      
+const { confFile, CONSEIL_JS, TESTNET_NAME } = require('../cli-variables');
+
+const jsonfile = require('jsonfile'),      
       Logger = require('../logger'),
       { Helper } = require('../helper'),
       { ExceptionHandler } = require('../exceptionHandler');

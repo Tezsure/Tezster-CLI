@@ -1,10 +1,6 @@
-const confFile = '/tmp/tezster/config.json',
-      jsonfile = require('jsonfile'),
-      CONSEIL_JS = '../../lib/conseiljs',
-      TESTNET_NAME = 'carthagenet',
-      CONSEIL_SERVER_APIKEY = 'f979f858-1941-4c4b-b231-d40d41df5377',
-      CONSEIL_SERVER_URL = 'https://conseil-dev.cryptonomic-infra.tech:443',
+const { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL } = require('../cli-variables');
       
+const jsonfile = require('jsonfile'),
       Logger = require('../logger'),
       { Helper } = require('../helper'),
       { ExceptionHandler } = require('../exceptionHandler');
@@ -112,7 +108,7 @@ class Contracts {
             Logger.info(`\nInitial Storage input must be of type : ${storageFormat[1].slice(8)}`);
             entryPoints.forEach(p => {
                 Logger.info('-------------------------------------------------------------------------------------------------------------------------------------');
-                Logger.info(`\nName => ${p.name}\n\nParameters => (${p.parameters.map(pp => (pp.name || '') + pp.type).join(', ')})\n\nStructure => ${p.structure}\n`);
+                Logger.info(`\nName => ${p.name}\n\nParameters => (${p.parameters.map(pp => (pp.name || '') + pp.type).join(', ')})\n\nStructure => ${p.structure}\n\nExample => ${p.generateSampleInvocation()}\n`);
             });
         }
         catch(error) {
@@ -156,9 +152,9 @@ class Contracts {
                                       100000, '', 10000, 500000, 
                                       contract, initValue, conseiljs.TezosParameterFormat.Michelson);        
                                       
-            if(!tezosNode.startsWith('http://localhost')) {
-            const Groupid = this.clearRPCOperationGroupHash(result.operationGroupID);
-            await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, Groupid, 10, 30+1);
+            if(!tezosNode.includes('localhost')) {
+                const Groupid = this.clearRPCOperationGroupHash(result.operationGroupID);
+                await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, Groupid, 10, 30+1);
             }
             
             if (result.results) {
