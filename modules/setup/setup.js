@@ -51,8 +51,7 @@ class Setup {
                     const container = docker.getContainer(CONTAINER_NAME);
                     container.stop(function (error, data){
                         if(error) {
-                            Helper.errorLogHandler(`Error occurred while stopping the nodes: ${error}`,
-                                                   'Error occurred while stopping the nodes');
+                            Logger.verbose(`Error occurred while stopping the nodes: ${error}`);
                         }
                     });
                     container.remove({force: true});
@@ -120,31 +119,20 @@ class Setup {
 
     copyConfigToTempFolder(){
         const fs = require('fs'),
-              path = require('path'),
-              mkdirp = require('mkdirp');
+              path = require('path');
 
         const pathToFile = path.join(__dirname, '../../config.json');
         const pathToNewDestination = path.join('/tmp/tezster/', 'config.json') ;
 
-        if(fs.existsSync('/tmp/tezster/')) {
-            if(fs.existsSync('/tmp/tezster/config.json')) {
-                return;
-            }
-        }
+        //     if(fs.existsSync('/tmp/tezster/config.json')) {
+        //         return;
+        //     }
 
-        mkdirp('/tmp/tezster', function (mkdirError) {
-            if (mkdirError) {
-                Helper.errorLogHandler(`Error occurred while creating the 'tmp/tezster' dir: ${mkdirError}`,
-                                       'Error occurred while moving the config file....');
-            }
-            else {
-                fs.copyFileSync(pathToFile, pathToNewDestination, function(cpError) {
-                    if (cpError) {
-                        Helper.errorLogHandler(`Error occurred while copying the config file to temp folder: ${cpError}`,
-                                               'Error occurred while moving the config file....');
-                    } 
-                });
-            }
+        fs.copyFileSync(pathToFile, pathToNewDestination, function(cpError) {
+            if (cpError) {
+                Helper.errorLogHandler(`Error occurred while copying the config file to temp folder: ${cpError}`,
+                                        'Error occurred while moving the config file....');
+            } 
         });
 
     }
