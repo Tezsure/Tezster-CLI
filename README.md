@@ -102,10 +102,16 @@ We’re building a lot of exciting features which will be released soon, So stay
 keep developing
 ```
 
-**Please go through our [error section](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix) to get information about the common errors and fixes. For any help or to report any issues please follow the [link](https://github.com/Tezsure/Tezster-CLI/issues).**
+**Please go through our [error section](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix) to get information about the common errors and fixes. For any help or to report any issues please follow the [
 
 ## Contributing
 
 Tezster-CLI is open source and we love to receive contributions from our community - you!
 
 There are many ways to contribute, from writing tutorials or blog posts, improving the documentation, submitting bug reports and feature requests or writing code. We certainly welcome pull requests as well.
+
+### Reporting bugs and Support
+
+To know about common errors and fixes follow our [error section](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix). To report bugs, please create an issue on [issue page](https://github.com/Tezsure/Tezster-CLI/issues).
+
+To get 24*7 support get connect with us on our [telegram channel](https://t.me/tezster).
