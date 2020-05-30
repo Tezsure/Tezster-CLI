@@ -59,7 +59,7 @@ git clone https://github.com/Tezsure/Tezster-CLI.git
 cd Tezster-CLI
 npm install
 sudo npm link
-npm run postinstall
+npm run postinstall --silent
 ```
 
 Run ```tezster --version``` to ensure the version of tezster.
