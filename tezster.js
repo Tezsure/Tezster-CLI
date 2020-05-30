@@ -2,8 +2,6 @@
 'use strict';
 
 const program = require('commander');
-const { Helper } = require('./modules/helper');
-Helper.copyConfigToTempFolder();
 const { TezsterManager } = require('./tezster-manager');
 const tezstermanager = new TezsterManager();
 
