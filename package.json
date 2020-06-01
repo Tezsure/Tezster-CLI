@@ -5,6 +5,7 @@
   "main": "tezster.js",
   "scripts": {
     "postinstall": "mkdir -p /tmp/tezster && cp -n ./config.json /tmp/tezster/config.json",
+    "postinstall-win": "mkdir -p /tmp/tezster && copy -n ./config.json /tmp/tezster/config.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {

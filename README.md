@@ -21,7 +21,7 @@ Follow below steps to get started with Tezster-CLI.
 *Note : Currently we are supporting Linux platform for running local nodes. You may encounter local node related issues in Mac OS X and Windows due to docker. If you are on Mac OS X and Windows, you can switch to remote nodes to use our functionalities.*
 
 ### Node.js Installation
-Run following commands to install Node.js LTS version 
+Run following commands to install Node.js LTS version or download nodejs from (downloads)[https://nodejs.org/en/download/]
 ```
 sudo apt-get update
 sudo apt-get install curl
@@ -59,7 +59,16 @@ git clone https://github.com/Tezsure/Tezster-CLI.git
 cd Tezster-CLI
 npm install
 sudo npm link
+```
+
+If you are using linux based system or mac os x, run
+```
 npm run postinstall --silent
+```
+
+If you are using windows, run
+```
+npm run postinstall-win --silent
 ```
 
 Run ```tezster --version``` to ensure the version of tezster.
