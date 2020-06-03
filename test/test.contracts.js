@@ -14,7 +14,7 @@ const chai = require("chai"),
       { Helper } = require('../modules/helper'),
       ContractClass = require('../modules/contract/contracts'),
       contract = new ContractClass.Contracts(),
-      { sendContractOriginationOperation } = require('./TezosOperations.responses');
+      { sendContractOriginationOperation, sendContractInvocationOperation } = require('./TezosOperations.responses');
 
 const CONTRACT_ADDRESS = 'KT1WvyJ1qUrWzShA2T6QeL7AW4DR6GspUimM',
       CONTRACT_LABEL = 'samplecontract',
@@ -30,8 +30,7 @@ const CONTRACT_ADDRESS = 'KT1WvyJ1qUrWzShA2T6QeL7AW4DR6GspUimM',
           publicKeyHash: 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
           seed: '',
           storeType: 1
-      },     
-      tezosNode = 'http://localhost:18731';
+      };
 
 describe('Smart Contract Operations', async () => {
     let sandbox = null;
@@ -50,9 +49,20 @@ describe('Smart Contract Operations', async () => {
                             .withArgs('./MichelsonCodeFile.tz')
                             .returns(CONTRACT_CODE);
 
+            const stubKeys = sandbox
+                            .stub(contract, 'getKeys')
+                            .withArgs(BOOTSTRAPPED_ACCOUNT)
+                            .returns( {
+                              pk: 'edpkuBknW28nW72KG6RoHtYW7p12T6GKc7nAbwYX5m8Wd9sDVC9yav',
+                              sk: 'edskRuR1azSfboG86YPTyxrQgosh5zChf5bVDmptqLTb5EuXAm9rsnDYfTKhq7rDQujdn5WWzwUMeV3agaZ6J2vPQT58jJAJPi',
+                              pkh: 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
+                              seed: '',
+                              storeType: 1
+                          });
+
             const stubConseil = sandbox
                             .stub(conseiljs.TezosNodeWriter, 'sendContractOriginationOperation')
-                            .withArgs(tezosNode, keystore, 0, undefined,
+                            .withArgs(config.provider, keystore, 0, undefined,
                                       100000, '', 10000, 500000, 
                                       CONTRACT_CODE, CONTRACT_INITIAL_STORAGE, conseiljs.TezosParameterFormat.Michelson)
                             .returns(sendContractOriginationOperation.applied);
@@ -79,9 +89,20 @@ describe('Smart Contract Operations', async () => {
                             .withArgs('./MichelsonCodeFile.tz')
                             .returns(CONTRACT_CODE);
 
+            const stubKeys = sandbox
+                            .stub(contract, 'getKeys')
+                            .withArgs(BOOTSTRAPPED_ACCOUNT)
+                            .returns( {
+                              pk: 'edpkuBknW28nW72KG6RoHtYW7p12T6GKc7nAbwYX5m8Wd9sDVC9yav',
+                              sk: 'edskRuR1azSfboG86YPTyxrQgosh5zChf5bVDmptqLTb5EuXAm9rsnDYfTKhq7rDQujdn5WWzwUMeV3agaZ6J2vPQT58jJAJPi',
+                              pkh: 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
+                              seed: '',
+                              storeType: 1
+                          });
+
             const stubConseil = sandbox
                             .stub(conseiljs.TezosNodeWriter, 'sendContractOriginationOperation')
-                            .withArgs(tezosNode, keystore, 0, undefined,
+                            .withArgs(config.provider, keystore, 0, undefined,
                                       100000, '', 10000, 500000, 
                                       CONTRACT_CODE, CONTRACT_INITIAL_STORAGE, conseiljs.TezosParameterFormat.Michelson)
                             .returns(sendContractOriginationOperation.failed);
@@ -108,23 +129,63 @@ describe('Smart Contract Operations', async () => {
         });
     });
 
+    context('invoke-contract-with-args', async () => {
+        it('must call sendContractInvocationOperation function with applied status', async () => {
+            const conseiljs = require(CONSEIL_JS);
+            const stubHelper = sandbox
+                            .stub(Helper, 'findKeyObj')
+                            .withArgs(config.contracts, CONTRACT_LABEL)
+                            .returns({
+                                "label": "samplecontract",
+                                "pkh": "KT1WvyJ1qUrWzShA2T6QeL7AW4DR6GspUimM",
+                                "identity": "localnode - samplecontract"
+                              });
+
+            const stubKeys = sandbox
+                            .stub(contract, 'getKeys')
+                            .withArgs(BOOTSTRAPPED_ACCOUNT)
+                            .returns( {
+                              pk: 'edpkuBknW28nW72KG6RoHtYW7p12T6GKc7nAbwYX5m8Wd9sDVC9yav',
+                              sk: 'edskRuR1azSfboG86YPTyxrQgosh5zChf5bVDmptqLTb5EuXAm9rsnDYfTKhq7rDQujdn5WWzwUMeV3agaZ6J2vPQT58jJAJPi',
+                              pkh: 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
+                              seed: '',
+                              storeType: 1
+                          });
+
+            const stubConseil = sandbox
+                            .stub(conseiljs.TezosNodeWriter, 'sendContractInvocationOperation')
+                            .withArgs(config.provider, keystore, CONTRACT_ADDRESS, 0,
+                                      100000, '', 10000, 100000, undefined,
+                                      CONTRACT_INVOCATION_STORAGE, conseiljs.TezosParameterFormat.Michelson)
+                            .returns(sendContractInvocationOperation.applied);
+
+            const stubLoggerWarn = sandbox.stub(Logger, 'warn');
+            const stubLoggerInfo = sandbox.stub(Logger, 'info');
+            const stubLoggerError = sandbox.stub(Logger, 'error');        
+            
+            contract.callContract([CONTRACT_LABEL, CONTRACT_INVOCATION_STORAGE, BOOTSTRAPPED_ACCOUNT]);
+            sinon.assert.calledOnce(stubHelper);
+            sinon.assert.calledOnce(stubKeys);
+            sinon.assert.calledOnce(stubConseil);
+        });
+    });
+
     context('get-storage-with-args', async () => {
         it('must call getContractStorage function', async () => {
             const conseiljs = require(CONSEIL_JS);
-            const tezosNode = 'http://localhost:18731';
 
             const stubHelper = sandbox
                             .stub(Helper, 'findKeyObj')
                             .withArgs(config.contracts, CONTRACT_LABEL)
-                            .returns(      {
-                              "label": "samplecontract",
-                              "pkh": "KT1WvyJ1qUrWzShA2T6QeL7AW4DR6GspUimM",
-                              "identity": "localnode - samplecontract"
-                            });
+                            .returns({
+                                "label": "samplecontract",
+                                "pkh": "KT1WvyJ1qUrWzShA2T6QeL7AW4DR6GspUimM",
+                                "identity": "localnode - samplecontract"
+                              });
 
             const stubConseil = sandbox
                             .stub(conseiljs.TezosNodeReader, 'getContractStorage')
-                            .withArgs(tezosNode, CONTRACT_ADDRESS);
+                            .withArgs(config.provider, CONTRACT_ADDRESS);
 
             sandbox.stub(Logger, 'info');
 
@@ -147,7 +208,7 @@ describe('Smart Contract Operations', async () => {
             const stubHelper = sandbox
                             .stub(Helper, 'findKeyObj')
                             .withArgs(config.contracts, CONTRACT_LABEL)
-                            .returns('');
+                            .returns();
 
             const stubAddNewContract = sandbox
                               .stub(contract, 'addNewContract')
