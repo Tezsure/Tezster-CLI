@@ -1,5 +1,6 @@
-const winston = require('winston');
-const { format } = require('winston');
+const winston = require('winston'),
+      { format } = require('winston'),
+      { COMMAND_LOGS_COLLECTION_FOLDER_PATH } = require('./cli-constants');
 
 let silent;
 
@@ -32,7 +33,7 @@ const options = {
         ),
     },
     file: {
-        filename: '/tmp/tezster-logs/tezster-command-logs.log',
+        filename: COMMAND_LOGS_COLLECTION_FOLDER_PATH,
         level : 'verbose',
         silent,
         handleExceptions: true,

@@ -1,7 +1,6 @@
-const confFile = __dirname + '/../config.json';
-const jsonfile = require('jsonfile');
-var config = jsonfile.readFileSync(confFile);
-const Logger = require('./logger');
+const { confFile } = require('./cli-constants'),
+      Logger = require('./logger'),
+      jsonfile = require('jsonfile');
 
 class Helper {
     
@@ -38,6 +37,7 @@ class Helper {
     }
 
     static clearContractAndAccountForLocalNode() {   
+        const config = jsonfile.readFileSync(confFile);
         let contractObjectIndex , accountObjectIndex;
         for (contractObjectIndex=0; contractObjectIndex<config.contracts.length; contractObjectIndex++) {
             if(config.contracts[contractObjectIndex].identity.includes('localnode')) {

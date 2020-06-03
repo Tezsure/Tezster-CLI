@@ -189,7 +189,7 @@ program
 /* list down all the entry points and initial storage format from smart contract */
 program
     .command('list-entry-points')
-    .usage('<contract-absolute-path>')
+    .usage('<contract-absolute-path/contract-address>')
     .description('List down all entry points and initial storage format from smart contract')
     .action(function(){
         tezstermanager.listEntryPoints();

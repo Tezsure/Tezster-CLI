@@ -1,11 +1,10 @@
-const confFile = __dirname + '/../../config.json';
-const jsonfile = require('jsonfile');
-var config = jsonfile.readFileSync(confFile);
-const CONSEIL_JS = '../../lib/conseiljs';
-const TESTNET_NAME = 'carthagenet';
-const Logger = require('../logger');
-const { Helper } = require('../helper');
-const { ExceptionHandler } = require('../exceptionHandler');
+const { confFile, CONSEIL_JS, TESTNET_NAME } = require('../cli-constants');
+
+const jsonfile = require('jsonfile'),      
+      Logger = require('../logger'),
+      { Helper } = require('../helper'),
+      { ExceptionHandler } = require('../exceptionHandler'),
+      config = jsonfile.readFileSync(confFile);
 
 class Transactions {
 
@@ -18,7 +17,7 @@ class Transactions {
         this.transferAmount(args);
     }
 
-    async listTransactions() {       
+    async listTransactions() {      
         Logger.verbose(`Command : tezster list-transactions`);
         Logger.warn(`For transactions done on ${TESTNET_NAME} node ,you can visit https://${TESTNET_NAME}.tzstats.com for more information`);
         if(Object.keys(config.transactions).length > 0) {        

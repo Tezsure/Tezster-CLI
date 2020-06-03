@@ -21,7 +21,7 @@ Follow below steps to get started with Tezster-CLI.
 *Note : Currently we are supporting Linux platform for running local nodes. You may encounter local node related issues in Mac OS X and Windows due to docker. If you are on Mac OS X and Windows, you can switch to remote nodes to use our functionalities.*
 
 ### Node.js Installation
-Run following commands to install Node.js LTS version 
+Run following commands to install Node.js LTS version or download nodejs from [downloads](https://nodejs.org/en/download/)
 ```
 sudo apt-get update
 sudo apt-get install curl
@@ -61,6 +61,16 @@ npm install
 sudo npm link
 ```
 
+If you are using linux based system or mac os x, run
+```
+npm run postinstall --silent
+```
+
+If you are using windows, run
+```
+npm run postinstall-win --silent
+```
+
 Run ```tezster --version``` to ensure the version of tezster.
 ```
 tezster --version
@@ -94,6 +104,19 @@ tezster --help
 To setup tezster-cli and for usage guidance visit our [documentation page](https://docs.tezster.tech/tezster-cli#playground-setup).
 
 
+## Contributing
+
+Tezster-CLI is open source and we love to receive contributions from whosoever passionate with the technology.
+
+There are many ways to contribute, from writing tutorials or blog posts, improving the documentation, bug reports and feature requests or writing code. We certainly welcome pull requests as well.
+
+## Reporting bugs and Support
+
+To know about common errors and fixes follow our [error section](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix). To report bugs, please create an issue on [issue page](https://github.com/Tezsure/Tezster-CLI/issues).
+
+**You can get in touch with us for any open discussion and 24*7 support through our [telegram channel](https://t.me/tezster).**
+
+
 ## Extra
 
 We’re building a lot of exciting features which will be released soon, So stay tuned with our updates and releases!
@@ -101,5 +124,3 @@ We’re building a lot of exciting features which will be released soon, So stay
 ```
 keep developing
 ```
-
-**Please go through our [error section](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix) to get information about the common errors and fixes. For any help or to report any issues please follow the [link](https://github.com/Tezsure/Tezster-CLI/issues).**

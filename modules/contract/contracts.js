@@ -1,13 +1,11 @@
-const confFile = __dirname + '/../../config.json';
-const jsonfile = require('jsonfile');
-var config = jsonfile.readFileSync(confFile);
-const CONSEIL_JS = '../../lib/conseiljs';
-const TESTNET_NAME = 'carthagenet';
-
-const Logger = require('../logger');
-const { Helper } = require('../helper');
-const { ExceptionHandler } = require('../exceptionHandler');
-
+const { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL } = require('../cli-constants');
+      
+const jsonfile = require('jsonfile'),
+      Logger = require('../logger'),
+      { Helper } = require('../helper'),
+      { ExceptionHandler } = require('../exceptionHandler'),
+      config = jsonfile.readFileSync(confFile);
+      
 class Contracts {
 
     async listContracts() {
@@ -65,7 +63,7 @@ class Contracts {
     async getEntryPoints(args) {
         Logger.verbose(`Command : tezster list-entry-points ${args}`);
         if (args.length < 1) {
-            Logger.warn('Incorrect usage - tezster list-entry-points <contract-absolute-path>');
+            Logger.warn('Incorrect usage - tezster list-entry-points <contract-absolute-path/contract-address>');
             return;
         }
         this.listEntryPoints(args[0]);
@@ -83,9 +81,26 @@ class Contracts {
     async listEntryPoints(contractPath) {
         const fs = require('fs');
         const conseiljs = require(CONSEIL_JS);
+        let conseilServer = { 'url': CONSEIL_SERVER_URL, 'apiKey': CONSEIL_SERVER_APIKEY, 'network': TESTNET_NAME };
+        let contractCode, contractAddress;
+        let contractObj = Helper.findKeyObj(config.contracts, contractPath);
+        if (contractObj) {
+            contractAddress = contractObj.pkh;
+        }
+      
+        if (!contractAddress && !fs.existsSync(contractPath)) {
+            Logger.error(`Couldn't find the contract, please make sure contract label or address is correct!`);
+            return;
+        }
 
         try {
-            const contractCode = fs.readFileSync(contractPath, 'utf8');
+            if(contractAddress) {
+                const account = await conseiljs.TezosConseilClient.getAccount(conseilServer, conseilServer.network, contractAddress);
+                contractCode = account.script;
+            } else {
+                contractCode = fs.readFileSync(contractPath, 'utf8');
+            }
+
             const entryPoints = await conseiljs.TezosContractIntrospector.generateEntryPointsFromCode(contractCode);
             const storageFormat = await conseiljs.TezosLanguageUtil.preProcessMichelsonScript(contractCode);
             Logger.info(`\nInitial Storage input must be of type : ${storageFormat[1].slice(8)}`);
@@ -103,6 +118,7 @@ class Contracts {
         const fs = require('fs');
         const conseiljs = require(CONSEIL_JS);
         const tezosNode = config.provider;  
+        let conseilServer = { 'url': CONSEIL_SERVER_URL, 'apiKey': CONSEIL_SERVER_APIKEY, 'network': TESTNET_NAME };
 
         const keys = this.getKeys(account);
         if(!keys) {
@@ -125,18 +141,30 @@ class Contracts {
 
         amount = amount | 0;
       
+        Logger.warn('please wait....this could take a while to deploy contract on the network');
         try {
             const contract = fs.readFileSync(contractPath, 'utf8');
             const result = await conseiljs.TezosNodeWriter.sendContractOriginationOperation(
                                       tezosNode, keystore, amount*1000000, undefined,
                                       100000, '', 10000, 500000, 
-                                      contract, initValue, conseiljs.TezosParameterFormat.Michelson);         
+                                      contract, initValue, conseiljs.TezosParameterFormat.Michelson);        
+                                      
+            if(!tezosNode.includes('localhost')) {
+                try {
+                    const Groupid = this.clearRPCOperationGroupHash(result.operationGroupID);
+                    await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, Groupid, 10, 30+1);
+                } catch(error) {
+                    Helper.errorLogHandler(`Contract deployment has failed: ${error}`,
+                                           'Contract deployment failed due to network provider....');
+                }
+            }
+            
             if (result.results) {
                 switch(result.results.contents[0].metadata.operation_result.status) {
                     case 'applied':
                         let opHash = result.results.contents[0].metadata.operation_result.originated_contracts;
                         this.addNewContract(contractLabel, opHash[0] , keys.pkh , config.provider);
-                        Logger.info(`contract '${contractLabel}' has been deployed at ${opHash}`);
+                        Logger.info(`Contract '${contractLabel}' has been deployed with ${opHash}`);
                         return;
                     case 'failed':
                     default:
@@ -228,6 +256,10 @@ class Contracts {
         catch(error) {
             ExceptionHandler.contractException('getStorage', error);
         }
+    }
+
+    clearRPCOperationGroupHash(ids) {
+        return ids.replace(/\'/g, '').replace(/\n/, '');
     }
 
     addContractToConfig(contractLabel, contractAddr) {

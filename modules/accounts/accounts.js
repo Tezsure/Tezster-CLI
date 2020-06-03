@@ -1,16 +1,11 @@
-const confFile = __dirname + '/../../config.json';
-const jsonfile = require('jsonfile');
-var config = jsonfile.readFileSync(confFile);
+const { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL } = require('../cli-constants');
 
-const CONSEIL_JS = '../../lib/conseiljs',
-      TESTNET_NAME = 'carthagenet',
-      CONSEIL_SERVER_APIKEY = 'f979f858-1941-4c4b-b231-d40d41df5377',
-      CONSEIL_SERVER_URL = 'https://conseil-dev.cryptonomic-infra.tech:443';
-
-const Logger = require('../logger');
-const { Helper } = require('../helper');
-const { RpcRequest } = require('../rpc-util');
-const { ExceptionHandler } = require('../exceptionHandler');
+const jsonfile = require('jsonfile'),
+      Logger = require('../logger'),
+      { Helper } = require('../helper'),
+      { RpcRequest } = require('../rpc-util'),
+      { ExceptionHandler } = require('../exceptionHandler'),
+      config = jsonfile.readFileSync(confFile);
 
 class Accounts{
 
@@ -139,6 +134,7 @@ class Accounts{
     async createTestnetWallet(args) {
         const accountLabel = args[0];
         const conseiljs = require(CONSEIL_JS);
+
         const keys = this.getKeys(accountLabel);
         if(keys) {
             Logger.error(`Account with this label already exists.`);
@@ -185,6 +181,7 @@ class Accounts{
             Logger.error(`Account with this label already exists.`);
             return;
         }
+
         try {
             let accountJSON = fs.readFileSync(accountFilePath, 'utf8');
             accountJSON = accountJSON && JSON.parse(accountJSON);
