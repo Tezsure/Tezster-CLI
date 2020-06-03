@@ -150,8 +150,13 @@ class Contracts {
                                       contract, initValue, conseiljs.TezosParameterFormat.Michelson);        
                                       
             if(!tezosNode.includes('localhost')) {
-                const Groupid = this.clearRPCOperationGroupHash(result.operationGroupID);
-                await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, Groupid, 10, 30+1);
+                try {
+                    const Groupid = this.clearRPCOperationGroupHash(result.operationGroupID);
+                    await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, Groupid, 10, 30+1);
+                } catch(error) {
+                    Helper.errorLogHandler(`Contract deployment has failed: ${error}`,
+                                           'Contract deployment failed due to network provider....');
+                }
             }
             
             if (result.results) {

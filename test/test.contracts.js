@@ -151,6 +151,7 @@ describe('Smart Contract Operations', async () => {
                               seed: '',
                               storeType: 1
                           });
+            const opHash = sendContractInvocationOperation.applied.operationGroupID.slice(1,sendContractInvocationOperation.applied.operationGroupID.length-2);
 
             const stubConseil = sandbox
                             .stub(conseiljs.TezosNodeWriter, 'sendContractInvocationOperation')
