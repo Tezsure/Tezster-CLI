@@ -1,5 +1,4 @@
-const chai = require('chai'),
-      sinon = require('sinon'),
+const sinon = require('sinon'),
       fs = require('fs'),
       path = require('path'),
       jsonfile = require('jsonfile'),
@@ -36,6 +35,7 @@ describe('Smart Contract Operations', async () => {
     let sandbox = null, contract;
     beforeEach(() => {
         sandbox = sinon.createSandbox();
+        sandbox1 = sinon.createSandbox();
         sandbox
             .stub(jsonfile, 'readFileSync')
             .withArgs(confFile)
@@ -80,11 +80,12 @@ describe('Smart Contract Operations', async () => {
 
             stubAddNewContract = sandbox
                                 .stub(contract, 'addNewContract')
-                                .withArgs(CONTRACT_LABEL, CONTRACT_ADDRESS, BOOTSTRAPPED_ACCOUNT, testconfig.provider);
-
-            contract.deployContract([CONTRACT_DEPLOY_LABEL, './MichelsonCodeFile.tz', CONTRACT_INITIAL_STORAGE, BOOTSTRAPPED_ACCOUNT]);
+                                .withArgs(CONTRACT_DEPLOY_LABEL, CONTRACT_ADDRESS, BOOTSTRAPPED_ACCOUNT, testconfig.provider);
+                                
+            await contract.deployContract([CONTRACT_DEPLOY_LABEL, './MichelsonCodeFile.tz', CONTRACT_INITIAL_STORAGE, BOOTSTRAPPED_ACCOUNT]);
             sinon.assert.calledOnce(stubReadFileSync);
             sinon.assert.calledOnce(stubConseil);
+            sinon.assert.calledOnce(stubAddNewContract);
         });
 
         it('must call conseil function with failed status', async () => {
@@ -119,7 +120,7 @@ describe('Smart Contract Operations', async () => {
             stubAddNewContract = sandbox
                                 .stub(contract, 'addNewContract');
 
-            contract.deployContract([CONTRACT_DEPLOY_LABEL, './MichelsonCodeFile.tz', CONTRACT_INITIAL_STORAGE, BOOTSTRAPPED_ACCOUNT]);
+            await contract.deployContract([CONTRACT_DEPLOY_LABEL, './MichelsonCodeFile.tz', CONTRACT_INITIAL_STORAGE, BOOTSTRAPPED_ACCOUNT]);
             sinon.assert.calledOnce(stubReadFileSync);
             sinon.assert.calledOnce(stubConseil);
             sinon.assert.callCount(stubAddNewContract, 0);
@@ -129,7 +130,7 @@ describe('Smart Contract Operations', async () => {
     context('deploy-contract-without-args', async () => {
         it('must throw warning', async () => {
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
-            contract.deployContract([CONTRACT_LABEL, CONTRACT_INITIAL_STORAGE, BOOTSTRAPPED_ACCOUNT]);
+            await contract.deployContract([CONTRACT_LABEL, CONTRACT_INITIAL_STORAGE, BOOTSTRAPPED_ACCOUNT]);
             sinon.assert.calledOnce(stubLoggerWarn);
         });
     });
@@ -169,7 +170,7 @@ describe('Smart Contract Operations', async () => {
             stubLoggerInfo = sandbox.stub(Logger, 'info');
             stubLoggerError = sandbox.stub(Logger, 'error');        
             
-            contract.callContract([CONTRACT_LABEL, CONTRACT_INVOCATION_STORAGE, BOOTSTRAPPED_ACCOUNT]);
+            await contract.callContract([CONTRACT_LABEL, CONTRACT_INVOCATION_STORAGE, BOOTSTRAPPED_ACCOUNT]);
             sinon.assert.calledOnce(stubHelper);
             sinon.assert.calledOnce(stubKeys);
             sinon.assert.calledOnce(stubConseil);
@@ -195,7 +196,7 @@ describe('Smart Contract Operations', async () => {
 
             sandbox.stub(Logger, 'info');
 
-            contract.getStorage([CONTRACT_LABEL]);
+            await contract.getStorage([CONTRACT_LABEL]);
             sinon.assert.calledOnce(stubHelper);
             sinon.assert.calledOnce(stubConseil);
         });
@@ -204,7 +205,7 @@ describe('Smart Contract Operations', async () => {
     context('get-storage-without-args', async () => {
         it('must throw warning', async () => { 
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
-            contract.getStorage([]);
+            await contract.getStorage([]);
             sinon.assert.calledOnce(stubLoggerWarn);
         });
     });
@@ -221,7 +222,7 @@ describe('Smart Contract Operations', async () => {
                                 .withArgs(CONTRACT_LABEL, CONTRACT_ADDRESS, '', testconfig.provider);
 
             sandbox.stub(Logger, 'info');
-            contract.addContract([CONTRACT_LABEL, CONTRACT_ADDRESS]);
+            await contract.addContract([CONTRACT_LABEL, CONTRACT_ADDRESS]);
             sinon.assert.calledOnce(stubHelper);
             sinon.assert.calledOnce(stubAddNewContract);
         });
@@ -230,7 +231,7 @@ describe('Smart Contract Operations', async () => {
     context('add-contract-without-args', async () => {
         it('must throw warning', async () => {
             stubLoggerWarn =  sandbox.stub(Logger, 'warn');
-            contract.addContract([CONTRACT_LABEL]);
+            await contract.addContract([CONTRACT_LABEL]);
             sinon.assert.calledOnce(stubLoggerWarn);
         });
     });
@@ -247,7 +248,7 @@ describe('Smart Contract Operations', async () => {
                                     .stub(jsonfile, 'writeFile')
                                     .withArgs(confFile, testconfig);
 
-            contract.removeContract([CONTRACT_LABEL]);
+            await contract.removeContract([CONTRACT_LABEL]);
             sinon.assert.calledOnce(stubHelper);
             sinon.assert.calledOnce(stubLoggerInfo);
             sinon.assert.calledOnce(stubSplice);
@@ -258,7 +259,7 @@ describe('Smart Contract Operations', async () => {
     context('delete-contract-without-args', async () => {
         it('must throw the warning', async () => {
             const stubLoggerWarn =  sandbox.stub(Logger, 'warn');
-            contract.removeContract([]);
+            await contract.removeContract([]);
             sinon.assert.calledOnce(stubLoggerWarn);
         });
     });
@@ -266,7 +267,7 @@ describe('Smart Contract Operations', async () => {
     context('list-contracts', async () => {
         it('should execute inside for loop', async () => {
             stubLoggerInfo = sandbox.stub(Logger, 'info');
-            contract.listContracts();
+            await contract.listContracts();
             sinon.assert.calledOnce(stubLoggerInfo);
         });
     });
@@ -300,10 +301,11 @@ describe('Smart Contract Operations', async () => {
 
             stubLoggerInfo = sandbox.stub(Logger, 'info');
 
-            contract.listEntryPoints('./contractFile.tz');
+            await contract.listEntryPoints('./contractFile.tz');
             sinon.assert.calledOnce(stubFileExistsSync);
             sinon.assert.calledOnce(stubHelper);
             sinon.assert.calledOnce(stubConseilEntryPoint);
+            sinon.assert.calledOnce(stubConseilStorageFormat);
         });
     });
 

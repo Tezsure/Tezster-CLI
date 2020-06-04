@@ -1,7 +1,4 @@
-const chai = require("chai"),
-      sinon = require("sinon"),
-      expect = chai.expect,
-      { assert } = require('chai'),
+const sinon = require("sinon"),
       fs = require('fs'),
       path = require('path'),
       jsonfile = require('jsonfile'),
@@ -47,7 +44,7 @@ describe('Faucet Account Operations', async () => {
             spyGetProviderAccounts = sinon.spy(account, 'getProviderAccounts');
             stubLoggerInfo = sandbox.stub(Logger, 'info');
 
-            account.getProvider();
+            await account.getProvider();
             sinon.assert.calledOnce(stubLoggerInfo);
             sinon.assert.calledOnce(spyGetProviderAccounts);
         });
@@ -60,7 +57,7 @@ describe('Faucet Account Operations', async () => {
             sandbox.stub(jsonfile, 'writeFile')
                 .withArgs(confFile, testconfig);
 
-            account.setProvider([tezosNode]);
+            await account.setProvider([tezosNode]);
             sinon.assert.calledOnce(stubLoggerInfo);
             sinon.assert.calledOnce(spySetProviderAccounts);
         });
@@ -87,10 +84,11 @@ describe('Faucet Account Operations', async () => {
             stubFormatTez = sandbox.stub(Helper, 'formatTez')
                                 .withArgs(BALANCE);
 
-            account.getBalance([BOOTSTRAPPED_ACCOUNT]);
+            await account.getBalance([BOOTSTRAPPED_ACCOUNT]);
             sinon.assert.calledThrice(stubHelper);
             sinon.assert.calledOnce(stubRpcRequest);
             sinon.assert.calledOnce(spyGetBalanceAccounts);
+            sinon.assert.calledOnce(stubFormatTez);
         });
     });
 
@@ -98,8 +96,16 @@ describe('Faucet Account Operations', async () => {
         it('should return warning', async () => { 
             const stubLoggerWarn = sandbox.stub(Logger, 'warn');
 
-            account.getBalance([]);
+            await account.getBalance([]);
             sinon.assert.calledOnce(stubLoggerWarn);
+        });
+    });
+
+    context('list-accounts', async () => {
+        it('should execute inside for loop', async () => {
+            stubLoggerInfo = sandbox.stub(Logger, 'info');
+            await account.listAccounts();
+            sinon.assert.called(stubLoggerInfo);
         });
     });
 
