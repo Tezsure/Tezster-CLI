@@ -3,10 +3,14 @@ const { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVE
 const jsonfile = require('jsonfile'),
       Logger = require('../logger'),
       { Helper } = require('../helper'),
-      { ExceptionHandler } = require('../exceptionHandler'),
-      config = jsonfile.readFileSync(confFile);
+      { ExceptionHandler } = require('../exceptionHandler');
+let config;
       
 class Contracts {
+
+    constructor(){
+        config = jsonfile.readFileSync(confFile);
+    }
 
     async listContracts() {
         Logger.verbose('Command : tezster list-contracts');

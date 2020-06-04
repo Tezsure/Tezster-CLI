@@ -15,7 +15,7 @@ const chai = require("chai"),
       { Helper } = require('../modules/helper'),
       AccountClass = require('../modules/accounts/accounts'),
       account = new AccountClass.Accounts(),
-      { sendContractOriginationOperation, sendContractInvocationOperation } = require('./TezosOperations.responses');
+      { sendContractOriginationOperation, sendContractInvocationOperation } = require('./responses/TezosOperations.responses');
 
 const BOOTSTRAPPED_ACCOUNT = 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
       tezosNode = 'http://localhost:18731',
