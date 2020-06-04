@@ -8,14 +8,14 @@ const chai = require("chai"),
       { RpcRequest } = require('../modules/rpc-util'),
 
       confFile = '/tmp/tezster/config.json',
-      config = jsonfile.readFileSync(confFile),
+      sampleconfFile = path.resolve(__dirname, './config/test-config.json'),
+      testconfig = jsonfile.readFileSync(sampleconfFile),
 
       CONSEIL_JS = '../lib/conseiljs',
       Logger = require('../modules/logger'),
       { Helper } = require('../modules/helper'),
       AccountClass = require('../modules/accounts/accounts'),
-      account = new AccountClass.Accounts(),
-      { sendContractOriginationOperation, sendContractInvocationOperation } = require('./responses/TezosOperations.responses');
+      {  } = require('./responses/TezosOperations.responses');
 
 const BOOTSTRAPPED_ACCOUNT = 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
       tezosNode = 'http://localhost:18731',
@@ -32,6 +32,11 @@ describe('Faucet Account Operations', async () => {
     let sandbox = null;
     beforeEach(() => {
       sandbox = sinon.createSandbox();
+      sandbox
+        .stub(jsonfile, 'readFileSync')
+        .withArgs(confFile)
+        .returns(testconfig);
+        account = new AccountClass.Accounts();
     })
     afterEach(() => {
       sandbox.restore()
@@ -53,7 +58,7 @@ describe('Faucet Account Operations', async () => {
             spySetProviderAccounts = sinon.spy(account, 'setProviderAccounts');
             const stubLoggerInfo = sandbox.stub(Logger, 'info');
             sandbox.stub(jsonfile, 'writeFile')
-                .withArgs(confFile, config);
+                .withArgs(confFile, testconfig);
 
             account.setProvider([tezosNode]);
             sinon.assert.calledOnce(stubLoggerInfo);
@@ -68,7 +73,7 @@ describe('Faucet Account Operations', async () => {
             
             stubHelper = sandbox
                         .stub(Helper, 'findKeyObj')
-                        .withArgs(config.contracts, BOOTSTRAPPED_ACCOUNT)
+                        .withArgs(testconfig.contracts, BOOTSTRAPPED_ACCOUNT)
                         .returns({
                             "label": "localnode_bootstrap1",
                             "pkh": "tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx",
@@ -76,7 +81,7 @@ describe('Faucet Account Operations', async () => {
                           });
 
             stubRpcRequest = sandbox.stub(RpcRequest, 'fetchBalance')
-                                .withArgs(config.provider, BOOTSTRAPPED_ACCOUNT)
+                                .withArgs(testconfig.provider, BOOTSTRAPPED_ACCOUNT)
                                 .returns(BALANCE);
 
             stubFormatTez = sandbox.stub(Helper, 'formatTez')

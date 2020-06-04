@@ -4,10 +4,14 @@ const jsonfile = require('jsonfile'),
       Logger = require('../logger'),
       { Helper } = require('../helper'),
       { RpcRequest } = require('../rpc-util'),
-      { ExceptionHandler } = require('../exceptionHandler'),
-      config = jsonfile.readFileSync(confFile);
+      { ExceptionHandler } = require('../exceptionHandler');
+let config;
 
 class Accounts{
+
+    constructor(){
+        config = jsonfile.readFileSync(confFile);
+    }
 
     async setProvider(args){
         Logger.verbose(`Command : tezster set-provider ${args}`);
