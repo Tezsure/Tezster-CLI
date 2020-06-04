@@ -13,7 +13,7 @@ const chai = require('chai'),
       { Helper } = require('../modules/helper'),
       ContractClass = require('../modules/contract/contracts'),
       
-      { sendContractOriginationOperation, sendContractInvocationOperation } = require('./responses/TezosOperations.responses');
+      { sendContractOriginationOperation, sendContractInvocationOperation, TezosContractIntrospector } = require('./responses/ContractOperations.responses');
 
 const CONTRACT_ADDRESS = 'KT1WvyJ1qUrWzShA2T6QeL7AW4DR6GspUimM',
       CONTRACT_LABEL = 'samplecontract',
@@ -268,6 +268,42 @@ describe('Smart Contract Operations', async () => {
             stubLoggerInfo = sandbox.stub(Logger, 'info');
             contract.listContracts();
             sinon.assert.calledOnce(stubLoggerInfo);
+        });
+    });
+
+    context('list-entry-points', async () => {
+        it('list entry points using file', async () => {
+            const conseiljs = require(CONSEIL_JS);
+            stubFileExistsSync = sandbox
+                                .stub(fs, 'existsSync')
+                                .withArgs('./contractFile.tz')
+                                .returns(true);
+
+            stubHelper = sandbox
+                        .stub(fs, 'readFileSync')
+                        .withArgs('./contractFile.tz', 'utf8')
+                        .returns(CONTRACT_CODE);
+
+            stubConseilEntryPoint = sandbox
+                                    .stub(conseiljs.TezosContractIntrospector, 'generateEntryPointsFromCode')
+                                    .withArgs(CONTRACT_CODE)
+                                    .returns(TezosContractIntrospector);
+
+            stubConseilStorageFormat = sandbox
+                                        .stub(conseiljs.TezosLanguageUtil, 'preProcessMichelsonScript')
+                                        .withArgs(CONTRACT_CODE)
+                                        .returns([
+                                            'parameter string;',
+                                            'storage string;',
+                                            'code {CAR; NIL operation; PAIR;};'
+                                        ]);
+
+            stubLoggerInfo = sandbox.stub(Logger, 'info');
+
+            contract.listEntryPoints('./contractFile.tz');
+            sinon.assert.calledOnce(stubFileExistsSync);
+            sinon.assert.calledOnce(stubHelper);
+            sinon.assert.calledOnce(stubConseilEntryPoint);
         });
     });
 

@@ -144,7 +144,19 @@ const sendContractInvocationOperation = {
     },
     operationGroupID: '"ooHWp24SiVPXyGGJv91ySQECAyrya3Us43MJzyvJ6phUPAC66Lv"\n'
   }
-  
 }
 
-module.exports = { sendContractOriginationOperation, sendContractInvocationOperation };
+const TezosContractIntrospector = 
+  [
+    {
+      name: 'default',
+      parameters: [ { name: 'default', type: 'string' } ],
+      structure: '$PARAM',
+      generateInvocationString: function generateInvocationString(){},
+      generateInvocationPair: function generateInvocationPair(){},
+      generateSampleInvocation: function generateSampleInvocation(){}
+    }
+  ]
+
+
+module.exports = { sendContractOriginationOperation, sendContractInvocationOperation, TezosContractIntrospector };

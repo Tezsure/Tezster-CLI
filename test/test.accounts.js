@@ -15,7 +15,7 @@ const chai = require("chai"),
       Logger = require('../modules/logger'),
       { Helper } = require('../modules/helper'),
       AccountClass = require('../modules/accounts/accounts'),
-      {  } = require('./responses/TezosOperations.responses');
+      {  } = require('./responses/ContractOperations.responses');
 
 const BOOTSTRAPPED_ACCOUNT = 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
       tezosNode = 'http://localhost:18731',
