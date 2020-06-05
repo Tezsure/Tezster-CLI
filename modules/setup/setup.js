@@ -211,7 +211,7 @@ class Setup {
             Cmd: [
                 '/bin/bash',
                 '-c',
-                'cd /usr/local/bin && start_nodes.sh && tail -f /dev/null'
+                'cp /usr/local/bin/tezos-scripts/tezos-init-sandboxed-client.sh /usr/local/bin/tezos/src/bin_client/tezos-init-sandboxed-client.sh && cp /usr/local/bin/tezos-scripts/tezos-sandboxed-node.sh /usr/local/bin/tezos/src/bin_node/tezos-sandboxed-node.sh && cd /usr/local/bin && start_nodes.sh && tail -f /dev/null'
             ]
         },
         function(err, container) {
