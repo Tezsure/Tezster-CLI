@@ -187,46 +187,42 @@ class Setup {
 
     runContainer(){
         this.startNodesProgressBar();
-        docker.createContainer({
-            name: `${CONTAINER_NAME}`,
-            Image: `${IMAGE_TAG}`,
-            Tty: true,
-            ExposedPorts: {
-                '18731/tchildprocess': {},
-                '18732/tchildprocess': {},
-                '18733/tchildprocess': {},
-            },
-            PortBindings: {
-                '18731/tchildprocess': [{
-                    HostPort: '18731'
-                }],
-                '18732/tchildprocess': [{
-                    HostPort: '18732'
-                }],
-                '18733/tchildprocess': [{
-                    HostPort: '18733'
-                }]
-            },
-            NetworkMode: 'host',
-            Cmd: [
-                '/bin/bash',
-                '-c',
-                'cp /usr/local/bin/tezos-scripts/tezos-init-sandboxed-client.sh /usr/local/bin/tezos/src/bin_client/tezos-init-sandboxed-client.sh && cp /usr/local/bin/tezos-scripts/tezos-sandboxed-node.sh /usr/local/bin/tezos/src/bin_node/tezos-sandboxed-node.sh && cd /usr/local/bin && start_nodes.sh && tail -f /dev/null'
-            ]
-        },
-        function(err, container) {
-            if(err) {
-                Helper.errorLogHandler(`Error occurred while starting the container: ${err}`,
-                                       'Error occurred while starting the nodes....');
-            } else {
-                container.start({}, function(err, data) {
-                    if (err) {
-                        Helper.errorLogHandler(`Error occurred while starting nodes: ${err}`,
-                                               'Error occurred while starting the nodes....');
+        docker.run ( 
+            `${IMAGE_TAG}`, 
+            [
+                '/bin/bash', 
+                '-c', 
+                ` cd /usr/local/bin && cp tezos-scripts/tezos-init-sandboxed-client.sh tezos/src/bin_client/tezos-init-sandboxed-client.sh && cp tezos-scripts/tezos-sandboxed-node.sh tezos/src/bin_node/tezos-sandboxed-node.sh && start_nodes.sh && tail -f /dev/null`
+            ], 
+            [process.stdout],
+            {
+                name: `${CONTAINER_NAME}`,
+                ExposedPorts: {
+                    '18731/tcp': {},
+                    '18732/tcp': {},
+                    '18733/tcp': {},
+                },
+                Hostconfig: {
+                    'PortBindings': {
+                        '18731/tcp': [{
+                            'HostPort': '18731'
+                        }],
+                        '18732/tcp': [{
+                            'HostPort': '18732'
+                        }],
+                        '18733/tcp': [{
+                            'HostPort': '18733'
+                        }],
                     }
-                });
-            }
-        });
+                },
+            },
+            function(err) {
+                if (err) {
+                    Helper.errorLogHandler(`Error occurred while starting nodes: ${err}`,
+                                           'Error occurred while starting the nodes....');
+                }
+            })
+
     }
 
     startNodesProgressBar() {
