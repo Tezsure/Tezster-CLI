@@ -37,7 +37,7 @@ node -v
 For Ubuntu/Linux run :  ```sudo apt install docker.io``` <br />
 For Debian refer this [link](https://docs.docker.com/engine/install/debian/). <br />
 For MAC refer this [link](https://docs.docker.com/docker-for-mac/release-notes/#docker-desktop-community-2303). (Docker Desktop stable v2.3.0.2 or later) <br />
-For Windows (Win-10 enterprise edition) refer this [link](https://docs.docker.com/docker-for-mac/release-notes/#docker-desktop-community-2303). (Docker Desktop stable v2.3.0.2 or later) <br />
+For Windows (Win-10 enterprise edition) refer this [link](https://docs.docker.com/docker-for-windows/release-notes/#docker-desktop-community-2303). (Docker Desktop stable v2.3.0.2 or later) <br />
 For Windows (Win-10 home edition or older) refer this [link](https://docs.docker.com/toolbox/toolbox_install_windows/).
 
 
@@ -92,7 +92,7 @@ You can install tezster-cli using npm package as well. To install npm package, r
 ```
 sudo npm install -g tezster@latest
 ```
-*Note: If you got error message regarding permission denied, try install using ```sudo npm install -g tezster@latest --unsafe-perm=true```.*
+*Note: If you got error message regarding permission denied, try install using ```sudo npm install -g tezster@latest --unsafe```.*
 
 Run ```tezster --version``` to ensure the version of tezster.
 ```
@@ -104,7 +104,7 @@ To list down all the tezster commands, run:
 tezster --help
 ```
 
-To setup tezster-cli and for usage guidance visit our [documentation page](https://docs.tezster.tech/tezster-cli#playground-setup).
+Congratulations, you are all set to use Tezster-CLI commands. For usage guidance follow our [documentation page](https://docs.tezster.tech/tezster-cli#playground-setup).
 
 
 ## Contributing
@@ -113,11 +113,13 @@ Tezster-CLI is open source and we love to receive contributions from whosoever p
 
 There are many ways to contribute, from writing tutorials or blog posts, improving the documentation, bug reports and feature requests or writing code. We certainly welcome pull requests as well.
 
+
 ### Reporting bugs and Support
 
 To know about common errors and fixes follow our [error section](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix). To report bugs, please create an issue on [issue page](https://github.com/Tezsure/Tezster-CLI/issues).
 
 **You can get in touch with us for any open discussion and 24*7 support through our [telegram channel](https://t.me/tezster).**
+
 
 
 ## Extra
