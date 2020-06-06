@@ -35,6 +35,12 @@ class Transactions {
         const conseiljs = require(CONSEIL_JS);
         const tezosNode = config.provider;
         let keys = this.getKeys(from);
+
+        if(isNaN(amount)) {
+            Logger.error('please enter amount value in integer....');
+            return;
+        }
+
         if(!keys) {
             Logger.error(`Sender account label doesn't exist.`);
             return;

@@ -18,10 +18,10 @@ Follow below steps to get started with Tezster-CLI.
 2. Mac OS X
 3. Windows 10 <br />
 
-*Note : Currently we are supporting Linux platform for running local nodes. You may encounter local node related issues in Mac OS X and Windows due to docker. If you are on Mac OS X and Windows, you can switch to remote nodes to use our functionalities.*
+*Note : Currently we are supporting Linux and Mac platform for running local nodes. You may encounter local node related issues in Windows due to docker. If you are on Windows, we would recommend you to switch to remote nodes and all functionalities will be same.*
 
 ### Node.js Installation
-Run following commands to install Node.js LTS version or download nodejs from [downloads](https://nodejs.org/en/download/)
+Run following commands to install Node.js LTS version (for linux based platforms) or can download nodejs from [Downloads](https://nodejs.org/en/download/).
 ```
 sudo apt-get update
 sudo apt-get install curl
@@ -36,8 +36,8 @@ node -v
 ### Docker Installation
 For Ubuntu/Linux run :  ```sudo apt install docker.io``` <br />
 For Debian refer this [link](https://docs.docker.com/engine/install/debian/). <br />
-For MAC refer this [link](https://docs.docker.com/docker-for-mac/release-notes/#docker-desktop-community-2105). (Docker Desktop v2.1.0.5 or earlier) <br />
-For Windows (Win-10 enterprise edition) refer this [link](https://docs.docker.com/docker-for-windows/release-notes/#docker-desktop-community-2105). (Docker Desktop v2.1.0.5 or earlier) <br />
+For MAC refer this [link](https://docs.docker.com/docker-for-mac/release-notes/#docker-desktop-community-2303). (Docker Desktop stable v2.3.0.2 or later) <br />
+For Windows (Win-10 enterprise edition) refer this [link](https://docs.docker.com/docker-for-mac/release-notes/#docker-desktop-community-2303). (Docker Desktop stable v2.3.0.2 or later) <br />
 For Windows (Win-10 home edition or older) refer this [link](https://docs.docker.com/toolbox/toolbox_install_windows/).
 
 
@@ -61,15 +61,18 @@ npm install
 sudo npm link
 ```
 
-If you are using linux based system or mac os x, run
+**Don't forget to run postinstall scripts as detailed below**
+
+For Linux based system (ubuntu/debian/others) or Mac OS X, run
 ```
 npm run postinstall --silent
 ```
 
-If you are using windows, run
+For Windows, run
 ```
 npm run postinstall-win --silent
 ```
+
 
 Run ```tezster --version``` to ensure the version of tezster.
 ```
@@ -81,7 +84,7 @@ To list down all the tezster commands, run:
 tezster --help
 ```
 
-Now you can run all the tezster commands. For usage guidance follow our [documentation page](https://docs.tezster.tech/tezster-cli#local-node-setup).
+Congratulations, you are all set to use Tezster-CLI commands. For usage guidance follow our [documentation page](https://docs.tezster.tech/tezster-cli#local-node-setup).
 
 ## NPM Package
 
@@ -110,7 +113,7 @@ Tezster-CLI is open source and we love to receive contributions from whosoever p
 
 There are many ways to contribute, from writing tutorials or blog posts, improving the documentation, bug reports and feature requests or writing code. We certainly welcome pull requests as well.
 
-## Reporting bugs and Support
+### Reporting bugs and Support
 
 To know about common errors and fixes follow our [error section](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix). To report bugs, please create an issue on [issue page](https://github.com/Tezsure/Tezster-CLI/issues).
 
