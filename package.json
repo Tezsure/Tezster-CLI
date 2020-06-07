@@ -5,6 +5,7 @@
   "main": "tezster.js",
   "scripts": {
     "postinstall": "node -e 'require(\"./modules/helper.js\").copyConfigToTempFolder()'",
+    "postinstall-win": "mkdir \"c:/tmp/tezster\" && copy /-Y \"./config.json\" \"c:/tmp/tezster/config.json\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {

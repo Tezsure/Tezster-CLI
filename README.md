@@ -63,9 +63,9 @@ sudo npm link
 
 **Don't forget to run postinstall scripts as detailed below**
 
-For Linux based system (ubuntu/debian/others) or Mac OS X, run
+For Linux based system (ubuntu/debian/others) and Mac OS X, run
 ```
-npm run postinstall --silent
+npm run postinstall
 ```
 
 For Windows, run
