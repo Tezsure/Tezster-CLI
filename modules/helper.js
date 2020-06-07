@@ -57,29 +57,29 @@ class Helper {
         jsonfile.writeFile(confFile, config);
     }
 
-}
-
-function copyConfigToTempFolder() {
-    const fs = require('fs'),
-          path = require('path');
-
-    const pathToFile = path.join(CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE);
-    const pathToNewDestination = confFile;
-
-    if(!fs.existsSync(TEZSTER_FOLDER_PATH_INSIDE_TEMP)) {
-        fs.mkdirSync(TEZSTER_FOLDER_PATH_INSIDE_TEMP);
+    static copyConfigToTempFolder() {
+        const fs = require('fs'),
+              path = require('path');
+    
+        const pathToFile = path.join(CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE);
+        const pathToNewDestination = confFile;
+    
+        if(!fs.existsSync(TEZSTER_FOLDER_PATH_INSIDE_TEMP)) {
+            fs.mkdirSync(TEZSTER_FOLDER_PATH_INSIDE_TEMP);
+        }
+    
+        if(fs.existsSync(confFile)) {
+            return;
+        }
+    
+        fs.copyFileSync(pathToFile, pathToNewDestination, function(cpError) {
+            if (cpError) {
+                Helper.errorLogHandler(`Error occurred while copying the config file to temp folder: ${cpError}`,
+                                        'Error occurred while copying the config file....');
+            } 
+        });
     }
 
-    if(fs.existsSync(confFile)) {
-        return;
-    }
-
-    fs.copyFileSync(pathToFile, pathToNewDestination, function(cpError) {
-        if (cpError) {
-            Helper.errorLogHandler(`Error occurred while copying the config file to temp folder: ${cpError}`,
-                                    'Error occurred while copying the config file....');
-        } 
-    });
 }
 
-module.exports = { Helper, copyConfigToTempFolder }
+module.exports = { Helper }
