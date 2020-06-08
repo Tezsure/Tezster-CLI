@@ -7,16 +7,16 @@ const pathToFile = path.join(CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE);
 const pathToNewDestination = confFile;
 
 if(!fs.existsSync(TEZSTER_FOLDER_PATH_INSIDE_TEMP)) {
-fs.mkdirSync(TEZSTER_FOLDER_PATH_INSIDE_TEMP);
+    fs.mkdirSync(TEZSTER_FOLDER_PATH_INSIDE_TEMP);
 }
 
 if(fs.existsSync(confFile)) {
-return;
+    return;
 }
 
 fs.copyFileSync(pathToFile, pathToNewDestination, function(cpError) {
-if (cpError) {
-  Helper.errorLogHandler(`Error occurred while copying the config file to temp folder: ${cpError}`,
-                          'Error occurred while copying the config file....');
-} 
+    if (cpError) {
+        Helper.errorLogHandler(`Error occurred while copying the config file to temp folder: ${cpError}`,
+                                'Error occurred while copying the config file....');
+    } 
 });
