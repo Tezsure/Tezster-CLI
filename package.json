@@ -27,7 +27,6 @@
     "fs": "^0.0.1-security",
     "get-random-values": "^1.2.0",
     "jsonfile": "^5.0.0",
-    "jsonpath": "^1.0.2",
     "jsonpath-plus": "^4.0.0",
     "libsodium-wrappers": "^0.7.4",
     "libsodium-wrappers-sumo": "^0.7.6",
@@ -41,6 +40,9 @@
     "winston": "^3.2.1",
     "xmlhttprequest": "^1.8.0",
     "zxcvbn": "^4.4.2"
+  },
+  "devDependencies": {
+    "jsonpath": "^1.0.2"
   },
   "keywords": [
     "tezster",
