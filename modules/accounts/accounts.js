@@ -4,6 +4,7 @@ const jsonfile = require('jsonfile'),
       Logger = require('../logger'),
       { Helper } = require('../helper'),
       { RpcRequest } = require('../rpc-util'),
+      docker_machine_ip = require('docker-ip'),
       { ExceptionHandler } = require('../exceptionHandler'),
       config = jsonfile.readFileSync(confFile);
 
@@ -92,6 +93,10 @@ class Accounts{
 
     setProviderAccounts(args){    
         config.provider = args[0];
+        if(process.platform.includes('win') && config.provider.includes('localhost')) {
+            config.provider = config.provider.replace('localhost', docker_machine_ip());
+        }
+
         jsonfile.writeFile(confFile, config);
         Logger.info('Provider updated to ' + config.provider);
     }

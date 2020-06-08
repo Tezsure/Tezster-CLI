@@ -1,4 +1,5 @@
 const request = require('request');
+const docker_machine_ip = require('docker-ip');
 
 class RpcRequest {
 
@@ -22,6 +23,9 @@ class RpcRequest {
     }
 
     static checkNodeStatus(provider) {
+        if(process.platform.includes('win')) {
+            provider = docker_machine_ip();
+        }
         return new Promise(function(resolve, reject) {
             request(`${provider}/chains/main/blocks/head/protocols`, function (error, response, body) {
                 if(error){
