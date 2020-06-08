@@ -18,8 +18,6 @@ Follow below steps to get started with Tezster-CLI.
 2. Mac OS X
 3. Windows 10 <br />
 
-*Note : Currently we are supporting Linux and Mac platform for running local nodes. You may encounter local node related issues in Windows due to docker. If you are on Windows, we would recommend you to switch to remote nodes and all functionalities will be same.*
-
 ### Node.js Installation
 Run following commands to install Node.js LTS version (for linux based platforms) or can download nodejs from [Downloads](https://nodejs.org/en/download/).
 ```
@@ -41,7 +39,7 @@ For Windows (Win-10 enterprise edition) refer this [link](https://docs.docker.co
 For Windows (Win-10 home edition or older) refer this [link](https://docs.docker.com/toolbox/toolbox_install_windows/).
 
 
-### Post docker installation step
+### Post Docker Installation Guide (skip if you are using docker-desktop or docker-toolbox)
 Make sure after installing docker you have added $USER to the docker group, if not run the following commands:
 
 ```
