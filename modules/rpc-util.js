@@ -24,7 +24,7 @@ class RpcRequest {
 
     static checkNodeStatus(provider) {
         if(process.platform.includes('win')) {
-            provider = docker_machine_ip();
+            provider = provider.replace('localhost', docker_machine_ip());
         }
         return new Promise(function(resolve, reject) {
             request(`${provider}/chains/main/blocks/head/protocols`, function (error, response, body) {

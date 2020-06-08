@@ -6,6 +6,10 @@ path = require('path');
 const pathToFile = path.join(CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE);
 const pathToNewDestination = confFile;
 
+if(!fs.existsSync('/tmp/')) {
+  fs.mkdirSync('/tmp/');
+}
+
 if(!fs.existsSync(TEZSTER_FOLDER_PATH_INSIDE_TEMP)) {
     fs.mkdirSync(TEZSTER_FOLDER_PATH_INSIDE_TEMP);
 }
