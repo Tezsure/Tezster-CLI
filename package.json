@@ -4,8 +4,7 @@
   "description": "A JavaScript-based private Tezos Blockchain Dev Tool that lives entirely on your local machine.",
   "main": "tezster.js",
   "scripts": {
-    "postinstall": "node -e 'require(\"./modules/helper.js\").copyConfigToTempFolder()'",
-    "postinstall-win": "mkdir \"c:/tmp/tezster\" && copy /-Y \"./config.json\" \"c:/tmp/tezster/config.json\"",
+    "postinstall": "node ./postinstall.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
