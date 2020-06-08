@@ -192,7 +192,7 @@ class Setup {
             [
                 '/bin/bash', 
                 '-c', 
-                ` cd /usr/local/bin && cp tezos-scripts/tezos-init-sandboxed-client.sh tezos/src/bin_client/tezos-init-sandboxed-client.sh && cp tezos-scripts/tezos-sandboxed-node.sh tezos/src/bin_node/tezos-sandboxed-node.sh && start_nodes.sh && tail -f /dev/null`
+                ` cd /usr/local/bin && start_nodes.sh && tail -f /dev/null`
             ], 
             [process.stdout],
             {
