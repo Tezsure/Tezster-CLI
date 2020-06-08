@@ -39,7 +39,7 @@ For Windows (Win-10 enterprise edition) refer this [link](https://docs.docker.co
 For Windows (Win-10 home edition or older) refer this [link](https://docs.docker.com/toolbox/toolbox_install_windows/).
 
 
-### Post Docker Installation Guide (skip if you are using docker-desktop or docker-toolbox)
+### Post Docker Installation Guide (Skip if using docker-desktop/docker-toolbox)
 Make sure after installing docker you have added $USER to the docker group, if not run the following commands:
 
 ```
