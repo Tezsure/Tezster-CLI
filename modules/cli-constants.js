@@ -12,6 +12,7 @@ const confFile = '/tmp/tezster/config.json',
       COMMAND_LOGS_COLLECTION_FOLDER_PATH = '/tmp/tezster/tezster-logs/tezster-command-logs.log',
       LOG_FOLDER_PATH_INSIDE_DOCKER = '/usr/local/bin/tezster-logs',
       CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE = `__dirname, /../config.json`,
+      TEMP_FOLDER = '/tmp/',
       TEZSTER_FOLDER_PATH_INSIDE_TEMP  = '/tmp/tezster',
       LOCAL_NODE_URL = 'http://localhost:18731';
       
@@ -19,5 +20,5 @@ const confFile = '/tmp/tezster/config.json',
 module.exports = { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY,
                    IMAGE_TAG, CONTAINER_NAME, LOCAL_NODE_URL, CONSEIL_SERVER_URL,
                    PROGRESS_REFRESH_INTERVAL, NODE_CONFIRMATION_TIMEOUT, TEZSTER_FOLDER_PATH_INSIDE_TEMP,
-                   LOGS_ZIPFILE_PATH, LOG_FOLDER_PATH_INSIDE_DOCKER, LOGS_ZIPFILE_NAME,
+                   LOGS_ZIPFILE_PATH, LOG_FOLDER_PATH_INSIDE_DOCKER, LOGS_ZIPFILE_NAME, TEMP_FOLDER,
                    COMMAND_LOGS_COLLECTION_FOLDER_PATH, CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE };
