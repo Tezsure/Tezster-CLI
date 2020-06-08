@@ -94,7 +94,11 @@ class Accounts{
     setProviderAccounts(args){    
         config.provider = args[0];
         if(process.platform.includes('win') && config.provider.includes('localhost')) {
-            config.provider = config.provider.replace('localhost', docker_machine_ip());
+            try { 
+                config.provider = config.provider.replace('localhost', docker_machine_ip());
+            } catch(error) {
+                Helper.errorLogHandler(`Error occurred while fetching docker machine ip address: ${error}`, 'Make sure docker-machine is in running state....');
+            }
         }
 
         jsonfile.writeFile(confFile, config);
