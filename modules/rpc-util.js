@@ -23,10 +23,14 @@ class RpcRequest {
     }
 
     static checkNodeStatus(provider) {
-        if(process.platform.includes('win')) {
-            provider = provider.replace('localhost', docker_machine_ip());
-        }
         return new Promise(function(resolve, reject) {
+            if(process.platform.includes('win')) {
+                try { 
+                    provider = provider.replace('localhost', docker_machine_ip());
+                } catch(error) {
+                    reject(error);
+                }
+            }
             request(`${provider}/chains/main/blocks/head/protocols`, function (error, response, body) {
                 if(error){
                     reject(error);
