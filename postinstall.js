@@ -29,9 +29,30 @@ fs.copyFileSync(pathToFile, pathToNewDestination, function(cpError) {
 setProviderForWindows();
 
 function setProviderForWindows() {
-    const { TezsterManager } = require('./tezster-manager');
-    const tezstermanager = new TezsterManager();
     if(process.platform.includes('win')) {
-        tezstermanager.accounts.setProvider(['http://localhost:18731']);
+        const { confFile } = require('./modules/cli-constants'),
+            jsonfile = require('jsonfile'),
+            config = jsonfile.readFileSync(confFile),
+            Logger = require('./modules/logger'),
+            docker_machine_ip = require('docker-ip');
+        let current_docker_machine_ip;
+
+        try {
+            current_docker_machine_ip = docker_machine_ip();
+        } catch(error) {
+            Logger.error(`Error occurred while fetching docker machine ip address during postinstall: ${error}`);
+        }
+
+        if(current_docker_machine_ip.includes('localhost')) {
+            current_docker_machine_ip = '192.168.99.100';
+        } else if(current_docker_machine_ip.includes('192')) {
+            current_docker_machine_ip = current_docker_machine_ip;
+        } else {
+            current_docker_machine_ip = 'localhost';
+        }
+        
+        config.provider = `http://${current_docker_machine_ip}:18731`;
+        jsonfile.writeFile(confFile, config);
     }
+
 }
