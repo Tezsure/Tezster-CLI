@@ -35,7 +35,7 @@ class RpcRequest {
                     Logger.error('make sure docker-machine is in running state');
                     return;
                 }
-                provider = provider.replace('localhost', docker_machine_ip());
+                provider = provider.replace('localhost', current_docker_machine_ip);
             }
             
             request(`${provider}/chains/main/blocks/head/protocols`, function (error, response, body) {
