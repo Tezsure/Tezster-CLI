@@ -23,14 +23,21 @@ class RpcRequest {
     }
 
     static checkNodeStatus(provider) {
+        let current_docker_machine_ip;
         return new Promise(function(resolve, reject) {
             if(process.platform.includes('win')) {
                 try { 
-                    provider = provider.replace('localhost', docker_machine_ip());
+                    current_docker_machine_ip = docker_machine_ip();
                 } catch(error) {
                     reject(error);
                 }
+                if(current_docker_machine_ip.includes('localhost')) {
+                    Logger.error('make sure docker-machine is in running state');
+                    return;
+                }
+                provider = provider.replace('localhost', docker_machine_ip());
             }
+            
             request(`${provider}/chains/main/blocks/head/protocols`, function (error, response, body) {
                 if(error){
                     reject(error);

@@ -92,13 +92,20 @@ class Accounts{
     }
 
     setProviderAccounts(args){    
+        let current_docker_machine_ip;
         config.provider = args[0];
+
         if(process.platform.includes('win') && config.provider.includes('localhost')) {
             try { 
-                config.provider = config.provider.replace('localhost', docker_machine_ip());
+                current_docker_machine_ip = docker_machine_ip();
             } catch(error) {
                 Helper.errorLogHandler(`Error occurred while fetching docker machine ip address: ${error}`, 'Make sure docker-machine is in running state....');
             }
+            if(current_docker_machine_ip.includes('localhost')) {
+                Logger.error('make sure docker-machine is in running state');
+                return;
+            }
+            config.provider = config.provider.replace('localhost', current_docker_machine_ip);
         }
 
         jsonfile.writeFile(confFile, config);
