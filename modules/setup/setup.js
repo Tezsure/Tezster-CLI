@@ -14,7 +14,7 @@ class Setup {
             this.pullNodeSetup();
         })
         .catch(error => Helper.errorLogHandler(`Error occurred while setting up docker image: ${error}`,
-                                               'Docker not detected on the system please install docker....'));
+                                               'Docker not detected on the system please install docker or start if already insta   lled....'));
 
     }
 
