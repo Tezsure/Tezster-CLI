@@ -23,8 +23,8 @@ class RpcRequest {
     }
 
     static checkNodeStatus(provider) {
-        let current_docker_machine_ip;
         return new Promise(function(resolve, reject) {
+            let current_docker_machine_ip;
             if(process.platform.includes('win')) {
                 try { 
                     current_docker_machine_ip = docker_machine_ip();
@@ -32,7 +32,7 @@ class RpcRequest {
                     reject(error);
                 }
                 if(current_docker_machine_ip.includes('localhost')) {
-                    Logger.error('make sure docker-machine is in running state');
+                    reject('docker machine is not running....');
                     return;
                 }
                 provider = provider.replace('localhost', current_docker_machine_ip);

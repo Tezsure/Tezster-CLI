@@ -92,10 +92,10 @@ class Accounts{
     }
 
     setProviderAccounts(args){    
-        let current_docker_machine_ip;
         config.provider = args[0];
 
         if(process.platform.includes('win') && config.provider.includes('localhost')) {
+            let current_docker_machine_ip;
             try { 
                 current_docker_machine_ip = docker_machine_ip();
             } catch(error) {
