@@ -1,4 +1,4 @@
-const { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL } = require('../cli-constants');
+const { confFile, WIN_PROCESS_PLATFORM, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL } = require('../cli-constants');
 
 const jsonfile = require('jsonfile'),
       Logger = require('../logger'),
@@ -94,7 +94,7 @@ class Accounts{
     setProviderAccounts(args){    
         config.provider = args[0];
 
-        if(process.platform.includes('win') && config.provider.includes('localhost')) {
+        if(process.platform.includes(WIN_PROCESS_PLATFORM) && config.provider.includes('localhost')) {
             let current_docker_machine_ip;
             try { 
                 current_docker_machine_ip = docker_machine_ip();

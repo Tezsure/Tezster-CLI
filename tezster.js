@@ -7,7 +7,7 @@ const tezstermanager = new TezsterManager();
 
 /******* To setup tezos nodes on user system */
 program
-    .version('0.2.8-beta', '-v, --version')
+    .version('0.2.8-beta.1', '-v, --version')
     .command('setup')
     .description('To set up Tezos nodes')
     .action(function(){  
