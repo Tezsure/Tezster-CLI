@@ -1,4 +1,4 @@
-const { confFile, CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE, TEZSTER_FOLDER_PATH_INSIDE_TEMP, TEMP_FOLDER } = require('./modules/cli-constants');
+const { confFile, CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE, TEZSTER_FOLDER_PATH_INSIDE_TEMP, TEMP_FOLDER , TEZSTER_LOGS_FOLDER_PATH_INSIDE_TEMP} = require('./modules/cli-constants');
 
 const fs = require('fs'),
 path = require('path');
@@ -12,6 +12,10 @@ if(!fs.existsSync(TEMP_FOLDER)) {
 
 if(!fs.existsSync(TEZSTER_FOLDER_PATH_INSIDE_TEMP)) {
     fs.mkdirSync(TEZSTER_FOLDER_PATH_INSIDE_TEMP);
+}
+
+if(!fs.existsSync(TEZSTER_LOGS_FOLDER_PATH_INSIDE_TEMP)) {
+    fs.mkdirSync(TEZSTER_LOGS_FOLDER_PATH_INSIDE_TEMP);
 }
 
 if(fs.existsSync(confFile)) {
