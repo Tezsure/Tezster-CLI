@@ -15,7 +15,7 @@ class Setup {
             this.pullNodeSetup();
         })
         .catch(error => Helper.errorLogHandler(`Error occurred while setting up docker image: ${error}`,
-                                               'Docker not detected on the system please install docker or start if already insta   lled....'));
+                                               'Docker not detected on the system please install docker or start if already installed....'));
 
     }
 
@@ -257,6 +257,9 @@ class Setup {
     }
 
     confirmNodeStatus(){   
+        if(process.platform.includes(WIN_PROCESS_PLATFORM)) { 
+            NODE_CONFIRMATION_TIMEOUT = NODE_CONFIRMATION_TIMEOUT_WIN;
+        }
         setTimeout(() => {
             const _cliProgress = require('cli-progress');
             const progressbar = new _cliProgress.Bar({
@@ -264,9 +267,6 @@ class Setup {
             },
                 _cliProgress.Presets.shades_classic
             );
-            if(process.platform.includes(WIN_PROCESS_PLATFORM)) { 
-                NODE_CONFIRMATION_TIMEOUT = NODE_CONFIRMATION_TIMEOUT_WIN;
-            }
 
             const interval = setInterval(() => {
                 RpcRequest.checkNodeStatus(LOCAL_NODE_URL).then(function(statusData) {

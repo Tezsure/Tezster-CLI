@@ -7,7 +7,7 @@ const confFile = '/tmp/tezster/config.json',
       CONTAINER_NAME = 'tezster',
       PROGRESS_REFRESH_INTERVAL = 1000,
       NODE_CONFIRMATION_TIMEOUT = 40000,
-      NODE_CONFIRMATION_TIMEOUT_WIN = 80000,
+      NODE_CONFIRMATION_TIMEOUT_WIN = 125000,
       LOGS_ZIPFILE_NAME = 'tezster-node-logs.tar.gz',
       LOGS_ZIPFILE_PATH = '/tmp/tezster/tezster-logs/tezster-node-logs.tar.gz',
       COMMAND_LOGS_COLLECTION_FOLDER_PATH = '/tmp/tezster/tezster-logs/tezster-command-logs.log',
@@ -19,7 +19,7 @@ const confFile = '/tmp/tezster/config.json',
       COMMAND_LOG_FILE = '/tmp/tezster/tezster-logs/tezster-command-logs.log',
       LOCAL_NODE_URL = 'http://localhost:18731',
       START_NODES_PROGRESS_BAR_INTERVAL = 2.5,
-      START_NODES_PROGRESS_BAR_INTERVAL_WIN = 1.2,
+      START_NODES_PROGRESS_BAR_INTERVAL_WIN = 0.80,
       WIN_PROCESS_PLATFORM = 'win32';
       
 
