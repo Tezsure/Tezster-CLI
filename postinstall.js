@@ -22,7 +22,8 @@ if(!fs.existsSync(TEZSTER_LOGS_FOLDER_PATH_INSIDE_TEMP)) {
 }
 
 if(!fs.existsSync(COMMAND_LOG_FILE)) {
-    fs.createWriteStream(COMMAND_LOG_FILE);
+    fs.writeFileSync(COMMAND_LOG_FILE);
+    fs.chmodSync(COMMAND_LOG_FILE, 0777);
 }
 
 if(fs.existsSync(confFile)) {
@@ -36,7 +37,6 @@ fs.copyFileSync(pathToFile, pathToNewDestination, function(cpError) {
                                 'Error occurred while copying the config file....');
     } 
 });
-fs.chmodSync(COMMAND_LOG_FILE, 0777);
 fs.chmodSync(pathToNewDestination, 0777);
 
 setProviderForWindows();
