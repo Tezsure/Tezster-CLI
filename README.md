@@ -105,12 +105,12 @@ To know about common errors and fixes follow our [error section](https://docs.te
 **You can get in touch with us for any open discussion and 24*7 support through our [telegram channel](https://t.me/tezster).**
 
 
-
-## Extra
-
-### Docker-Image
+## Docker-Image
 
 Official docker images for tezster are premade with inbuilt tezos nodes and can be found [here](https://hub.docker.com/r/tezsureinc/tezster/tags).
+
+
+## Extra
 
 We’re building a lot of exciting features which will be released soon, So stay tuned with our updates and releases!
 

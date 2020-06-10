@@ -1,7 +1,8 @@
 const Docker = require('dockerode');
 var docker = new Docker({ socketPath: '/var/run/docker.sock', hosts: 'tcp://0.0.0.0:2376' });
 
-const { IMAGE_TAG, CONTAINER_NAME, LOCAL_NODE_URL, PROGRESS_REFRESH_INTERVAL, NODE_CONFIRMATION_TIMEOUT, LOG_FOLDER_PATH_INSIDE_DOCKER, LOGS_ZIPFILE_PATH, LOGS_ZIPFILE_NAME, START_NODES_PROGRESS_BAR_INTERVAL, START_NODES_PROGRESS_BAR_INTERVAL_WIN, NODE_CONFIRMATION_TIMEOUT_WIN } = require('../cli-constants');
+const { IMAGE_TAG, CONTAINER_NAME, LOCAL_NODE_URL, PROGRESS_REFRESH_INTERVAL, LOG_FOLDER_PATH_INSIDE_DOCKER, LOGS_ZIPFILE_PATH, LOGS_ZIPFILE_NAME, START_NODES_PROGRESS_BAR_INTERVAL_WIN, NODE_CONFIRMATION_TIMEOUT_WIN } = require('../cli-constants');
+let { NODE_CONFIRMATION_TIMEOUT, START_NODES_PROGRESS_BAR_INTERVAL } = require('../cli-constants');
 const Logger = require('../logger'),
       { Helper } = require('../helper'),
       { RpcRequest } = require('../rpc-util');
