@@ -1,4 +1,4 @@
-const { confFile, CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE, TEZSTER_FOLDER_PATH_INSIDE_TEMP, TEMP_FOLDER , TEZSTER_LOGS_FOLDER_PATH_INSIDE_TEMP} = require('./modules/cli-constants');
+const { confFile, WIN_PROCESS_PLATFORM, CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE, TEZSTER_FOLDER_PATH_INSIDE_TEMP, TEMP_FOLDER , TEZSTER_LOGS_FOLDER_PATH_INSIDE_TEMP, COMMAND_LOG_FILE } = require('./modules/cli-constants');
 
 const fs = require('fs'),
 path = require('path');
@@ -8,14 +8,21 @@ const pathToNewDestination = confFile;
 
 if(!fs.existsSync(TEMP_FOLDER)) {
   fs.mkdirSync(TEMP_FOLDER);
+  fs.chmodSync(TEMP_FOLDER, 0777);
 }
 
 if(!fs.existsSync(TEZSTER_FOLDER_PATH_INSIDE_TEMP)) {
     fs.mkdirSync(TEZSTER_FOLDER_PATH_INSIDE_TEMP);
+    fs.chmodSync(TEZSTER_FOLDER_PATH_INSIDE_TEMP, 0777);
 }
 
 if(!fs.existsSync(TEZSTER_LOGS_FOLDER_PATH_INSIDE_TEMP)) {
     fs.mkdirSync(TEZSTER_LOGS_FOLDER_PATH_INSIDE_TEMP);
+    fs.chmodSync(TEZSTER_LOGS_FOLDER_PATH_INSIDE_TEMP, 0777);
+}
+
+if(!fs.existsSync(COMMAND_LOG_FILE)) {
+    fs.createWriteStream(COMMAND_LOG_FILE);
 }
 
 if(fs.existsSync(confFile)) {
@@ -29,11 +36,13 @@ fs.copyFileSync(pathToFile, pathToNewDestination, function(cpError) {
                                 'Error occurred while copying the config file....');
     } 
 });
+fs.chmodSync(COMMAND_LOG_FILE, 0777);
+fs.chmodSync(pathToNewDestination, 0777);
 
 setProviderForWindows();
 
 function setProviderForWindows() {
-    if(process.platform.includes('win')) {
+    if(process.platform.includes(WIN_PROCESS_PLATFORM)) {
         const { confFile } = require('./modules/cli-constants'),
             jsonfile = require('jsonfile'),
             config = jsonfile.readFileSync(confFile),

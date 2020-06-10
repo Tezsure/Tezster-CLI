@@ -1,5 +1,6 @@
 const request = require('request');
 const docker_machine_ip = require('docker-ip');
+const { WIN_PROCESS_PLATFORM } = require('./cli-constants');
 
 class RpcRequest {
 
@@ -24,8 +25,8 @@ class RpcRequest {
 
     static checkNodeStatus(provider) {
         return new Promise(function(resolve, reject) {
-            let current_docker_machine_ip;
-            if(process.platform.includes('win')) {
+            if(process.platform.includes(WIN_PROCESS_PLATFORM)) {
+                let current_docker_machine_ip;
                 try { 
                     current_docker_machine_ip = docker_machine_ip();
                 } catch(error) {
