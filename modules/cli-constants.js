@@ -7,6 +7,7 @@ const confFile = '/tmp/tezster/config.json',
       CONTAINER_NAME = 'tezster',
       PROGRESS_REFRESH_INTERVAL = 1000,
       NODE_CONFIRMATION_TIMEOUT = 40000,
+      NODE_CONFIRMATION_TIMEOUT_WIN = 70000,
       LOGS_ZIPFILE_NAME = 'tezster-node-logs.tar.gz',
       LOGS_ZIPFILE_PATH = '/tmp/tezster/tezster-logs/tezster-node-logs.tar.gz',
       COMMAND_LOGS_COLLECTION_FOLDER_PATH = '/tmp/tezster/tezster-logs/tezster-command-logs.log',
@@ -14,11 +15,14 @@ const confFile = '/tmp/tezster/config.json',
       CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE = `__dirname, /../config.json`,
       TEMP_FOLDER = '/tmp/',
       TEZSTER_FOLDER_PATH_INSIDE_TEMP  = '/tmp/tezster',
-      LOCAL_NODE_URL = 'http://localhost:18731';
+      LOCAL_NODE_URL = 'http://localhost:18731',
+      START_NODES_PROGRESS_BAR_INTERVAL = 2.5,
+      START_NODES_PROGRESS_BAR_INTERVAL_WIN = 4.0;
       
 
 module.exports = { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY,
                    IMAGE_TAG, CONTAINER_NAME, LOCAL_NODE_URL, CONSEIL_SERVER_URL,
                    PROGRESS_REFRESH_INTERVAL, NODE_CONFIRMATION_TIMEOUT, TEZSTER_FOLDER_PATH_INSIDE_TEMP,
                    LOGS_ZIPFILE_PATH, LOG_FOLDER_PATH_INSIDE_DOCKER, LOGS_ZIPFILE_NAME, TEMP_FOLDER,
-                   COMMAND_LOGS_COLLECTION_FOLDER_PATH, CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE };
+                   COMMAND_LOGS_COLLECTION_FOLDER_PATH, CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE,
+                   START_NODES_PROGRESS_BAR_INTERVAL, NODE_CONFIRMATION_TIMEOUT_WIN, START_NODES_PROGRESS_BAR_INTERVAL_WIN };
