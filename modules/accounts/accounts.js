@@ -102,7 +102,7 @@ class Accounts{
                 Helper.errorLogHandler(`Error occurred while fetching docker machine ip address: ${error}`, 'Make sure docker-machine is in running state....');
             }
             if(current_docker_machine_ip.includes('localhost')) {
-                Logger.error('make sure docker-machine is in running state');
+                Logger.error('Docker is not running....');
                 return;
             }
             config.provider = config.provider.replace('localhost', current_docker_machine_ip);

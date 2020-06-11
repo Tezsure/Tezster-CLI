@@ -11,7 +11,7 @@ Follow below steps to get started with Tezster-CLI.
 ## Prerequisites
 
 1. Node v. 12.x+
-2. Install Docker
+2. Docker v. 2.3.0.2+
 
 ### OS Support
 1. Linux (Ubuntu and Debian)
@@ -59,24 +59,14 @@ npm install
 sudo npm link
 ```
 
-Run ```tezster --version``` to ensure the version of tezster.
-```
-tezster --version
-```
-
-To list down all the tezster commands, run:
-```
-tezster --help
-```
-
-Congratulations, you are all set to use Tezster-CLI commands. For usage guidance follow our [documentation page](https://docs.tezster.tech/tezster-cli#local-node-setup).
-
 ## NPM Package
 
 You can install tezster-cli using npm package as well. To install npm package, run:
 ```
 sudo npm install -g tezster@latest
 ```
+
+*Note: If error occured, install package using - ```sudo npm install -g tezster@latest --unsafe```*
 
 Run ```tezster --version``` to ensure the version of tezster.
 ```
@@ -105,12 +95,9 @@ To know about common errors and fixes follow our [error section](https://docs.te
 **You can get in touch with us for any open discussion and 24*7 support through our [telegram channel](https://t.me/tezster).**
 
 
-## Docker-Image
-
-Official docker images for tezster are premade with inbuilt tezos nodes and can be found [here](https://hub.docker.com/r/tezsureinc/tezster/tags).
-
-
 ## Extra
+
+**Docker Image:** Official docker images for tezster are premade with inbuilt tezos nodes and can be found [here](https://hub.docker.com/r/tezsureinc/tezster/tags).
 
 We’re building a lot of exciting features which will be released soon, So stay tuned with our updates and releases!
 
