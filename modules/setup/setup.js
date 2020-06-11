@@ -2,7 +2,7 @@ const Docker = require('dockerode');
 var docker = new Docker({ socketPath: '/var/run/docker.sock', hosts: 'tcp://0.0.0.0:2376' });
 
 const { IMAGE_TAG, WIN_PROCESS_PLATFORM, CONTAINER_NAME, LOCAL_NODE_URL, PROGRESS_REFRESH_INTERVAL, LOG_FOLDER_PATH_INSIDE_DOCKER, LOGS_ZIPFILE_PATH, LOGS_ZIPFILE_NAME, START_NODES_PROGRESS_BAR_INTERVAL_WIN, NODE_CONFIRMATION_TIMEOUT_WIN } = require('../cli-constants');
-let { NODE_CONFIRMATION_TIMEOUT, START_NODES_PROGRESS_BAR_INTERVAL } = require('../cli-constants');
+let { Node_Confirmation_Timeout, Start_Nodes_Progress_Bar_Interval } = require('../cli-constants');
 const Logger = require('../logger'),
       { Helper } = require('../helper'),
       { RpcRequest } = require('../rpc-util');
@@ -237,12 +237,12 @@ class Setup {
             _cliProgress.Presets.shades_classic
         );
         if(process.platform.includes(WIN_PROCESS_PLATFORM)) { 
-            START_NODES_PROGRESS_BAR_INTERVAL = START_NODES_PROGRESS_BAR_INTERVAL_WIN;
+            Start_Nodes_Progress_Bar_Interval = START_NODES_PROGRESS_BAR_INTERVAL_WIN;
         }
 
         progressInterval = setInterval(() => {
             progressbar.start(100, progress);
-            progress = progress + START_NODES_PROGRESS_BAR_INTERVAL;
+            progress = progress + Start_Nodes_Progress_Bar_Interval;
             clearInterval(progress);
             if (progress >= 100) {
                 clearInterval(progressInterval);
@@ -258,7 +258,7 @@ class Setup {
 
     confirmNodeStatus(){   
         if(process.platform.includes(WIN_PROCESS_PLATFORM)) { 
-            NODE_CONFIRMATION_TIMEOUT = NODE_CONFIRMATION_TIMEOUT_WIN;
+            Node_Confirmation_Timeout = NODE_CONFIRMATION_TIMEOUT_WIN;
         }
         setTimeout(() => {
             const _cliProgress = require('cli-progress');
@@ -283,7 +283,7 @@ class Setup {
                     process.exit();
                 });
             }, PROGRESS_REFRESH_INTERVAL);
-        }, NODE_CONFIRMATION_TIMEOUT);
+        }, Node_Confirmation_Timeout);
     }
 
 }
