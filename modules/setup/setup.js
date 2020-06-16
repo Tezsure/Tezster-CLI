@@ -1,7 +1,8 @@
-const Docker = require('dockerode');
+const Docker = require('dockerode'),
+      os = require('os');
 var docker = new Docker({ socketPath: '/var/run/docker.sock', hosts: 'tcp://0.0.0.0:2376' });
 
-const { IMAGE_TAG, WIN_PROCESS_PLATFORM, CONTAINER_NAME, LOCAL_NODE_URL, PROGRESS_REFRESH_INTERVAL, LOG_FOLDER_PATH_INSIDE_DOCKER, LOGS_ZIPFILE_PATH, LOGS_ZIPFILE_NAME, START_NODES_PROGRESS_BAR_INTERVAL_WIN, NODE_CONFIRMATION_TIMEOUT_WIN } = require('../cli-constants');
+const { IMAGE_TAG, WIN_OS_PLATFORM, WIN_WSL_OS_RELEASE, CONTAINER_NAME, LOCAL_NODE_URL, PROGRESS_REFRESH_INTERVAL, LOG_FOLDER_PATH_INSIDE_DOCKER, LOGS_ZIPFILE_PATH, LOGS_ZIPFILE_NAME, START_NODES_PROGRESS_BAR_INTERVAL_WIN, NODE_CONFIRMATION_TIMEOUT_WIN } = require('../cli-constants');
 let { Node_Confirmation_Timeout, Start_Nodes_Progress_Bar_Interval } = require('../cli-constants');
 const Logger = require('../logger'),
       { Helper } = require('../helper'),
@@ -236,7 +237,7 @@ class Setup {
         },
             _cliProgress.Presets.shades_classic
         );
-        if(process.platform.includes(WIN_PROCESS_PLATFORM)) { 
+        if(os.platform().includes(WIN_OS_PLATFORM) || os.release().includes(WIN_WSL_OS_RELEASE)) {
             Start_Nodes_Progress_Bar_Interval = START_NODES_PROGRESS_BAR_INTERVAL_WIN;
         }
 
@@ -257,7 +258,7 @@ class Setup {
     }
 
     confirmNodeStatus(){   
-        if(process.platform.includes(WIN_PROCESS_PLATFORM)) { 
+        if(os.platform().includes(WIN_OS_PLATFORM) || os.release().includes(WIN_WSL_OS_RELEASE)) {
             Node_Confirmation_Timeout = NODE_CONFIRMATION_TIMEOUT_WIN;
         }
         setTimeout(() => {
