@@ -114,7 +114,7 @@ class Contracts {
         }
     }
 
-    async deploy(contractLabel, contractPath, value, account, amount) {
+    async deploy(contractLabel, contractPath, initValue, account, amount) {
         const fs = require('fs');
         const conseiljs = require(CONSEIL_JS);
         const tezosNode = config.provider;  
@@ -140,7 +140,6 @@ class Contracts {
         }
 
         amount = amount | 0;
-        const initValue = isNaN(value) ? JSON.stringify(value) : value;
       
         Logger.warn('please wait....this could take a while to deploy contract on the network');
         try {
@@ -180,7 +179,7 @@ class Contracts {
         }
     }
 
-    async invokeContract(contract, value, account, amount) {
+    async invokeContract(contract, argument, account, amount) {
         const conseiljs = require(CONSEIL_JS);
         const tezosNode = config.provider;
         const keys = this.getKeys(account);
@@ -208,7 +207,6 @@ class Contracts {
         }
 
         amount = amount | 0;
-        const argument = isNaN(value) ? JSON.stringify(value) : value;
       
         try {
           const result = await conseiljs.TezosNodeWriter.sendContractInvocationOperation(
