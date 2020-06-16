@@ -1,25 +1,30 @@
-const { confFile, WIN_PROCESS_PLATFORM, CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE, TEZSTER_FOLDER_PATH_INSIDE_DOCUMENTS, DOCUMENTS_FOLDER , TEZSTER_LOGS_FOLDER_PATH_INSIDE_DOCUMENTS, COMMAND_LOG_FILE } = require('./modules/cli-constants');
+const { confFile, WIN_OS_PLATFORM, WIN_WSL_OS_RELEASE, CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE, TEZSTER_FOLDER_PATH, TEZSTER_LOGS_FOLDER_PATH, COMMAND_LOG_FILE, TEMP_PATH } = require('./modules/cli-constants');
 
 const fs = require('fs'),
-path = require('path');
+      path = require('path'),
+      os = require('os');
 
-const pathToFile = path.join(CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE);
-const pathToNewDestination = confFile;
+const pathToFile = path.join(CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE),
+      pathToNewDestination = confFile;
 
-if(!fs.existsSync(DOCUMENTS_FOLDER)) {
-  fs.mkdirSync(DOCUMENTS_FOLDER);
+if(!fs.existsSync(TEMP_PATH)) {
+    fs.mkdirSync(TEMP_PATH, {recursive: true});
+    fs.chmodSync(TEMP_PATH, 0777);
 }
 
-if(!fs.existsSync(TEZSTER_FOLDER_PATH_INSIDE_DOCUMENTS)) {
-    fs.mkdirSync(TEZSTER_FOLDER_PATH_INSIDE_DOCUMENTS);
+if(!fs.existsSync(TEZSTER_FOLDER_PATH)) {
+    fs.mkdirSync(TEZSTER_FOLDER_PATH);
+    fs.chmodSync(TEZSTER_FOLDER_PATH, 0777);
 }
 
-if(!fs.existsSync(TEZSTER_LOGS_FOLDER_PATH_INSIDE_DOCUMENTS)) {
-    fs.mkdirSync(TEZSTER_LOGS_FOLDER_PATH_INSIDE_DOCUMENTS);
+if(!fs.existsSync(TEZSTER_LOGS_FOLDER_PATH)) {
+    fs.mkdirSync(TEZSTER_LOGS_FOLDER_PATH);
+    fs.chmodSync(TEZSTER_LOGS_FOLDER_PATH, 0777);
 }
 
 if(!fs.existsSync(COMMAND_LOG_FILE)) {
     fs.writeFileSync(COMMAND_LOG_FILE);
+    fs.chmodSync(COMMAND_LOG_FILE, 0777);
 }
 
 if(fs.existsSync(confFile)) {
@@ -33,11 +38,12 @@ fs.copyFileSync(pathToFile, pathToNewDestination, function(cpError) {
                                 'Error occurred while copying the config file....');
     } 
 });
+fs.chmodSync(pathToNewDestination, 0777);
 
 setProviderForWindows();
 
 function setProviderForWindows() {
-    if(process.platform.includes(WIN_PROCESS_PLATFORM)) {
+    if(os.platform().includes(WIN_OS_PLATFORM) || os.release().includes(WIN_WSL_OS_RELEASE)) {
         const { confFile } = require('./modules/cli-constants'),
             jsonfile = require('jsonfile'),
             config = jsonfile.readFileSync(confFile),

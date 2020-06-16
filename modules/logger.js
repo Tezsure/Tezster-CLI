@@ -1,6 +1,6 @@
 const winston = require('winston'),
       { format } = require('winston'),
-      { COMMAND_LOGS_COLLECTION_FOLDER_PATH } = require('./cli-constants');
+      { COMMAND_LOG_FILE } = require('./cli-constants');
 
 let silent;
 
@@ -33,7 +33,7 @@ const options = {
         ),
     },
     file: {
-        filename: COMMAND_LOGS_COLLECTION_FOLDER_PATH,
+        filename: COMMAND_LOG_FILE,
         level : 'verbose',
         silent,
         handleExceptions: true,
