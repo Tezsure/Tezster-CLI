@@ -1,4 +1,4 @@
-const { confFile, WIN_OS_PLATFORM, WIN_WSL_OS_RELEASE, CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE, TEZSTER_FOLDER_PATH, TEZSTER_LOGS_FOLDER_PATH, COMMAND_LOG_FILE, TEMP_PATH } = require('./modules/cli-constants');
+const { confFile, WIN_OS_PLATFORM, CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE, TEZSTER_FOLDER_PATH, TEZSTER_LOGS_FOLDER_PATH, COMMAND_LOG_FILE, TEMP_PATH } = require('./modules/cli-constants');
 
 const fs = require('fs'),
       path = require('path'),
@@ -43,7 +43,7 @@ fs.chmodSync(pathToNewDestination, 0777);
 setProviderForWindows();
 
 function setProviderForWindows() {
-    if(os.platform().includes(WIN_OS_PLATFORM) || os.release().includes(WIN_WSL_OS_RELEASE)) {
+    if(os.platform().includes(WIN_OS_PLATFORM)) {
         const { confFile } = require('./modules/cli-constants'),
             jsonfile = require('jsonfile'),
             config = jsonfile.readFileSync(confFile),
