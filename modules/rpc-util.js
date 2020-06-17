@@ -1,7 +1,7 @@
 const request = require('request'),
       os = require('os'),
       docker_machine_ip = require('docker-ip'),
-      { WIN_OS_PLATFORM, WIN_WSL_OS_RELEASE } = require('./cli-constants');
+      { WIN_OS_PLATFORM } = require('./cli-constants');
 
 class RpcRequest {
 
@@ -26,16 +26,12 @@ class RpcRequest {
 
     static checkNodeStatus(provider) {
         return new Promise(function(resolve, reject) {
-            if(os.platform().includes(WIN_OS_PLATFORM) || os.release().includes(WIN_WSL_OS_RELEASE)) {
+            if(os.platform().includes(WIN_OS_PLATFORM)) {
                 let current_docker_machine_ip;
                 try { 
                     current_docker_machine_ip = docker_machine_ip();
                 } catch(error) {
                     reject(error);
-                }
-                if(current_docker_machine_ip.includes('localhost')) {
-                    reject('docker machine is not running....');
-                    return;
                 }
                 provider = provider.replace('localhost', current_docker_machine_ip);
             }

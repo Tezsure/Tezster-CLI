@@ -1,4 +1,4 @@
-const { confFile, WIN_OS_PLATFORM, WIN_WSL_OS_RELEASE, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL } = require('../cli-constants');
+const { confFile, WIN_OS_PLATFORM, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL } = require('../cli-constants');
 
 const jsonfile = require('jsonfile'),
       os = require('os'),
@@ -95,16 +95,12 @@ class Accounts{
     setProviderAccounts(args){    
         config.provider = args[0];
 
-        if((os.platform().includes(WIN_OS_PLATFORM) || os.release().includes(WIN_WSL_OS_RELEASE)) && config.provider.includes('localhost')) {
+        if(os.platform().includes(WIN_OS_PLATFORM) && config.provider.includes('localhost')) {
             let current_docker_machine_ip;
             try { 
                 current_docker_machine_ip = docker_machine_ip();
             } catch(error) {
                 Helper.errorLogHandler(`Error occurred while fetching docker machine ip address: ${error}`, 'Make sure docker-machine is in running state....');
-            }
-            if(current_docker_machine_ip.includes('localhost')) {
-                Logger.error('Docker is not running....');
-                return;
             }
             config.provider = config.provider.replace('localhost', current_docker_machine_ip);
         }
@@ -320,7 +316,7 @@ class Accounts{
     }
 
     addAccount(label, pkh, identity, nodeType) {
-        if(nodeType.includes('localhost')) {
+        if(nodeType.includes('localhost') || nodeType.includes('192.168')) {
             nodeType = 'localnode';
         } else {
             nodeType = 'carthagenet'
