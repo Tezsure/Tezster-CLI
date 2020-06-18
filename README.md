@@ -49,7 +49,7 @@ sudo usermod -aG docker $USER
 newgrp docker
 ```
 
-*Note: If you are using **docker-toolbox on windows** to setup docker, please do follow post docker installation steps as detailed in **[section](https://docs.tezster.tech/tezster-cli#post-docker-installation-steps-for-windows-docker-toolbox)**.*
+*Note: If you are using **docker-toolbox on windows** to setup docker, please do follow post docker installation steps as detailed in [section](https://docs.tezster.tech/tezster-cli#post-docker-installation-steps-for-windows-docker-toolbox).*
 
 
 ## Clone repository
