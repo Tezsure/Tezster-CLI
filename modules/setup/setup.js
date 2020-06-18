@@ -132,7 +132,7 @@ class Setup {
                                        'Make sure you have added docker to the USER group');
                 process.exit();
             } else {
-                Logger.info('setting up tezos node, this could take a while....');      
+                Logger.info('Setting up tezos node, this could take a while....');      
                 progressInterval = setInterval(() => {
                     progressbar.start(100, progress);
                     progress = progress + 0.45;
@@ -153,7 +153,7 @@ class Setup {
                         } else {
                             clearInterval(progress);
                             progressbar.update(100);
-                            Logger.info('\nTezos nodes have been setup successfully on system....');
+                            Logger.info('\nTezos nodes have been setup successfully on system.');
                             process.exit();
                         }
                     });
