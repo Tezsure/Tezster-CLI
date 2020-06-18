@@ -247,7 +247,7 @@ class Accounts{
         };
 
         try {
-            Logger.warn('Activating the account....');
+            Logger.warn('Activating the account, this could take a while....');
             let activationResult = await conseiljs.TezosNodeWriter.sendIdentityActivationOperation(tezosNode, keystore, keys.secret);
             
             const activationGroupid = this.clearRPCOperationGroupHash(activationResult.operationGroupID);

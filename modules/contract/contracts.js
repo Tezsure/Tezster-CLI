@@ -149,7 +149,7 @@ class Contracts {
                                       100000, '', 10000, 500000, 
                                       contract, initValue, conseiljs.TezosParameterFormat.Michelson);        
                                       
-            if(!tezosNode.includes('localhost')) {
+            if(!tezosNode.includes('localhost') && !tezosNode.includes('192.168')) {
                 try {
                     const Groupid = this.clearRPCOperationGroupHash(result.operationGroupID);
                     await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, Groupid, 10, 30+1);

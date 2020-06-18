@@ -18,6 +18,8 @@ Follow below steps to get started with Tezster-CLI.
 2. Mac OS X
 3. Windows 10 <br />
 
+*Note: If you are on ***Windows***, we would recommend to use ***powershell as administrator***. If you want to use ***Windows subsystem for Linux (WSL)*** on windows, please do follow instructions for initial setup as explained in [section](https://docs.tezster.tech/tezster-cli#windows-subsystem-for-linux-wsl).*
+
 ### Node.js Installation
 Run following commands to install Node.js LTS version (for linux based platforms) or can download nodejs from [Downloads](https://nodejs.org/en/download/).
 ```
@@ -38,8 +40,7 @@ For MAC refer this [link](https://docs.docker.com/docker-for-mac/release-notes/#
 For Windows (Win-10 enterprise edition) refer this [link](https://docs.docker.com/docker-for-windows/release-notes/#docker-desktop-community-2303). (Docker Desktop stable v2.3.0.2 or later) <br />
 For Windows (Win-10 home edition or older) refer this [link](https://docs.docker.com/toolbox/toolbox_install_windows/).
 
-
-### Post Docker Installation Guide (Skip if using docker-desktop/docker-toolbox)
+### Post Docker Installation Guide (Skip if using docker-desktop)
 Make sure after installing docker you have added $USER to the docker group, if not run the following commands:
 
 ```
@@ -47,6 +48,9 @@ sudo groupadd docker
 sudo usermod -aG docker $USER
 newgrp docker
 ```
+
+***Note: If you are using docker-toolbox on windows to setup docker, please do follow post docker installation steps as detailed in [section](https://docs.tezster.tech/tezster-cli#post-docker-installation-steps-for-windows-docker-toolbox).***
+
 
 ## Clone repository
 
@@ -68,6 +72,7 @@ sudo npm install -g tezster@latest
 
 *Note: If error occured, install package using - ```sudo npm install -g tezster@latest --unsafe```*
 
+
 Run ```tezster --version``` to ensure the version of tezster.
 ```
 tezster --version
@@ -78,7 +83,7 @@ To list down all the tezster commands, run:
 tezster --help
 ```
 
-Congratulations, you are all set to use Tezster-CLI commands. For usage guidance follow our [documentation page](https://docs.tezster.tech/tezster-cli#playground-setup).
+Congratulations, you are all set to use Tezster-CLI commands. For usage guidance follow our ***[documentation page](https://docs.tezster.tech/tezster-cli#playground-setup)***.
 
 
 ## Contributing
