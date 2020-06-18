@@ -18,7 +18,7 @@ Follow below steps to get started with Tezster-CLI.
 2. Mac OS X
 3. Windows 10 <br />
 
-*Note: If you are on ***Windows***, we would recommend to use ***powershell as administrator***. If you want to use ***Windows subsystem for Linux (WSL)*** on windows, please do follow instructions for initial setup as explained in [section](https://docs.tezster.tech/tezster-cli#windows-subsystem-for-linux-wsl).*
+*Note: If you are on **Windows**, we would recommend to use **powershell as administrator**. If you want to use **Windows subsystem for Linux (WSL)** on windows, please do follow instructions for initial setup as explained in [section](https://docs.tezster.tech/tezster-cli#windows-subsystem-for-linux-wsl).*
 
 ### Node.js Installation
 Run following commands to install Node.js LTS version (for linux based platforms) or can download nodejs from [Downloads](https://nodejs.org/en/download/).
@@ -70,7 +70,7 @@ You can install tezster-cli using npm package as well. To install npm package, r
 sudo npm install -g tezster@latest
 ```
 
-*Note: If error occured, install package using - ```sudo npm install -g tezster@latest --unsafe```*
+*Note: If error occured, install package using - ```sudo npm install -g tezster@latest --unsafe```*<br />
 
 
 Run ```tezster --version``` to ensure the version of tezster.
@@ -83,7 +83,7 @@ To list down all the tezster commands, run:
 tezster --help
 ```
 
-Congratulations, you are all set to use Tezster-CLI commands. For usage guidance follow our ***[documentation page](https://docs.tezster.tech/tezster-cli#playground-setup)***.
+Congratulations, you are all set to use Tezster-CLI commands. For usage guidance follow our **[documentation page](https://docs.tezster.tech/tezster-cli#playground-setup)**.
 
 
 ## Contributing
