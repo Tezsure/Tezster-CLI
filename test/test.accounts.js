@@ -50,7 +50,7 @@ describe('Faucet Account Operations', async () => {
       sandbox.restore();
     })
 
-    context('set provider with args', async () => { 
+    context('set-provider', async () => { 
         it('should call method and replace current provider', async () => { 
             spySetProviderAccounts = sinon.spy(account, 'setProviderAccounts');
             stubLoggerInfo = sandbox.stub(Logger, 'info');
@@ -61,17 +61,15 @@ describe('Faucet Account Operations', async () => {
             sinon.assert.calledOnce(stubLoggerInfo);
             sinon.assert.calledOnce(spySetProviderAccounts);
         });
-    });
 
-    context('set provider without args', async () => { 
-        it('should throw warn', async () => { 
+        it('invalid number of arguments', async () => { 
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
             await account.setProvider([]);
             sinon.assert.calledOnce(stubLoggerWarn);
         });
     });
 
-    context('get provider', async () => {
+    context('get-provider', async () => {
         it('should fetch current provider', async () => { 
             spyGetProviderAccounts = sinon.spy(account, 'getProviderAccounts');
             stubLoggerInfo = sandbox.stub(Logger, 'info');
@@ -82,7 +80,7 @@ describe('Faucet Account Operations', async () => {
         });
     });
 
-    context('list accounts', async () => {
+    context('list-accounts', async () => {
         it('should be able to list down all accounts', async () => {
             stubLoggerInfo = sandbox.stub(Logger, 'info');
             await account.listAccounts();
@@ -90,7 +88,7 @@ describe('Faucet Account Operations', async () => {
         });
     });
 
-    context('delete accounts with args', async () => {
+    context('delete-accounts', async () => {
         it('should not splice the bootstrapped account', async () => {
             stubLoggerError =  sandbox.stub(Logger, 'error');
             await account.removeAccount([BOOTSTRAPPED_ACCOUNT]);
@@ -118,30 +116,19 @@ describe('Faucet Account Operations', async () => {
             sinon.assert.calledOnce(stubIdentitySplice);
             sinon.assert.calledOnce(stubWriteFile);
         });
-    });
 
-    context('delete accounts without args', async () => {
-        it('should throw the warning', async () => {
+        it('invalid number of arguments', async () => {
             const stubLoggerWarn =  sandbox.stub(Logger, 'warn');
             await account.removeAccount([]);
             sinon.assert.calledOnce(stubLoggerWarn);
         });
     });
 
-    context('get balance with args', async () => {
+    context('get-balance', async () => {
         it('should return balance', async () => { 
             spyGetBalanceAccounts = sinon.spy(account, 'getBalanceAccounts');
             stubLoggerInfo = sandbox.stub(Logger, 'info');
             
-            // stubHelper = sandbox
-            //             .stub(Helper, 'findKeyObj')
-            //             .withArgs(testconfig.contracts, BOOTSTRAPPED_ACCOUNT)
-            //             .returns({
-            //                 "label": "localnode_bootstrap1",
-            //                 "pkh": "tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx",
-            //                 "identity": "bootstrap1"
-            //               });
-
             stubRpcRequest = sandbox.stub(RpcRequest, 'fetchBalance')
                                 .withArgs(testconfig.provider, BOOTSTRAPPED_ACCOUNT)
                                 .returns(BALANCE);
@@ -154,10 +141,8 @@ describe('Faucet Account Operations', async () => {
             sinon.assert.calledOnce(spyGetBalanceAccounts);
             sinon.assert.calledOnce(stubFormatTez);
         });
-    });
 
-    context('get balance without args', async () => {
-        it('should return warning', async () => { 
+        it('invalid number of arguments', async () => { 
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
 
             await account.getBalance([]);
@@ -165,7 +150,7 @@ describe('Faucet Account Operations', async () => {
         });
     });
 
-    context('create wallet with args', async () => {
+    context('create-wallet', async () => {
         it('should create wallet along with mnemonic phrases', async () => { 
             const conseiljs = require(CONSEIL_JS);
             stubConseilMnemonic = sandbox.stub(conseiljs.TezosWalletUtil, 'generateMnemonic')
@@ -197,17 +182,14 @@ describe('Faucet Account Operations', async () => {
             sinon.assert.calledOnce(stubLoggerError);
         });
 
-    });
-
-    context('create wallet without args', async () => {
-        it('should return warning', async () => { 
+        it('invalid number of arguments', async () => { 
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
             await account.createWallet([]);
             sinon.assert.calledOnce(stubLoggerWarn);
         });
     });
 
-    context('add testnet account with args', async () => {
+    context('add-testnet-account', async () => {
         it('should add newaccount using faucet file', async () => { 
             const conseiljs = require(CONSEIL_JS);
             stubReadFileSync = sandbox
@@ -241,56 +223,14 @@ describe('Faucet Account Operations', async () => {
             sinon.assert.calledOnce(stubLoggerError);
         });
 
-    });
-
-    context('add testnet account without args', async () => {
-        it('should return warning', async () => { 
+        it('invalid number of arguments', async () => { 
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
             await account.addTestnetAccount([]);
             sinon.assert.calledOnce(stubLoggerWarn);
         });
     });
 
-    context('restore wallet with args', async () => {
-        it('should restore wallet using mnemonic and add into config', async () => { 
-            const conseiljs = require(CONSEIL_JS);
-
-            stubConseil = sandbox.stub(conseiljs.TezosWalletUtil, 'unlockIdentityWithMnemonic')
-                                .withArgs(MNEMOMICS, '')
-                                .returns(MNEMOMICS_KEYSTORE);
-                                
-            stubAddIdentity = sandbox.stub(account, 'addIdentity')
-                                .withArgs(NEW_WALLET, MNEMOMICS_KEYSTORE.privateKey, MNEMOMICS_KEYSTORE.publicKey, MNEMOMICS_KEYSTORE.publicKeyHash, '');
-                    
-            stubAddAccount = sandbox.stub(account, 'addAccount')
-                                .withArgs(NEW_WALLET, MNEMOMICS_KEYSTORE.publicKeyHash, NEW_WALLET, testconfig.provider);
-
-            stubLoggerInfo = sandbox.stub(Logger, 'info');
-
-            await account.restoreWallet([NEW_WALLET, MNEMOMICS]);
-            sinon.assert.calledOnce(stubConseil);
-            sinon.assert.calledOnce(stubLoggerInfo);
-            sinon.assert.calledOnce(stubAddIdentity);
-            sinon.assert.calledOnce(stubAddAccount);
-        });
-
-        it('should return error as keys already exist', async () => { 
-            stubLoggerError = sandbox.stub(Logger, 'error');
-            await account.restoreWallet([BOOTSTRAPPED_ACCOUNT, MNEMOMICS]);
-            sinon.assert.calledOnce(stubLoggerError);
-        });
-
-    });
-
-    context('restore wallet without args', async () => {
-        it('should return warning', async () => { 
-            stubLoggerWarn = sandbox.stub(Logger, 'warn');
-            await account.restoreWallet([]);
-            sinon.assert.calledOnce(stubLoggerWarn);
-        });
-    });
-
-    context('activate testnet with args', async () => {
+    context('activate-testnet-account', async () => {
         it('should activate the account which have been already added', async () => { 
             const conseiljs = require(CONSEIL_JS);
 
@@ -339,13 +279,47 @@ describe('Faucet Account Operations', async () => {
             sinon.assert.calledOnce(stubLoggerError);
         });
 
-    });
-
-    context('activate testnet without args', async () => {
-        it('should return warning', async () => { 
+        it('invalid number of arguments', async () => { 
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
             await account.activateTestnetAccount([]);
             sinon.assert.calledOnce(stubLoggerWarn);
         });
     });
+
+    context('restore-wallet', async () => {
+        it('should restore wallet using mnemonic and add into config', async () => { 
+            const conseiljs = require(CONSEIL_JS);
+
+            stubConseil = sandbox.stub(conseiljs.TezosWalletUtil, 'unlockIdentityWithMnemonic')
+                                .withArgs(MNEMOMICS, '')
+                                .returns(MNEMOMICS_KEYSTORE);
+                                
+            stubAddIdentity = sandbox.stub(account, 'addIdentity')
+                                .withArgs(NEW_WALLET, MNEMOMICS_KEYSTORE.privateKey, MNEMOMICS_KEYSTORE.publicKey, MNEMOMICS_KEYSTORE.publicKeyHash, '');
+                    
+            stubAddAccount = sandbox.stub(account, 'addAccount')
+                                .withArgs(NEW_WALLET, MNEMOMICS_KEYSTORE.publicKeyHash, NEW_WALLET, testconfig.provider);
+
+            stubLoggerInfo = sandbox.stub(Logger, 'info');
+
+            await account.restoreWallet([NEW_WALLET, MNEMOMICS]);
+            sinon.assert.calledOnce(stubConseil);
+            sinon.assert.calledOnce(stubLoggerInfo);
+            sinon.assert.calledOnce(stubAddIdentity);
+            sinon.assert.calledOnce(stubAddAccount);
+        });
+
+        it('should return error as keys already exist', async () => { 
+            stubLoggerError = sandbox.stub(Logger, 'error');
+            await account.restoreWallet([BOOTSTRAPPED_ACCOUNT, MNEMOMICS]);
+            sinon.assert.calledOnce(stubLoggerError);
+        });
+
+        it('invalid number of arguments', async () => { 
+            stubLoggerWarn = sandbox.stub(Logger, 'warn');
+            await account.restoreWallet([]);
+            sinon.assert.calledOnce(stubLoggerWarn);
+        });
+    });
+
 });

@@ -17,6 +17,7 @@ const sinon = require('sinon'),
 const tezosNode = 'http://localhost:18731',
       CONTRACT_ADDRESS = 'KT1WvyJ1qUrWzShA2T6QeL7AW4DR6GspUimM',
       CONTRACT_LABEL = 'samplecontract',
+      INCORRECT_CONTRACT_LABEL = 'notavailablecontract',
       CONTRACT_DEPLOY_LABEL = 'deployedcontract',
       BOOTSTRAPPED_ACCOUNT = 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
       CONTRACT_INITIAL_STORAGE = "\"tezsure\"",
@@ -46,7 +47,7 @@ describe('Smart Contract Operations', async () => {
         sandbox.restore()
     });
 
-    context('deploy-contract-with-args', async () => {
+    context('deploy-contract', async () => {
         it('must call sendContractOriginationOperation function with applied status', async () => {
             const conseiljs = require(CONSEIL_JS);
             stubReadFileSync = sandbox
@@ -125,17 +126,15 @@ describe('Smart Contract Operations', async () => {
             sinon.assert.calledOnce(stubConseil);
             sinon.assert.callCount(stubAddNewContract, 0);
         });
-    });
 
-    context('deploy-contract-without-args', async () => {
-        it('must throw warning', async () => {
+        it('invalid number of arguments', async () => {
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
             await contract.deployContract([CONTRACT_LABEL, CONTRACT_INITIAL_STORAGE, BOOTSTRAPPED_ACCOUNT]);
             sinon.assert.calledOnce(stubLoggerWarn);
         });
     });
 
-    context('invoke-contract-with-args', async () => {
+    context('invoke-contract', async () => {
         it('must call sendContractInvocationOperation function with applied status', async () => {
             const conseiljs = require(CONSEIL_JS);
             stubHelper = sandbox.stub(Helper, 'findKeyObj')
@@ -166,20 +165,32 @@ describe('Smart Contract Operations', async () => {
 
             stubAddTransaction = sandbox
                                 .stub(contract, 'addTransaction')
-                                .withArgs('contract-call', opHash, keystore.pkh, CONTRACT_LABEL, 0);
+                                .withArgs('contract-call', opHash, keystore.publicKeyHash, CONTRACT_LABEL, 0);
 
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
             stubLoggerInfo = sandbox.stub(Logger, 'info');
-            //stubLoggerError = sandbox.stub(Logger, 'error');        
             
             await contract.callContract([CONTRACT_LABEL, CONTRACT_INVOCATION_STORAGE, BOOTSTRAPPED_ACCOUNT]);
             sinon.assert.calledOnce(stubHelper);
             sinon.assert.calledOnce(stubKeys);
             sinon.assert.calledOnce(stubConseil);
         });
+
+        it('should throw error as contract label is not present', async () => {
+            stubLoggerWarn = sandbox.stub(Logger, 'warn');
+            stubLoggerError = sandbox.stub(Logger, 'error');
+            await contract.callContract([INCORRECT_CONTRACT_LABEL, CONTRACT_INVOCATION_STORAGE, BOOTSTRAPPED_ACCOUNT]);
+            sinon.assert.calledOnce(stubLoggerError);
+        });
+
+        it('invalid number of arguments', async () => {
+            stubLoggerWarn = sandbox.stub(Logger, 'warn');
+            await contract.callContract([CONTRACT_LABEL, CONTRACT_INITIAL_STORAGE]);
+            sinon.assert.calledOnce(stubLoggerWarn);
+        });
     });
 
-    context('get-storage-with-args', async () => {
+    context('get-storage', async () => {
         it('must call getContractStorage function', async () => {
             const conseiljs = require(CONSEIL_JS);
 
@@ -202,17 +213,15 @@ describe('Smart Contract Operations', async () => {
             sinon.assert.calledOnce(stubHelper);
             sinon.assert.calledOnce(stubConseil);
         });
-    });
 
-    context('get-storage-without-args', async () => {
-        it('must throw warning', async () => { 
+        it('invalid number of arguments', async () => { 
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
             await contract.getStorage([]);
             sinon.assert.calledOnce(stubLoggerWarn);
         });
     });
   
-    context('add-contract-with-args', async () => {
+    context('add-contract', async () => {
         it('must call addNewContract method', async () => {
             stubHelper = sandbox
                         .stub(Helper, 'findKeyObj')
@@ -228,9 +237,7 @@ describe('Smart Contract Operations', async () => {
             sinon.assert.calledOnce(stubHelper);
             sinon.assert.calledOnce(stubAddNewContract);
         });
-    });
-
-    context('add-contract-without-args', async () => {
+    
         it('must throw warning', async () => {
             stubLoggerWarn =  sandbox.stub(Logger, 'warn');
             await contract.addContract([CONTRACT_LABEL]);
@@ -238,7 +245,7 @@ describe('Smart Contract Operations', async () => {
         });
     });
 
-    context('delete-contract-with-args', async () => {
+    context('delete-contract', async () => {
         it('must splice the contract from config', async () => {
             const stubHelper = sandbox
                             .stub(Helper, 'findKeyObj')
@@ -256,10 +263,8 @@ describe('Smart Contract Operations', async () => {
             sinon.assert.calledOnce(stubSplice);
             sinon.assert.calledOnce(stubWriteFile);
         });
-    });
 
-    context('delete-contract-without-args', async () => {
-        it('must throw the warning', async () => {
+        it('invalid number of arguments', async () => {
             const stubLoggerWarn =  sandbox.stub(Logger, 'warn');
             await contract.removeContract([]);
             sinon.assert.calledOnce(stubLoggerWarn);
