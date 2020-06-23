@@ -152,8 +152,8 @@ class Contracts {
                                       tezosNode, keystore, amount*1000000, undefined,
                                       100000, '', 10000, 500000, 
                                       contract, initValue, conseiljs.TezosParameterFormat.Michelson);        
-                                      
-            if(!tezosNode.includes('localhost')) {
+
+            if(!tezosNode.includes('localhost') && !tezosNode.includes('192.168')) {
                 try {
                     const Groupid = this.clearRPCOperationGroupHash(result.operationGroupID);
                     await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, Groupid, 10, 30+1);
@@ -298,7 +298,7 @@ class Contracts {
     }
 
     addNewContract(label, opHash, pkh, nodeType) {
-        if(nodeType.includes('localhost')) {
+        if(nodeType.includes('localhost') || nodeType.includes('192.168')) {
             nodeType = 'localnode';
         } else {
             nodeType = 'carthagenet'

@@ -3,9 +3,9 @@ const sinon = require('sinon'),
       path = require('path'),
       jsonfile = require('jsonfile'),
 
-      confFile = '/tmp/tezster/config.json',
-      sampleconfFile = path.resolve(__dirname, './config/test-config.json'),
-      testconfig = jsonfile.readFileSync(sampleconfFile),
+      confFile = '/var/tmp/tezster/config.json',
+      testconfFile = path.resolve(__dirname, './config/test-config.json'),
+      testconfig = jsonfile.readFileSync(testconfFile),
 
       CONSEIL_JS = '../lib/conseiljs',
       Logger = require('../modules/logger'),
@@ -14,7 +14,8 @@ const sinon = require('sinon'),
       
       { sendContractOriginationOperation, sendContractInvocationOperation, TezosContractIntrospector } = require('./responses/ContractOperations.responses');
 
-const CONTRACT_ADDRESS = 'KT1WvyJ1qUrWzShA2T6QeL7AW4DR6GspUimM',
+const tezosNode = 'http://localhost:18731',
+      CONTRACT_ADDRESS = 'KT1WvyJ1qUrWzShA2T6QeL7AW4DR6GspUimM',
       CONTRACT_LABEL = 'samplecontract',
       CONTRACT_DEPLOY_LABEL = 'deployedcontract',
       BOOTSTRAPPED_ACCOUNT = 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
@@ -32,10 +33,9 @@ const CONTRACT_ADDRESS = 'KT1WvyJ1qUrWzShA2T6QeL7AW4DR6GspUimM',
       };
 
 describe('Smart Contract Operations', async () => {
-    let sandbox = null, contract;
+    let sandbox = null;
     beforeEach(() => {
         sandbox = sinon.createSandbox();
-        sandbox1 = sinon.createSandbox();
         sandbox
             .stub(jsonfile, 'readFileSync')
             .withArgs(confFile)
@@ -57,7 +57,7 @@ describe('Smart Contract Operations', async () => {
             stubKeys = sandbox
                         .stub(contract, 'getKeys')
                         .withArgs(BOOTSTRAPPED_ACCOUNT)
-                        .returns( {
+                        .returns({
                             pk: 'edpkuBknW28nW72KG6RoHtYW7p12T6GKc7nAbwYX5m8Wd9sDVC9yav',
                             sk: 'edskRuR1azSfboG86YPTyxrQgosh5zChf5bVDmptqLTb5EuXAm9rsnDYfTKhq7rDQujdn5WWzwUMeV3agaZ6J2vPQT58jJAJPi',
                             pkh: 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
@@ -98,7 +98,7 @@ describe('Smart Contract Operations', async () => {
             stubKeys = sandbox
                         .stub(contract, 'getKeys')
                         .withArgs(BOOTSTRAPPED_ACCOUNT)
-                        .returns( {
+                        .returns({
                             pk: 'edpkuBknW28nW72KG6RoHtYW7p12T6GKc7nAbwYX5m8Wd9sDVC9yav',
                             sk: 'edskRuR1azSfboG86YPTyxrQgosh5zChf5bVDmptqLTb5EuXAm9rsnDYfTKhq7rDQujdn5WWzwUMeV3agaZ6J2vPQT58jJAJPi',
                             pkh: 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
@@ -138,8 +138,7 @@ describe('Smart Contract Operations', async () => {
     context('invoke-contract-with-args', async () => {
         it('must call sendContractInvocationOperation function with applied status', async () => {
             const conseiljs = require(CONSEIL_JS);
-            stubHelper = sandbox
-                        .stub(Helper, 'findKeyObj')
+            stubHelper = sandbox.stub(Helper, 'findKeyObj')
                         .withArgs(testconfig.contracts, CONTRACT_LABEL)
                         .returns({
                             "label": "samplecontract",
@@ -147,10 +146,9 @@ describe('Smart Contract Operations', async () => {
                             "identity": "localnode - samplecontract"
                             });
 
-            stubKeys = sandbox
-                        .stub(contract, 'getKeys')
+            stubKeys = sandbox.stub(contract, 'getKeys')
                         .withArgs(BOOTSTRAPPED_ACCOUNT)
-                        .returns( {
+                        .returns({
                             pk: 'edpkuBknW28nW72KG6RoHtYW7p12T6GKc7nAbwYX5m8Wd9sDVC9yav',
                             sk: 'edskRuR1azSfboG86YPTyxrQgosh5zChf5bVDmptqLTb5EuXAm9rsnDYfTKhq7rDQujdn5WWzwUMeV3agaZ6J2vPQT58jJAJPi',
                             pkh: 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
@@ -166,9 +164,13 @@ describe('Smart Contract Operations', async () => {
                                       CONTRACT_INVOCATION_STORAGE, conseiljs.TezosParameterFormat.Michelson)
                             .returns(sendContractInvocationOperation.applied);
 
+            stubAddTransaction = sandbox
+                                .stub(contract, 'addTransaction')
+                                .withArgs('contract-call', opHash, keystore.pkh, CONTRACT_LABEL, 0);
+
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
             stubLoggerInfo = sandbox.stub(Logger, 'info');
-            stubLoggerError = sandbox.stub(Logger, 'error');        
+            //stubLoggerError = sandbox.stub(Logger, 'error');        
             
             await contract.callContract([CONTRACT_LABEL, CONTRACT_INVOCATION_STORAGE, BOOTSTRAPPED_ACCOUNT]);
             sinon.assert.calledOnce(stubHelper);

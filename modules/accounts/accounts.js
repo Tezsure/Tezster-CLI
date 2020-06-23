@@ -1,9 +1,11 @@
-const { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL } = require('../cli-constants');
+const { confFile, WIN_OS_PLATFORM, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL } = require('../cli-constants');
 
 const jsonfile = require('jsonfile'),
+      os = require('os'),
       Logger = require('../logger'),
       { Helper } = require('../helper'),
       { RpcRequest } = require('../rpc-util'),
+      docker_machine_ip = require('docker-ip'),
       { ExceptionHandler } = require('../exceptionHandler');
 let config;
 
@@ -96,6 +98,17 @@ class Accounts{
 
     setProviderAccounts(args){    
         config.provider = args[0];
+
+        if(os.platform().includes(WIN_OS_PLATFORM) && config.provider.includes('localhost')) {
+            let current_docker_machine_ip;
+            try { 
+                current_docker_machine_ip = docker_machine_ip();
+            } catch(error) {
+                Helper.errorLogHandler(`Error occurred while fetching docker machine ip address: ${error}`, 'Make sure docker-machine is in running state....');
+            }
+            config.provider = config.provider.replace('localhost', current_docker_machine_ip);
+        }
+
         jsonfile.writeFile(confFile, config);
         Logger.info('Provider updated to ' + config.provider);
     }
@@ -150,7 +163,6 @@ class Accounts{
             const keystore = await conseiljs.TezosWalletUtil.unlockIdentityWithMnemonic(mnemonic, '');
             this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, config.provider);     
-            jsonfile.writeFile(confFile, config);
             Logger.info(`Successfully created wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
             Logger.warn(`We suggest you to store following Mnemonic Pharase which can be used to restore wallet in case you lost wallet:\n'${mnemonic}'`);
         } catch(error) {
@@ -170,7 +182,6 @@ class Accounts{
             const keystore = await conseiljs.TezosWalletUtil.unlockIdentityWithMnemonic(mnemonic, '');
             this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, config.provider);     
-            jsonfile.writeFile(confFile, config);
             Logger.info(`Successfully restored the wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
         } catch(error) {
             Logger.error(`Error occurred while restoring the wallet:\n${error}`);
@@ -238,9 +249,8 @@ class Accounts{
         };
 
         try {
-            Logger.warn('Activating the account....');
+            Logger.warn('Activating the account, this could take a while....');
             let activationResult = await conseiljs.TezosNodeWriter.sendIdentityActivationOperation(tezosNode, keystore, keys.secret);
-            
             const activationGroupid = this.clearRPCOperationGroupHash(activationResult.operationGroupID);
             await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, activationGroupid, 10, 30+1);
 
@@ -307,7 +317,7 @@ class Accounts{
     }
 
     addAccount(label, pkh, identity, nodeType) {
-        if(nodeType.includes('localhost')) {
+        if(nodeType.includes('localhost') || nodeType.includes('192.168')) {
             nodeType = 'localnode';
         } else {
             nodeType = 'carthagenet'

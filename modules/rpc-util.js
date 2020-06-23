@@ -1,4 +1,7 @@
-const request = require('request');
+const request = require('request'),
+      os = require('os'),
+      docker_machine_ip = require('docker-ip'),
+      { WIN_OS_PLATFORM } = require('./cli-constants');
 
 class RpcRequest {
 
@@ -23,6 +26,16 @@ class RpcRequest {
 
     static checkNodeStatus(provider) {
         return new Promise(function(resolve, reject) {
+            if(os.platform().includes(WIN_OS_PLATFORM)) {
+                let current_docker_machine_ip;
+                try { 
+                    current_docker_machine_ip = docker_machine_ip();
+                } catch(error) {
+                    reject(error);
+                }
+                provider = provider.replace('localhost', current_docker_machine_ip);
+            }
+            
             request(`${provider}/chains/main/blocks/head/protocols`, function (error, response, body) {
                 if(error){
                     reject(error);

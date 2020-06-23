@@ -30,6 +30,13 @@
         "pk": "edpkv8EUUH68jmo3f7Um5PezmfGrRF24gnfLpH3sVNwJnV5bVCxL2n",
         "pkh": "tz1ddb9NMYHZi5UzPdzTZMYQQZoMub195zgv",
         "label": "bootstrap5"
+      },       
+      {
+        "sk": "edskRw8BjxMinJVPaaB4QaAiwt3FXsoZavrYuScaYfrKdPcyc1CjiGj7Z3heTGtfeFNsJnYQhCHBXg5sk6Q47LHEZMsqx6eqgr",
+        "pk": "edpkv34XmPaRsAaDVqQv1c4AZygigqQqhnd6doxYapnhsAZQF8YcCA",
+        "pkh": "tz1d5r26m3MGMbrvTktUDzjVSUXfF7VnfUTV",
+        "label": "nonbootstrapped",
+        "secret": "d89ddefd8f3b0119c8d088fac32d1bfcea257957"
       }
     ],
     "accounts": [
@@ -57,6 +64,11 @@
         "label": "localnode_bootstrap5",
         "pkh": "tz1ddb9NMYHZi5UzPdzTZMYQQZoMub195zgv",
         "identity": "bootstrap5"
+      },
+      {
+        "label": "carthagenet_nonbootstrapped",
+        "pkh": "tz1d5r26m3MGMbrvTktUDzjVSUXfF7VnfUTV",
+        "identity": "nonbootstrapped"
       }
     ],
     "contracts": [
@@ -67,5 +79,5 @@
       }
     ],  
     "programs": [],
-    "transactions": []
+    "transactions": [{"operation":"contract-call","hash":"ooHWp24SiVPXyGGJv91ySQECAyrya3Us43MJzyvJ6phUPAC66Lv","from":"tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx","to":"samplecontract","amount":0}]
 }
