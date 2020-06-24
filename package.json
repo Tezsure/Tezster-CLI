@@ -51,6 +51,9 @@
     "include": [
       "modules/**/*.js",
       "*.js"
+    ],
+    "exclude": [
+      "modules/exceptionHandler.js"
     ]
   },
   "keywords": [

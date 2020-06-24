@@ -17,9 +17,11 @@ const sinon = require('sinon'),
 const tezosNode = 'http://localhost:18731',
       CONTRACT_ADDRESS = 'KT1WvyJ1qUrWzShA2T6QeL7AW4DR6GspUimM',
       CONTRACT_LABEL = 'samplecontract',
+      NEW_CONTRACT_LABEL = 'newcontract',
       INCORRECT_CONTRACT_LABEL = 'notavailablecontract',
       CONTRACT_DEPLOY_LABEL = 'deployedcontract',
       BOOTSTRAPPED_ACCOUNT = 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
+      INCORRECT_BOOTSTRAPPED_ACCOUNT = 'tz1KqTpEZ7Yob7hgfd45tyTw8fHG8LhKxZ12',
       CONTRACT_INITIAL_STORAGE = "\"tezsure\"",
       CONTRACT_INVOCATION_STORAGE = "\"tezster\"",
       CONTRACT_CODE = `parameter string;
@@ -127,6 +129,20 @@ describe('Smart Contract Operations', async () => {
             sinon.assert.callCount(stubAddNewContract, 0);
         });
 
+        it('should throw error as key is not present', async () => {
+            stubLoggerWarn = sandbox.stub(Logger, 'warn');
+            stubLoggerError = sandbox.stub(Logger, 'error');
+            await contract.deployContract([CONTRACT_DEPLOY_LABEL, './MichelsonCodeFile.tz', CONTRACT_INITIAL_STORAGE, INCORRECT_BOOTSTRAPPED_ACCOUNT]);
+            sinon.assert.calledOnce(stubLoggerError);
+        });
+
+        it('should throw error as contract label already exists', async () => {
+            stubLoggerWarn = sandbox.stub(Logger, 'warn');
+            stubLoggerError = sandbox.stub(Logger, 'error');
+            await contract.deployContract([CONTRACT_LABEL, './MichelsonCodeFile.tz', CONTRACT_INITIAL_STORAGE, BOOTSTRAPPED_ACCOUNT]);
+            sinon.assert.calledOnce(stubLoggerError);
+        });
+
         it('invalid number of arguments', async () => {
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
             await contract.deployContract([CONTRACT_LABEL, CONTRACT_INITIAL_STORAGE, BOOTSTRAPPED_ACCOUNT]);
@@ -176,6 +192,13 @@ describe('Smart Contract Operations', async () => {
             sinon.assert.calledOnce(stubConseil);
         });
 
+        it('should throw error as key is not present', async () => {
+            stubLoggerWarn = sandbox.stub(Logger, 'warn');
+            stubLoggerError = sandbox.stub(Logger, 'error');
+            await contract.callContract([CONTRACT_LABEL, CONTRACT_INVOCATION_STORAGE, INCORRECT_BOOTSTRAPPED_ACCOUNT]);
+            sinon.assert.calledOnce(stubLoggerError);
+        });
+
         it('should throw error as contract label is not present', async () => {
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
             stubLoggerError = sandbox.stub(Logger, 'error');
@@ -214,6 +237,12 @@ describe('Smart Contract Operations', async () => {
             sinon.assert.calledOnce(stubConseil);
         });
 
+        it('should throw error as contract label is not present', async () => {
+            stubLoggerError = sandbox.stub(Logger, 'error');
+            await contract.getStorage([INCORRECT_CONTRACT_LABEL]);
+            sinon.assert.calledOnce(stubLoggerError);
+        });
+
         it('invalid number of arguments', async () => { 
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
             await contract.getStorage([]);
@@ -223,19 +252,21 @@ describe('Smart Contract Operations', async () => {
   
     context('add-contract', async () => {
         it('must call addNewContract method', async () => {
-            stubHelper = sandbox
-                        .stub(Helper, 'findKeyObj')
-                        .withArgs(testconfig.contracts, CONTRACT_LABEL)
-                        .returns();
 
             stubAddNewContract = sandbox
                                 .stub(contract, 'addNewContract')
-                                .withArgs(CONTRACT_LABEL, CONTRACT_ADDRESS, '', testconfig.provider);
+                                .withArgs(NEW_CONTRACT_LABEL, CONTRACT_ADDRESS, '', testconfig.provider);
 
             sandbox.stub(Logger, 'info');
-            await contract.addContract([CONTRACT_LABEL, CONTRACT_ADDRESS]);
+            await contract.addContract([NEW_CONTRACT_LABEL, CONTRACT_ADDRESS]);
             sinon.assert.calledOnce(stubHelper);
             sinon.assert.calledOnce(stubAddNewContract);
+        });
+
+        it('should throw error as contract label is not present', async () => {
+            stubLoggerError = sandbox.stub(Logger, 'error');
+            await contract.addContract([CONTRACT_LABEL, CONTRACT_ADDRESS]);
+            sinon.assert.calledOnce(stubLoggerError);
         });
     
         it('must throw warning', async () => {
@@ -262,6 +293,12 @@ describe('Smart Contract Operations', async () => {
             sinon.assert.calledOnce(stubLoggerInfo);
             sinon.assert.calledOnce(stubSplice);
             sinon.assert.calledOnce(stubWriteFile);
+        });
+
+        it('should throw error as contract label is not present', async () => {
+            stubLoggerError = sandbox.stub(Logger, 'error');
+            await contract.removeContract([INCORRECT_CONTRACT_LABEL]);
+            sinon.assert.calledOnce(stubLoggerError);
         });
 
         it('invalid number of arguments', async () => {
@@ -308,11 +345,23 @@ describe('Smart Contract Operations', async () => {
 
             stubLoggerInfo = sandbox.stub(Logger, 'info');
 
-            await contract.listEntryPoints('./contractFile.tz');
+            await contract.getEntryPoints(['./contractFile.tz']);
             sinon.assert.calledOnce(stubFileExistsSync);
             sinon.assert.calledOnce(stubHelper);
             sinon.assert.calledOnce(stubConseilEntryPoint);
             sinon.assert.calledOnce(stubConseilStorageFormat);
+        });
+
+        it(`should throw error as contract path/address doesn't exist`, async () => {
+            const stubLoggerError =  sandbox.stub(Logger, 'error');
+            await contract.getEntryPoints(['temp.tz']);
+            sinon.assert.calledOnce(stubLoggerError);
+        });
+
+        it('invalid number of arguments', async () => {
+            const stubLoggerWarn =  sandbox.stub(Logger, 'warn');
+            await contract.getEntryPoints([]);
+            sinon.assert.calledOnce(stubLoggerWarn);
         });
     });
 
