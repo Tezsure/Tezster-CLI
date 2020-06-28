@@ -1,13 +1,21 @@
 #!/usr/bin/env node
 'use strict';
 
-const program = require('commander');
-const { TezsterManager } = require('./tezster-manager');
-const tezstermanager = new TezsterManager();
+const program = require('commander'),
+      { prompt } = require('inquirer'),
+      fs = require('fs'),
+      { confFile, deployParameter, callParameter } = require('./modules/cli-constants');
+
+if(!fs.existsSync(confFile)) {
+    require('./postinstall');
+}
+
+const { TezsterManager } = require('./tezster-manager'),
+      tezstermanager = new TezsterManager();
 
 /******* To setup tezos nodes on user system */
 program
-    .version('0.2.7-beta.4', '-v, --version')
+    .version('0.2.7-beta.6', '-v, --version')
     .command('setup')
     .description('To set up Tezos nodes')
     .action(function(){  
@@ -74,7 +82,7 @@ program
     .command('create-wallet')
     .usage('<wallet-label>')
     .description('To create a new account')
-    .action(async function(){  
+    .action(function(){  
         tezstermanager.createWallet(); 
 });
 
@@ -101,7 +109,7 @@ program
     .command('restore-wallet')
     .usage(`<wallet-label/identity/hash> <mnemonic-phrase> \n(Note: Mnemonic phrase must be enclose between '')`)
     .description('To restore an existing wallet using mnemonic')
-    .action(async function(){  
+    .action(function(){  
         tezstermanager.restoreWallet(); 
 });
 
@@ -110,7 +118,7 @@ program
     .command('remove-account')
     .usage('<account-label/identity/hash>')
     .description('To remove an existing account')
-    .action(async function(){  
+    .action(function(){  
         tezstermanager.removeAccount(); 
 });
 
@@ -125,21 +133,30 @@ program
 /*******deploy contract written in Michelson*/
 program
     .command('deploy')
-    .usage('<contract-label> <contract-absolute-path> <init-storage-value> <account>')
     .description('Deploys a smart contract written in Michelson')
-    .option('-a, --amount <amount>', 'Initial funding amount to new account')
-    .action(function(){
-        tezstermanager.deployContract();
+    .action(function() {
+        if (process.argv.length > 3) {
+            console.log('Incorrect usage of deploy command. Correct usage: - tezster deploy');
+            return;
+        }
+        prompt(deployParameter).then(deployParamaterValues => {
+            tezstermanager.deployContract(deployParamaterValues);
+    });
 });
+
 
 /*******calls contract written in Michelson*/
 program
     .command('call')
-    .usage('<contract-name/address> <argument-value> <account>')
     .description('Calls a smart contract with given value provided in Michelson format')
-    .option('-a, --amount <amount>', 'Funding amount to deployed contract')
-    .action(function(){
-        tezstermanager.callContract();
+    .action(function() {
+        if (process.argv.length > 3) {
+            console.log('Incorrect usage of call command. Correct usage: - tezster call');
+            return;
+        }
+        prompt(callParameter).then(callParamaterValues => {
+            tezstermanager.callContract(callParamaterValues);
+    });
 });
 
 /*******gets storage for a contract*/
@@ -156,7 +173,7 @@ program
     .command('add-contract')
     .usage('<label> <address>')
     .description('Adds a smart contract with label for interaction')
-    .action(async function(){  
+    .action(function(){  
         tezstermanager.addContract();    
 });
 
@@ -165,7 +182,7 @@ program
     .command('remove-contract')
     .usage('<contract-label>')
     .description('To remove deployed contract from list')
-    .action(async function(){  
+    .action(function(){  
         tezstermanager.removeContract(); 
 });
 
