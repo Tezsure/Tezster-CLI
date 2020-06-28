@@ -1,4 +1,4 @@
-const { confFile, WIN_OS_PLATFORM, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL } = require('../cli-constants');
+const { confFile, WIN_OS_PLATFORM, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL, TEZSTER_FOLDER_PATH } = require('../cli-constants');
 
 const jsonfile = require('jsonfile'),
       os = require('os'),
@@ -6,10 +6,15 @@ const jsonfile = require('jsonfile'),
       { Helper } = require('../helper'),
       { RpcRequest } = require('../rpc-util'),
       docker_machine_ip = require('docker-ip'),
-      { ExceptionHandler } = require('../exceptionHandler'),
-      config = jsonfile.readFileSync(confFile);
+      { ExceptionHandler } = require('../exceptionHandler');
+
+let config;
 
 class Accounts{
+
+    constructor(){
+        config = jsonfile.readFileSync(confFile);
+    }
 
     async setProvider(args){
         Logger.verbose(`Command : tezster set-provider ${args}`);
