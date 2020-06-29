@@ -1,4 +1,5 @@
-const { confFile } = require('./cli-constants'),
+const { confFile, WIN_OS_PLATFORM, WIN_WSL_OS_RELEASE } = require('./cli-constants'),
+      os = require('os'),
       Logger = require('./logger'),
       jsonfile = require('jsonfile');
 
@@ -25,6 +26,14 @@ class Helper {
             }
         }
         return false;
+    }
+
+    static isWindows(){
+        return os.platform().includes(WIN_OS_PLATFORM);
+    }
+
+    static isWSL(){
+        return os.release().includes(WIN_WSL_OS_RELEASE);
     }
 
     static confirmNodeProvider(tezosNode) {

@@ -3,19 +3,22 @@
 
 const program = require('commander'),
       { prompt } = require('inquirer'),
+      { postinstall } = require('./postinstall'),
       fs = require('fs'),
       { confFile, deployParameter, callParameter } = require('./modules/cli-constants');
 
-if(!fs.existsSync(confFile)) {
-    require('./postinstall');
-}
+(async function() {
+    if(!fs.existsSync(confFile)) {
+        await postinstall.copyFiles();
+    }
+})()
 
 const { TezsterManager } = require('./tezster-manager'),
       tezstermanager = new TezsterManager();
 
 /******* To setup tezos nodes on user system */
 program
-    .version('0.2.7-beta.7', '-v, --version')
+    .version('0.2.7', '-v, --version')
     .command('setup')
     .description('To set up Tezos nodes')
     .action(function(){  
