@@ -15,7 +15,7 @@ const { TezsterManager } = require('./tezster-manager'),
 
 /******* To setup tezos nodes on user system */
 program
-    .version('0.2.7-beta.7', '-v, --version')
+    .version('0.2.4', '-v, --version')
     .command('setup')
     .description('To set up Tezos nodes')
     .action(function(){  
