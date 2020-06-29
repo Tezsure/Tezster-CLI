@@ -151,11 +151,10 @@ class Contracts {
                                       
             if(!tezosNode.includes('localhost') && !tezosNode.includes('192.168')) {
                 try {
-                    const Groupid = this.clearRPCOperationGroupHash(result.operationGroupID);
-                    await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, Groupid, 10, 30+1);
+                    await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, JSON.parse(result.operationGroupID), 15, 10);
                 } catch(error) {
-                    Helper.errorLogHandler(`Contract deployment has failed: ${error}`,
-                                           'Contract deployment failed due to network provider....');
+                    Helper.errorLogHandler(`Error occurred in operation confirmation: ${error}`,
+                                           'Contract deployment operation confirmation failed ....');
                 }
             }
             
@@ -259,10 +258,6 @@ class Contracts {
         catch(error) {
             ExceptionHandler.contractException('getStorage', error);
         }
-    }
-
-    clearRPCOperationGroupHash(ids) {
-        return ids.replace(/\'/g, '').replace(/\n/, '');
     }
 
     addContractToConfig(contractLabel, contractAddr) {

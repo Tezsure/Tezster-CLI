@@ -1,49 +1,52 @@
-const { confFile, WIN_OS_PLATFORM, CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE, TEZSTER_FOLDER_PATH, TEZSTER_LOGS_FOLDER_PATH, COMMAND_LOG_FILE, TEMP_PATH } = require('./modules/cli-constants');
+const { confFile, CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE, TEZSTER_FOLDER_PATH, TEZSTER_LOGS_FOLDER_PATH, COMMAND_LOG_FILE, TEMP_PATH } = require('./modules/cli-constants');
 
 const fs = require('fs'),
       path = require('path'),
-      os = require('os');
+      { Helper } = require('./modules/helper');
 
-const pathToFile = path.join(CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE),
-      pathToNewDestination = confFile;
+copyFiles();
 
-if(!fs.existsSync(TEMP_PATH)) {
-    fs.mkdirSync(TEMP_PATH, {recursive: true});
-    fs.chmodSync(TEMP_PATH, 0777);
-}
+function copyFiles() {
+    const pathToFile = path.join(CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE),
+          pathToNewDestination = confFile;
 
-if(!fs.existsSync(TEZSTER_FOLDER_PATH)) {
-    fs.mkdirSync(TEZSTER_FOLDER_PATH);
-    fs.chmodSync(TEZSTER_FOLDER_PATH, 0777);
-}
+    if(!fs.existsSync(TEMP_PATH)) {
+        fs.mkdirSync(TEMP_PATH, {recursive: true});
+        fs.chmodSync(TEMP_PATH, 0777);
+    }
 
-if(!fs.existsSync(TEZSTER_LOGS_FOLDER_PATH)) {
-    fs.mkdirSync(TEZSTER_LOGS_FOLDER_PATH);
-    fs.chmodSync(TEZSTER_LOGS_FOLDER_PATH, 0777);
-}
+    if(!fs.existsSync(TEZSTER_FOLDER_PATH)) {
+        fs.mkdirSync(TEZSTER_FOLDER_PATH);
+        fs.chmodSync(TEZSTER_FOLDER_PATH, 0777);
+    }
 
-if(!fs.existsSync(COMMAND_LOG_FILE)) {
-    fs.writeFileSync(COMMAND_LOG_FILE);
-    fs.chmodSync(COMMAND_LOG_FILE, 0777);
-}
+    if(!fs.existsSync(TEZSTER_LOGS_FOLDER_PATH)) {
+        fs.mkdirSync(TEZSTER_LOGS_FOLDER_PATH);
+        fs.chmodSync(TEZSTER_LOGS_FOLDER_PATH, 0777);
+    }
 
-if(fs.existsSync(confFile)) {
+    if(!fs.existsSync(COMMAND_LOG_FILE)) {
+        fs.writeFileSync(COMMAND_LOG_FILE);
+        fs.chmodSync(COMMAND_LOG_FILE, 0777);
+    }
+
+    if(fs.existsSync(confFile)) {
+        setProviderForWindows();
+        return;
+    }
+
+    fs.copyFileSync(pathToFile, pathToNewDestination, function(cpError) {
+        if (cpError) {
+            Helper.errorLogHandler(`Error occurred while copying the config file to documents folder: ${cpError}`,
+                                    'Error occurred while copying the config file....');
+        } 
+    });
+    fs.chmodSync(pathToNewDestination, 0777);
     setProviderForWindows();
-    return;
 }
-
-fs.copyFileSync(pathToFile, pathToNewDestination, function(cpError) {
-    if (cpError) {
-        Helper.errorLogHandler(`Error occurred while copying the config file to documents folder: ${cpError}`,
-                                'Error occurred while copying the config file....');
-    } 
-});
-fs.chmodSync(pathToNewDestination, 0777);
-
-setProviderForWindows();
 
 function setProviderForWindows() {
-    if(os.platform().includes(WIN_OS_PLATFORM)) {
+    if(Helper.isWindows()) {
         const { confFile } = require('./modules/cli-constants'),
             jsonfile = require('jsonfile'),
             config = jsonfile.readFileSync(confFile),
@@ -70,3 +73,5 @@ function setProviderForWindows() {
     }
 
 }
+
+module.exports = copyFiles;

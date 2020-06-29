@@ -1,4 +1,4 @@
-const { confFile, WIN_OS_PLATFORM, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL, TEZSTER_FOLDER_PATH } = require('../cli-constants');
+const { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL, TEZSTER_FOLDER_PATH } = require('../cli-constants');
 
 const jsonfile = require('jsonfile'),
       os = require('os'),
@@ -100,7 +100,7 @@ class Accounts{
     setProviderAccounts(args){    
         config.provider = args[0];
 
-        if(os.platform().includes(WIN_OS_PLATFORM) && config.provider.includes('localhost')) {
+        if(Helper.isWindows() && config.provider.includes('localhost')) {
             let current_docker_machine_ip;
             try { 
                 current_docker_machine_ip = docker_machine_ip();
@@ -255,8 +255,12 @@ class Accounts{
             Logger.warn('Activating the account, this could take a while....');
             let activationResult = await conseiljs.TezosNodeWriter.sendIdentityActivationOperation(tezosNode, keystore, keys.secret);
             
-            const activationGroupid = this.clearRPCOperationGroupHash(activationResult.operationGroupID);
-            await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, activationGroupid, 10, 30+1);
+            try {
+                await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, JSON.parse(activationResult.operationGroupID), 15, 10);
+            } catch(error) {
+                Helper.errorLogHandler(`Error occurred in operation confirmation: ${error}`,
+                                       'Account activation operation confirmation failed ....');
+            }
 
             const revealResult = await conseiljs.TezosNodeWriter.sendKeyRevealOperation(tezosNode, keystore);
             Logger.info(`Testnet faucet account successfully activated: ${keys.label} - ${keys.pkh} \nWith tx hash: ${JSON.stringify(revealResult.operationGroupID)}`);
@@ -291,10 +295,6 @@ class Accounts{
         catch(error) {
             Logger.error(`Error occurred while removing account:\n${error}`);
         }
-    }
-
-    clearRPCOperationGroupHash(ids) {
-        return ids.replace(/\'/g, '').replace(/\n/, '');
     }
 
     getKeys(account) {
