@@ -4,14 +4,14 @@
 const program = require('commander'),
       { prompt } = require('inquirer'),
       fs = require('fs'),
+      { TezsterManager } = require('./tezster-manager'),
       { confFile, deployParameter, callParameter } = require('./modules/cli-constants');
 
 if(!fs.existsSync(confFile)) {
     require('./postinstall');
 }
 
-const { TezsterManager } = require('./tezster-manager'),
-      tezstermanager = new TezsterManager();
+const tezstermanager = new TezsterManager();
 
 /******* To setup tezos nodes on user system */
 program
