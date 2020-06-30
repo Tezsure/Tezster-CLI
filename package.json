@@ -4,8 +4,7 @@
   "description": "A JavaScript-based private Tezos Blockchain Dev Tool that lives entirely on your local machine.",
   "main": "tezster.js",
   "scripts": {
-    "postinstall": "mkdir -p /tmp/tezster && cp -n ./config.json /tmp/tezster/config.json",
-    "postinstall-win": "mkdir -p /tmp/tezster && copy -n ./config.json /tmp/tezster/config.json",
+    "postinstall": "node ./postinstall.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
@@ -22,10 +21,12 @@
     "cli-progress": "^2.1.1",
     "commander": "^2.20.0",
     "crypto": "^1.0.1",
+    "docker-ip": "^2.0.1",
     "docker-modem": "^2.1.0",
     "dockerode": "^3.1.0",
     "fs": "^0.0.1-security",
     "get-random-values": "^1.2.0",
+    "inquirer": "^7.2.0",
     "jsonfile": "^5.0.0",
     "jsonpath": "^1.0.2",
     "jsonpath-plus": "^4.0.0",
@@ -36,6 +37,7 @@
     "nearley": "^2.19.0",
     "node-cmd": "^3.0.0",
     "node-fetch": "^2.6.0",
+    "os": "^0.1.1",
     "pbkdf2": "^3.0.17",
     "request": "^2.81.0",
     "winston": "^3.2.1",

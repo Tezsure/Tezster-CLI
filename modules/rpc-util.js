@@ -1,4 +1,6 @@
 const request = require('request');
+      docker_machine_ip = require('docker-ip'),
+      { Helper } = require('./helper');
 
 class RpcRequest {
 
@@ -23,6 +25,16 @@ class RpcRequest {
 
     static checkNodeStatus(provider) {
         return new Promise(function(resolve, reject) {
+            if(Helper.isWindows()) {
+                let current_docker_machine_ip;
+                try { 
+                    current_docker_machine_ip = docker_machine_ip();
+                } catch(error) {
+                    reject(error);
+                }
+                provider = provider.replace('localhost', current_docker_machine_ip);
+            }
+            
             request(`${provider}/chains/main/blocks/head/protocols`, function (error, response, body) {
                 if(error){
                     reject(error);

@@ -1,7 +1,8 @@
 const Docker = require('dockerode');
 var docker = new Docker({ socketPath: '/var/run/docker.sock', hosts: 'tcp://0.0.0.0:2376' });
 
-const { confFile, IMAGE_TAG, CONTAINER_NAME, LOCAL_NODE_URL, PROGRESS_REFRESH_INTERVAL, NODE_CONFIRMATION_TIMEOUT, LOG_FOLDER_PATH_INSIDE_DOCKER, LOGS_ZIPFILE_PATH, LOGS_ZIPFILE_NAME } = require('../cli-constants');
+const { IMAGE_TAG, CONTAINER_NAME, LOCAL_NODE_URL, PROGRESS_REFRESH_INTERVAL, LOG_FOLDER_PATH_INSIDE_DOCKER, LOGS_ZIPFILE_PATH, LOGS_ZIPFILE_NAME, START_NODES_PROGRESS_BAR_INTERVAL_WIN, NODE_CONFIRMATION_TIMEOUT_WIN } = require('../cli-constants');
+let { Node_Confirmation_Timeout, Start_Nodes_Progress_Bar_Interval } = require('../cli-constants');
 const Logger = require('../logger'),
       { Helper } = require('../helper'),
       { RpcRequest } = require('../rpc-util');
@@ -14,7 +15,7 @@ class Setup {
             this.pullNodeSetup();
         })
         .catch(error => Helper.errorLogHandler(`Error occurred while setting up docker image: ${error}`,
-                                               'Docker not detected on the system please install docker....'));
+                                               'Docker not detected on the system please install docker or start if already installed....'));
 
     }
 
@@ -130,7 +131,7 @@ class Setup {
                                        'Make sure you have added docker to the USER group');
                 process.exit();
             } else {
-                Logger.info('setting up tezos node, this could take a while....');      
+                Logger.info('Setting up tezos node, this could take a while....');      
                 progressInterval = setInterval(() => {
                     progressbar.start(100, progress);
                     progress = progress + 0.45;
@@ -151,7 +152,7 @@ class Setup {
                         } else {
                             clearInterval(progress);
                             progressbar.update(100);
-                            Logger.info('\nTezos nodes have been setup successfully on system....');
+                            Logger.info('\nTezos nodes have been setup successfully on system.');
                             process.exit();
                         }
                     });
@@ -187,46 +188,42 @@ class Setup {
 
     runContainer(){
         this.startNodesProgressBar();
-        docker.createContainer({
-            name: `${CONTAINER_NAME}`,
-            Image: `${IMAGE_TAG}`,
-            Tty: true,
-            ExposedPorts: {
-                '18731/tchildprocess': {},
-                '18732/tchildprocess': {},
-                '18733/tchildprocess': {},
-            },
-            PortBindings: {
-                '18731/tchildprocess': [{
-                    HostPort: '18731'
-                }],
-                '18732/tchildprocess': [{
-                    HostPort: '18732'
-                }],
-                '18733/tchildprocess': [{
-                    HostPort: '18733'
-                }]
-            },
-            NetworkMode: 'host',
-            Cmd: [
-                '/bin/bash',
-                '-c',
-                'cd /usr/local/bin && start_nodes.sh && tail -f /dev/null'
-            ]
-        },
-        function(err, container) {
-            if(err) {
-                Helper.errorLogHandler(`Error occurred while starting the container: ${err}`,
-                                       'Error occurred while starting the nodes....');
-            } else {
-                container.start({}, function(err, data) {
-                    if (err) {
-                        Helper.errorLogHandler(`Error occurred while starting nodes: ${err}`,
-                                               'Error occurred while starting the nodes....');
+        docker.run ( 
+            `${IMAGE_TAG}`, 
+            [
+                '/bin/bash', 
+                '-c', 
+                ` cd /usr/local/bin && start_nodes.sh && tail -f /dev/null`
+            ], 
+            [process.stdout],
+            {
+                name: `${CONTAINER_NAME}`,
+                ExposedPorts: {
+                    '18731/tcp': {},
+                    '18732/tcp': {},
+                    '18733/tcp': {},
+                },
+                Hostconfig: {
+                    'PortBindings': {
+                        '18731/tcp': [{
+                            'HostPort': '18731'
+                        }],
+                        '18732/tcp': [{
+                            'HostPort': '18732'
+                        }],
+                        '18733/tcp': [{
+                            'HostPort': '18733'
+                        }],
                     }
-                });
-            }
-        });
+                },
+            },
+            function(err) {
+                if (err) {
+                    Helper.errorLogHandler(`Error occurred while starting nodes: ${err}`,
+                                           'Error occurred while starting the nodes....');
+                }
+            })
+
     }
 
     startNodesProgressBar() {
@@ -239,10 +236,13 @@ class Setup {
         },
             _cliProgress.Presets.shades_classic
         );
+        if(Helper.isWindows() || Helper.isWSL()) {
+            Start_Nodes_Progress_Bar_Interval = START_NODES_PROGRESS_BAR_INTERVAL_WIN;
+        }
 
         progressInterval = setInterval(() => {
             progressbar.start(100, progress);
-            progress = progress + 2.5;
+            progress = progress + Start_Nodes_Progress_Bar_Interval;
             clearInterval(progress);
             if (progress >= 100) {
                 clearInterval(progressInterval);
@@ -257,6 +257,9 @@ class Setup {
     }
 
     confirmNodeStatus(){   
+        if(Helper.isWindows() || Helper.isWSL()) {
+            Node_Confirmation_Timeout = NODE_CONFIRMATION_TIMEOUT_WIN;
+        }
         setTimeout(() => {
             const _cliProgress = require('cli-progress');
             const progressbar = new _cliProgress.Bar({
@@ -280,7 +283,7 @@ class Setup {
                     process.exit();
                 });
             }, PROGRESS_REFRESH_INTERVAL);
-        }, NODE_CONFIRMATION_TIMEOUT);
+        }, Node_Confirmation_Timeout);
     }
 
 }

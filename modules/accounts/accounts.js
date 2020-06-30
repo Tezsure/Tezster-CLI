@@ -1,13 +1,20 @@
-const { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL } = require('../cli-constants');
+const { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL, TEZSTER_FOLDER_PATH } = require('../cli-constants');
 
 const jsonfile = require('jsonfile'),
+      os = require('os'),
       Logger = require('../logger'),
       { Helper } = require('../helper'),
       { RpcRequest } = require('../rpc-util'),
-      { ExceptionHandler } = require('../exceptionHandler'),
-      config = jsonfile.readFileSync(confFile);
+      docker_machine_ip = require('docker-ip'),
+      { ExceptionHandler } = require('../exceptionHandler');
+
+let config;
 
 class Accounts{
+
+    constructor(){
+        config = jsonfile.readFileSync(confFile);
+    }
 
     async setProvider(args){
         Logger.verbose(`Command : tezster set-provider ${args}`);
@@ -92,6 +99,17 @@ class Accounts{
 
     setProviderAccounts(args){    
         config.provider = args[0];
+
+        if(Helper.isWindows() && config.provider.includes('localhost')) {
+            let current_docker_machine_ip;
+            try { 
+                current_docker_machine_ip = docker_machine_ip();
+            } catch(error) {
+                Helper.errorLogHandler(`Error occurred while fetching docker machine ip address: ${error}`, 'Make sure docker-machine is in running state....');
+            }
+            config.provider = config.provider.replace('localhost', current_docker_machine_ip);
+        }
+
         jsonfile.writeFile(confFile, config);
         Logger.info('Provider updated to ' + config.provider);
     }
@@ -234,11 +252,15 @@ class Accounts{
         };
 
         try {
-            Logger.warn('Activating the account....');
+            Logger.warn('Activating the account, this could take a while....');
             let activationResult = await conseiljs.TezosNodeWriter.sendIdentityActivationOperation(tezosNode, keystore, keys.secret);
             
-            const activationGroupid = this.clearRPCOperationGroupHash(activationResult.operationGroupID);
-            await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, activationGroupid, 10, 30+1);
+            try {
+                await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, JSON.parse(activationResult.operationGroupID), 15, 10);
+            } catch(error) {
+                Helper.errorLogHandler(`Error occurred in operation confirmation: ${error}`,
+                                       'Account activation operation confirmation failed ....');
+            }
 
             const revealResult = await conseiljs.TezosNodeWriter.sendKeyRevealOperation(tezosNode, keystore);
             Logger.info(`Testnet faucet account successfully activated: ${keys.label} - ${keys.pkh} \nWith tx hash: ${JSON.stringify(revealResult.operationGroupID)}`);
@@ -275,10 +297,6 @@ class Accounts{
         }
     }
 
-    clearRPCOperationGroupHash(ids) {
-        return ids.replace(/\'/g, '').replace(/\n/, '');
-    }
-
     getKeys(account) {
         let keys,f;
         if (f = Helper.findKeyObj(config.identities, account)) {
@@ -303,7 +321,7 @@ class Accounts{
     }
 
     addAccount(label, pkh, identity, nodeType) {
-        if(nodeType.includes('localhost')) {
+        if(nodeType.includes('localhost') || nodeType.includes('192.168')) {
             nodeType = 'localnode';
         } else {
             nodeType = 'carthagenet'

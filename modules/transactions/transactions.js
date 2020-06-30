@@ -1,12 +1,17 @@
-const { confFile, CONSEIL_JS, TESTNET_NAME } = require('../cli-constants');
+const { confFile, CONSEIL_JS, TESTNET_NAME, TEZSTER_FOLDER_PATH } = require('../cli-constants');
 
 const jsonfile = require('jsonfile'),      
       Logger = require('../logger'),
       { Helper } = require('../helper'),
-      { ExceptionHandler } = require('../exceptionHandler'),
-      config = jsonfile.readFileSync(confFile);
+      { ExceptionHandler } = require('../exceptionHandler');
+
+let config;
 
 class Transactions {
+
+    constructor(){
+        config = jsonfile.readFileSync(confFile);
+    }
 
     async transfer(args) {
         Logger.verbose(`Command : tezster transfer ${args}`);
@@ -35,6 +40,12 @@ class Transactions {
         const conseiljs = require(CONSEIL_JS);
         const tezosNode = config.provider;
         let keys = this.getKeys(from);
+
+        if(isNaN(amount)) {
+            Logger.error('please enter amount value in integer....');
+            return;
+        }
+
         if(!keys) {
             Logger.error(`Sender account label doesn't exist.`);
             return;
