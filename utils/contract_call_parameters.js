@@ -1,4 +1,4 @@
-const callParameter = [
+const contractCallParameters = [
     {
       type : 'input',
       name : 'contractName',
@@ -40,4 +40,4 @@ const callParameter = [
     },
 ];
 
-module.exports = { callParameter }
+module.exports = { contractCallParameters }
