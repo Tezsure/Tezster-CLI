@@ -5,7 +5,9 @@ const program = require('commander'),
       { prompt } = require('inquirer'),
       fs = require('fs'),
       { TezsterManager } = require('./tezster-manager'),
-      { confFile, deployParameter, callParameter } = require('./modules/cli-constants');
+      { confFile } = require('./modules/cli-constants'),
+      { deployParameter } = require('./utils/deploy-parameter'),
+      { callParameter } = require('./utils/call-parameter');
 
 if(!fs.existsSync(confFile)) {
     require('./postinstall');
