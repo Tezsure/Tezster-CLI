@@ -6,8 +6,8 @@ const program = require('commander'),
       fs = require('fs'),
       { TezsterManager } = require('./tezster-manager'),
       { confFile } = require('./modules/cli-constants'),
-      { deployParameter } = require('./utils/deploy-parameter'),
-      { callParameter } = require('./utils/call-parameter');
+      { contractDeployParameters } = require('./utils/contract_deploy_parameters'),
+      { contractCallParameters } = require('./utils/contract_call_parameters');
 
 if(!fs.existsSync(confFile)) {
     require('./postinstall');
@@ -141,7 +141,7 @@ program
             console.log('Incorrect usage of deploy command. Correct usage: - tezster deploy');
             return;
         }
-        prompt(deployParameter).then(deployParamaterValues => {
+        prompt(contractDeployParameters).then(deployParamaterValues => {
             tezstermanager.deployContract(deployParamaterValues);
     });
 });
@@ -156,7 +156,7 @@ program
             console.log('Incorrect usage of call command. Correct usage: - tezster call');
             return;
         }
-        prompt(callParameter).then(callParamaterValues => {
+        prompt(contractCallParameters).then(callParamaterValues => {
             tezstermanager.callContract(callParamaterValues);
     });
 });
