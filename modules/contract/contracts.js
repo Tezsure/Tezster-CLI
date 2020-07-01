@@ -103,7 +103,7 @@ class Contracts {
             Logger.info(`\nInitial Storage input must be of type : ${storageFormat[1].slice(8)}`);
             entryPoints.forEach(p => {
                 Logger.info('-------------------------------------------------------------------------------------------------------------------------------------');
-                Logger.info(`\nName => ${p.name}\n\nParameters => (${p.parameters.map(pp => (pp.name || '') + pp.type).join(', ')})\n\nStructure => ${p.structure}\n\nExample => ${p.generateSampleInvocation()}\n`);
+                Logger.info(`\nName => ${p.name}\n\nParameters => (${p.parameters.map(pp => (pp.name || '') + pp.type).join(', ')})\n\nStructure => ${p.structure}\n`);
             });
         }
         catch(error) {

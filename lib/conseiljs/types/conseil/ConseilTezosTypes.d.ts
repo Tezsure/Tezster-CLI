@@ -91,3 +91,18 @@ export interface AppliedOperation {
     id: string;
     contract: string;
 }
+export interface ContractMapDetails {
+    contract: string;
+    maps: ContractMapDetailsItem[];
+}
+export interface ContractMapDetailsItem {
+    definition: {
+        index: number;
+        key: string;
+        value: string;
+    };
+    content: {
+        key: string;
+        value: string;
+    }[];
+}
