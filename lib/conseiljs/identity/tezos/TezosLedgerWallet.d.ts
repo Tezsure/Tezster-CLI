@@ -5,5 +5,6 @@ export declare namespace TezosLedgerWallet {
     function unlockAddress(deviceType: HardwareDeviceType, derivationPath: string): Promise<KeyStore>;
     function getTezosPublicKey(derivationPath: string): Promise<string>;
     function signTezosOperation(derivationPath: string, watermarkedOpInHex: string): Promise<Buffer>;
+    function signText(derivationPath: string, message: string): Promise<string>;
     function initLedgerTransport(): void;
 }

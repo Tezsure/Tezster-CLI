@@ -1,4 +1,4 @@
-const { confFile, CONSEIL_JS, TESTNET_NAME, TEZSTER_FOLDER_PATH } = require('../cli-constants');
+const { confFile, CONSEIL_JS, TESTNET_NAME } = require('../cli-constants');
 
 const jsonfile = require('jsonfile'),      
       Logger = require('../logger'),
@@ -43,16 +43,6 @@ class Transactions {
 
         if(isNaN(amount)) {
             Logger.error('please enter amount value in integer....');
-            return;
-        }
-
-        if(!keys) {
-            Logger.error(`Sender account label doesn't exist.`);
-            return;
-        }
-
-        if(!this.getKeys(to)) {
-            Logger.error(`Receiver account doesn't exist.`);
             return;
         }
 

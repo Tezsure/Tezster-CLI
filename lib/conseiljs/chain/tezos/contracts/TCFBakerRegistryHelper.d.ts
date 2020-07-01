@@ -1,6 +1,6 @@
 export declare namespace TCFBakerRegistryHelper {
     function verifyDestination(server: string, address: string): Promise<boolean>;
-    function getFees(server: string, address: string): Promise<{
+    function getSimpleStorage(server: string, address: string): Promise<{
         mapid: number;
         owner: any;
         signupFee: number;

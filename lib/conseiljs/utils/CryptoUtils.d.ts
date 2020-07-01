@@ -13,6 +13,7 @@ export declare namespace CryptoUtils {
         publicKey: any;
     }>;
     function signDetached(payload: Buffer, secretKey: Buffer): Promise<Buffer>;
+    function checkSignature(signature: Buffer, payload: Buffer, publicKey: Buffer): Promise<boolean>;
     function twoByteHex(n: number): string;
     function fromByteHex(s: string): number;
 }
