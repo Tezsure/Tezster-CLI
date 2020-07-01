@@ -65,8 +65,6 @@ You can install tezster-cli using npm package as well. To install npm package, r
 sudo npm install -g tezster@latest
 ```
 
-*Note: If error occured, install package using - ```sudo npm install -g tezster@latest --unsafe```*
-
 Run ```tezster --version``` to ensure the version of tezster.
 ```
 tezster --version
