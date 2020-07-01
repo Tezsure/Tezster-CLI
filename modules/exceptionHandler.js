@@ -6,7 +6,7 @@ const EMPTY_IMPLICIT_CONTRACT = 'Account is not yet revealed on the blockchain. 
       NOT_FOUND_404 = `make sure current network is same as the network smart contract got deployed....`,
       CONNECT_ECONNREFUSED = 'Error occurred while establishing the connection with node provider....',
       ABSOLUTE_URL_ARE_SUPPORTED = 'Current provider URL is not supported by network provider....',
-      GETADDRINFO_ENOTFOUND = 'Current provider URL is not supported by network provider....',
+      GETADDRINFO = 'Current provider URL is not supported by network provider....',
       HTTP_PROTOCOL = 'Current provider URL is not supported by network provider....',
       CANNOT_READ_PROPERTY = 'Current provider URL is not supported by network provider....',
       CHECKSUM = `Account doesn't  exists or not revealed on the network.... To list down all accounts run 'tezster list-accounts'.`,
@@ -47,8 +47,8 @@ class ExceptionHandler {
         else if(error.toString().includes(`Only absolute URLs are supported`)) {
             Helper.errorLogHandler(`Error occurred while ${commandType}: ${error}`, `${ABSOLUTE_URL_ARE_SUPPORTED}`);
         } 
-        else if(error.toString().includes(`getaddrinfo ENOTFOUND`)) {
-            Helper.errorLogHandler(`Error occurred while ${commandType}: ${error}`, `${GETADDRINFO_ENOTFOUND}`);
+        else if(error.toString().includes(`getaddrinfo`)) {
+            Helper.errorLogHandler(`Error occurred while ${commandType}: ${error}`, `${GETADDRINFO}`);
         } 
         else if(error.toString().includes(`Only HTTP(S) protocols are supported`)) {
             Helper.errorLogHandler(`Error occurred while ${commandType}: ${error}`, `${HTTP_PROTOCOL}`);
@@ -87,8 +87,8 @@ class ExceptionHandler {
         else if(error.toString().includes(`Only absolute URLs are supported`)) {
             Helper.errorLogHandler(`Error occurred while ${commandType}: ${error}`, `${ABSOLUTE_URL_ARE_SUPPORTED}`);
         } 
-        else if(error.toString().includes(`getaddrinfo ENOTFOUND`)) {
-            Helper.errorLogHandler(`Error occurred while ${commandType}: ${error}`, `${GETADDRINFO_ENOTFOUND}`);
+        else if(error.toString().includes(`getaddrinfo`)) {
+            Helper.errorLogHandler(`Error occurred while ${commandType}: ${error}`, `${GETADDRINFO}`);
         } 
         else if(error.toString().includes(`Invalid`)) {
             Helper.errorLogHandler(`Error occurred while ${commandType}: ${error}`, `${INVALID}`);

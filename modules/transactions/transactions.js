@@ -39,20 +39,30 @@ class Transactions {
         
         const conseiljs = require(CONSEIL_JS);
         const tezosNode = config.provider;
-        let keys = this.getKeys(from);
+        let keys;
+
+        try {
+            keys = this.getKeys(from);
+        } catch(error) {
+            console.log('---------')
+        }
 
         if(isNaN(amount)) {
             Logger.error('please enter amount value in integer....');
             return;
         }
 
-        const keystore = {
-            publicKey: keys.pk,
-            privateKey: keys.sk,
-            publicKeyHash: keys.pkh,
-            seed: '',
-            storeType: conseiljs.StoreType.Fundraiser
-        };
+        try {
+            const keystore = {
+                publicKey: keys.pk,
+                privateKey: keys.sk,
+                publicKeyHash: keys.pkh,
+                seed: '',
+                storeType: conseiljs.StoreType.Fundraiser
+            };
+        } catch(error) {
+            Logger.error(`Sender account doesn't exist ....`);
+        }
 
         if (f = Helper.findKeyObj(config.identities, from)) {
             keys = f;
