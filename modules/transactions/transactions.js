@@ -39,13 +39,7 @@ class Transactions {
         
         const conseiljs = require(CONSEIL_JS);
         const tezosNode = config.provider;
-        let keys;
-
-        try {
-            keys = this.getKeys(from);
-        } catch(error) {
-            console.log('---------')
-        }
+        const keys = this.getKeys(from);
 
         if(isNaN(amount)) {
             Logger.error('please enter amount value in integer....');
