@@ -10,4 +10,7 @@ export declare namespace TezosNodeReader {
     function isManagerKeyRevealedForAccount(server: string, accountHash: string): Promise<boolean>;
     function getContractStorage(server: string, accountHash: string, block?: string, chainid?: string): Promise<any>;
     function getValueForBigMapKey(server: string, index: number, key: string, block?: string, chainid?: string): Promise<any>;
+    function getMempoolOperation(server: string, operationGroupId: string, chainid?: string): Promise<any>;
+    function estimateBranchTimeout(server: string, branch: string, chainid?: string): Promise<number>;
+    function getMempoolOperationsForAccount(server: string, accountHash: string, chainid?: string): Promise<any>;
 }

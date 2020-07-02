@@ -1,4 +1,4 @@
-const { confFile, CONSEIL_JS, TESTNET_NAME, TEZSTER_FOLDER_PATH } = require('../cli-constants');
+const { confFile, CONSEIL_JS, TESTNET_NAME } = require('../cli-constants');
 
 const jsonfile = require('jsonfile'),      
       Logger = require('../logger'),
@@ -39,30 +39,25 @@ class Transactions {
         
         const conseiljs = require(CONSEIL_JS);
         const tezosNode = config.provider;
-        let keys = this.getKeys(from);
+        let keys = this.getKeys(from), keystore;
 
         if(isNaN(amount)) {
             Logger.error('please enter amount value in integer....');
             return;
         }
 
-        if(!keys) {
-            Logger.error(`Sender account label doesn't exist.`);
+        try {
+            keystore = {
+                publicKey: keys.pk,
+                privateKey: keys.sk,
+                publicKeyHash: keys.pkh,
+                seed: '',
+                storeType: conseiljs.StoreType.Fundraiser
+            };
+        } catch(error) {
+            Logger.error(`Sender account doesn't exist. Run 'tezster list-accounts' to get all accounts.`);
             return;
         }
-
-        if(!this.getKeys(to)) {
-            Logger.error(`Receiver account doesn't exist.`);
-            return;
-        }
-
-        const keystore = {
-            publicKey: keys.pk,
-            privateKey: keys.sk,
-            publicKeyHash: keys.pkh,
-            seed: '',
-            storeType: conseiljs.StoreType.Fundraiser
-        };
 
         if (f = Helper.findKeyObj(config.identities, from)) {
             keys = f;
