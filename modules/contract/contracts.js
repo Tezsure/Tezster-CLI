@@ -34,7 +34,7 @@ class Contracts {
     async callContract(args) {
         Logger.verbose(`Command : tezster call ${args}`);
         
-        await this.invokeContract(args.contractLabel, args.argumentValue, args.account, args.amount, args.fee, args.storageLimit, args.gasLimit);
+        await this.invokeContract(args.contractName, args.argumentValue, args.account, args.amount, args.fee, args.storageLimit, args.gasLimit);
         Logger.warn(`If you're using ${TESTNET_NAME} node, use https://${TESTNET_NAME}.tzstats.com to check contract/transactions`);
     }
 

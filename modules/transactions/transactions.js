@@ -55,7 +55,7 @@ class Transactions {
                 storeType: conseiljs.StoreType.Fundraiser
             };
         } catch(error) {
-            Logger.error(`Sender account doesn't exist.`);
+            Logger.error(`Sender account doesn't exist. Run 'tezster list-accounts' to get all accounts.`);
             return;
         }
 
