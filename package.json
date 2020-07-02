@@ -49,11 +49,10 @@
   },
   "nyc": {
     "include": [
-      "modules/**/*.js",
-      "*.js"
+      "modules/**/*.js"
     ],
     "exclude": [
-      "modules/exceptionHandler.js"
+      "modules/*.js"
     ]
   },
   "keywords": [

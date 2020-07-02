@@ -8,7 +8,6 @@ const sinon = require('sinon'),
 
       CONSEIL_JS = '../lib/conseiljs',
       Logger = require('../modules/logger'),
-      { Helper } = require('../modules/helper'),
       { TransferOperation } = require('./responses/AccountOperations.responses'),
       TransactionClass = require('../modules/transactions/transactions');
 
@@ -55,13 +54,13 @@ describe('Transaction Operations', async () => {
                         .withArgs(tezosNode, keystore, ACCOUNT2_PKH, 40000000, 1500, '')
                         .returns(TransferOperation);
 
-            stubAddTransaction = sandbox.stub(transaction, 'addTransaction')
-                                .withArgs('transfer', TransferOperation.operationGroupID, ACCOUNT1_PKH, ACCOUNT2_PKH, 40000000);
+            stubWriteFile = sandbox.stub(jsonfile, 'writeFile')
+                                    .withArgs(confFile, testconfig);
 
             await transaction.transfer([40, ACCOUNT1_PKH, ACCOUNT2_PKH]);
             sinon.assert.calledOnce(stubLoggerInfo);
             sinon.assert.calledOnce(stubConseil);
-            sinon.assert.calledOnce(stubAddTransaction);
+            sinon.assert.calledOnce(stubWriteFile);
         });
 
         it('should throw error as amount is not an integer', async () => {
@@ -70,16 +69,21 @@ describe('Transaction Operations', async () => {
             sinon.assert.calledOnce(stubLoggerError); 
         });
 
-        it(`should throw error as sender account doesn't exist`, async () => {
+        it(`should be able to run catch error for keystore`, async () => {
             stubLoggerError = sandbox.stub(Logger, 'error');
             await transaction.transfer([40, ACCOUNT3_PKH, ACCOUNT2_PKH]);
             sinon.assert.calledOnce(stubLoggerError); 
         });
 
-        it(`should throw error as receiver account doesn't exist`, async () => {
+        it('should be able to run catch error for conseiljs transfer ', async () => {
+            const conseiljs = require(CONSEIL_JS);
             stubLoggerError = sandbox.stub(Logger, 'error');
-            await transaction.transfer([40, ACCOUNT1_PKH, ACCOUNT3_PKH]);
-            sinon.assert.calledOnce(stubLoggerError); 
+            stubConseil = sandbox.stub(conseiljs.TezosNodeWriter, 'sendTransactionOperation')
+                        .withArgs(tezosNode, keystore, ACCOUNT2_PKH, 40000000, 150, '')
+                        .returns(TransferOperation);
+
+            await transaction.transfer([40, ACCOUNT1_PKH, ACCOUNT2_PKH]);
+            sinon.assert.calledOnce(stubLoggerError);
         });
 
         it('invalid number of arguments', async () => {

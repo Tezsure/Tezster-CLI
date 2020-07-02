@@ -22,6 +22,6 @@ const faucetFile =
   "pkh": "tz1d5r26m3MGMbrvTktUDzjVSUXfF7VnfUTV",
   "password": "I9qDKNqc9u",
   "email": "ulllcvid.udipeowg@tezos.example.org"
-}
+};
 
 module.exports = JSON.stringify({...faucetFile})

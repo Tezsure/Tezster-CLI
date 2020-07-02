@@ -13,10 +13,12 @@ const sinon = require("sinon"),
       { Helper } = require('../modules/helper'),
       AccountClass = require('../modules/accounts/accounts'),
       faucetFile = require('./responses/faucet'),
+      incorrectFaucetFile = require('./responses/faucet'),
       { ActivationOperation, RevealOperation } = require('./responses/AccountOperations.responses');
 
 const BOOTSTRAPPED_ACCOUNT = 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
       NON_BOOTSTRAPPED_ACCOUNT = 'tz1d5r26m3MGMbrvTktUDzjVSUXfF7VnfUTV',
+      NON_EXISTING_ACCOUNT = 'tz1g8r26m3Mse45vTktUDzjVSUXfF7uHGrE',
       NEW_WALLET = 'testaccount'
       tezosNode = 'http://localhost:18731',
       BALANCE = 40000000000,
@@ -142,9 +144,14 @@ describe('Faucet Account Operations', async () => {
             sinon.assert.calledOnce(stubFormatTez);
         });
 
+        it('should throw error as invalid account', async () => { 
+            stubLoggerError = sandbox.stub(Logger, 'error');
+            await account.getBalance([NON_EXISTING_ACCOUNT]);
+            sinon.assert.calledOnce(stubLoggerError);
+        });
+
         it('invalid number of arguments', async () => { 
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
-
             await account.getBalance([]);
             sinon.assert.calledOnce(stubLoggerWarn);
         });
@@ -174,6 +181,22 @@ describe('Faucet Account Operations', async () => {
             sinon.assert.calledOnce(stubConseilKeystore);
             sinon.assert.calledOnce(stubLoggerInfo);
             sinon.assert.calledOnce(stubLoggerWarn);
+        });
+
+        it('should catch error via conseiljs function', async () => { 
+            const conseiljs = require(CONSEIL_JS);
+            stubConseilMnemonic = sandbox.stub(conseiljs.TezosWalletUtil, 'generateMnemonic')
+                                    .returns(MNEMOMICS);
+
+            stubConseilKeystore = sandbox.stub(conseiljs.TezosWalletUtil, 'unlockIdentityWithMnemonic')
+                                .withArgs(MNEMOMICS, 'toThrowError')
+                                .returns(MNEMOMICS_KEYSTORE);
+
+            stubLoggerError = sandbox.stub(Logger, 'error');
+
+            await account.createWallet([NEW_WALLET]);
+            sinon.assert.calledOnce(stubConseilMnemonic);
+            sinon.assert.calledOnce(stubLoggerError);
         });
 
         it('should throw error as account already exists', async () => { 
@@ -212,9 +235,20 @@ describe('Faucet Account Operations', async () => {
             await account.addTestnetAccount([NEW_WALLET, './faucet.json']);
             sinon.assert.calledOnce(stubReadFileSync);
             sinon.assert.calledOnce(stubConseil);
-            sinon.assert.calledOnce(stubAddIdentity);
-            sinon.assert.calledOnce(stubAddAccount);
             sinon.assert.calledOnce(stubLoggerInfo);
+        });
+
+        it('should trigger error as empty JSON file', async () => { 
+            stubReadFileSync = sandbox
+                                .stub(fs, 'readFileSync')
+                                .withArgs('./faucet.json', 'utf8')
+                                .returns();
+
+            stubLoggerError = sandbox.stub(Logger, 'error');
+
+            await account.addTestnetAccount([NEW_WALLET, './faucet.json']);
+            sinon.assert.calledOnce(stubReadFileSync);
+            sinon.assert.calledOnce(stubLoggerError);
         });
 
         it('should return error as keys already exist', async () => { 
@@ -242,10 +276,6 @@ describe('Faucet Account Operations', async () => {
                                     .withArgs(tezosNode, MNEMOMICS_KEYSTORE, JSON.parse(faucetFile).secret)
                                     .returns(ActivationOperation);
 
-            stubActivationGroupid = sandbox.stub(account, 'clearRPCOperationGroupHash')
-                                    .withArgs(ActivationOperation.operationGroupID)
-                                    .returns('onrs9CymfqtUNirHnJF53nrUebcwDR1uRdvq8b9KhhRc5LeYfLg');
-
             stubOperationConfirmation = sandbox.stub(conseiljs.TezosConseilClient, 'awaitOperationConfirmation');
 
             stubConseilReveal = sandbox.stub(conseiljs.TezosNodeWriter, 'sendKeyRevealOperation')
@@ -258,10 +288,27 @@ describe('Faucet Account Operations', async () => {
             await account.activateTestnetAccount([NON_BOOTSTRAPPED_ACCOUNT]);
             sinon.assert.calledOnce(stubNodeProvider);
             sinon.assert.calledOnce(stubConseilActivation);
-            sinon.assert.calledOnce(stubActivationGroupid);
             sinon.assert.calledOnce(stubOperationConfirmation);
             sinon.assert.calledOnce(stubConseilReveal);
             sinon.assert.calledOnce(stubLoggerInfo);
+        });
+
+        it('should be able to catch error in operation confirmation hook', async () => { 
+            const conseiljs = require(CONSEIL_JS);
+
+            stubNodeProvider = sandbox.stub(Helper, 'confirmNodeProvider')
+                                .withArgs(tezosNode)
+                                .returns(false);
+
+            stubConseilActivation = sandbox.stub(conseiljs.TezosNodeWriter, 'sendIdentityActivationOperation')
+                                    .withArgs(tezosNode, keystore, JSON.parse(faucetFile).secret)
+                                    .returns(ActivationOperation);
+        
+            stubLoggerError = sandbox.stub(Logger, 'error');
+            stubLoggerWarn = sandbox.stub(Logger, 'warn');
+
+            await account.activateTestnetAccount([NON_BOOTSTRAPPED_ACCOUNT]);
+            sinon.assert.calledTwice(stubLoggerError);
         });
 
         it('should throw error for current provider as local nodes', async () => { 
@@ -293,7 +340,7 @@ describe('Faucet Account Operations', async () => {
             stubConseil = sandbox.stub(conseiljs.TezosWalletUtil, 'unlockIdentityWithMnemonic')
                                 .withArgs(MNEMOMICS, '')
                                 .returns(MNEMOMICS_KEYSTORE);
-                                
+
             stubAddIdentity = sandbox.stub(account, 'addIdentity')
                                 .withArgs(NEW_WALLET, MNEMOMICS_KEYSTORE.privateKey, MNEMOMICS_KEYSTORE.publicKey, MNEMOMICS_KEYSTORE.publicKeyHash, '');
                     

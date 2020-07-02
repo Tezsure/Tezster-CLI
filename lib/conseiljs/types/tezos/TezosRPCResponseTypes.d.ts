@@ -100,7 +100,7 @@ export interface TezosBlockOperationContentMetadataOperationResult {
 export interface Contract {
     balance: string;
     delegate?: ContractDelegate;
-    script?: string;
+    script?: any;
     counter: string;
 }
 export interface ContractDelegate {

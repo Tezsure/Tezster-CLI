@@ -1,7 +1,6 @@
-const request = require('request'),
-      os = require('os'),
+const request = require('request');
       docker_machine_ip = require('docker-ip'),
-      { WIN_OS_PLATFORM } = require('./cli-constants');
+      { Helper } = require('./helper');
 
 class RpcRequest {
 
@@ -26,7 +25,7 @@ class RpcRequest {
 
     static checkNodeStatus(provider) {
         return new Promise(function(resolve, reject) {
-            if(os.platform().includes(WIN_OS_PLATFORM)) {
+            if(Helper.isWindows()) {
                 let current_docker_machine_ip;
                 try { 
                     current_docker_machine_ip = docker_machine_ip();

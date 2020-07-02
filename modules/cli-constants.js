@@ -1,18 +1,18 @@
 const confFile = `/var/tmp/tezster/config.json`,
       CONSEIL_JS = '../../lib/conseiljs',
-      TEMP_PATH = '/var/tmp'
+      TEMP_PATH = '/var/tmp',
       TEZSTER_FOLDER_PATH  = `/var/tmp/tezster`,
       TEZSTER_LOGS_FOLDER_PATH  = `/var/tmp/tezster/tezster-logs`,
       COMMAND_LOG_FILE = `/var/tmp/tezster/tezster-logs/tezster-command-logs.log`,
       LOGS_ZIPFILE_NAME = 'tezster-node-logs.tar.gz',
       LOGS_ZIPFILE_PATH = `/var/tmp/tezster/tezster-logs/tezster-node-logs.tar.gz`,
       LOG_FOLDER_PATH_INSIDE_DOCKER = `/usr/local/bin/tezster-logs`,
-      CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE = `__dirname, /../config.json`,
+      CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE = require('path').join(__dirname, '/../config.json'),
       
       TESTNET_NAME = 'carthagenet',
-      CONSEIL_SERVER_APIKEY = 'f979f858-1941-4c4b-b231-d40d41df5377',
-      CONSEIL_SERVER_URL = 'https://conseil-dev.cryptonomic-infra.tech:443',
-      IMAGE_TAG = 'tezsureinc/tezster:1.0.3-beta',
+      CONSEIL_SERVER_APIKEY = '04c98bd2-7cc5-49f2-9108-2d48efcbd660',
+      CONSEIL_SERVER_URL = 'https://conseil-dev.cryptonomic-infra.tech',
+      IMAGE_TAG = 'tezsureinc/tezster:1.0.3',
       CONTAINER_NAME = 'tezster',
       PROGRESS_REFRESH_INTERVAL = 1000,
       Node_Confirmation_Timeout = 40000,
@@ -21,8 +21,7 @@ const confFile = `/var/tmp/tezster/config.json`,
       START_NODES_PROGRESS_BAR_INTERVAL_WIN = 0.80,
       LOCAL_NODE_URL = 'http://localhost:18731',
       WIN_OS_PLATFORM = 'win32',
-      WIN_WSL_OS_RELEASE = 'microsoft';
-      
+      WIN_WSL_OS_RELEASE = 'microsoft'; 
 
 module.exports = { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, TEZSTER_LOGS_FOLDER_PATH,
                    IMAGE_TAG, CONTAINER_NAME, LOCAL_NODE_URL, CONSEIL_SERVER_URL, COMMAND_LOG_FILE, TEMP_PATH,

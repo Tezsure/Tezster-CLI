@@ -15,15 +15,20 @@ const sinon = require('sinon'),
       { sendContractOriginationOperation, sendContractInvocationOperation, TezosContractIntrospector } = require('./responses/ContractOperations.responses');
 
 const tezosNode = 'http://localhost:18731',
-      CONTRACT_ADDRESS = 'KT1WvyJ1qUrWzShA2T6QeL7AW4DR6GspUimM',
+      contractAbsolutePath = 'KT1WvyJ1qUrWzShA2T6QeL7AW4DR6GspUimM',
       CONTRACT_LABEL = 'samplecontract',
       NEW_CONTRACT_LABEL = 'newcontract',
       INCORRECT_CONTRACT_LABEL = 'notavailablecontract',
-      CONTRACT_DEPLOY_LABEL = 'deployedcontract',
+      contractLabel = 'deployedcontract',
       BOOTSTRAPPED_ACCOUNT = 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
       INCORRECT_BOOTSTRAPPED_ACCOUNT = 'tz1KqTpEZ7Yob7hgfd45tyTw8fHG8LhKxZ12',
-      CONTRACT_INITIAL_STORAGE = "\"tezsure\"",
-      CONTRACT_INVOCATION_STORAGE = "\"tezster\"",
+      initStorageValue = "\"tezsure\"",
+      argumentValue = "\"tezster\"",
+      account = 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
+      amount = 0,
+      fee = 100000,
+      storageLimit = 10000,
+      gasLimit = 500000,
       CONTRACT_CODE = `parameter string;
                        storage string;
                        code {CAR; NIL operation; PAIR;};`,
@@ -54,7 +59,7 @@ describe('Smart Contract Operations', async () => {
             const conseiljs = require(CONSEIL_JS);
             stubReadFileSync = sandbox
                                 .stub(fs, 'readFileSync')
-                                .withArgs('./MichelsonCodeFile.tz')
+                                .withArgs(contractAbsolutePath)
                                 .returns(CONTRACT_CODE);
 
             stubKeys = sandbox
@@ -70,9 +75,9 @@ describe('Smart Contract Operations', async () => {
 
             stubConseil = sandbox
                             .stub(conseiljs.TezosNodeWriter, 'sendContractOriginationOperation')
-                            .withArgs(testconfig.provider, keystore, 0, undefined,
-                                      100000, '', 10000, 500000, 
-                                      CONTRACT_CODE, CONTRACT_INITIAL_STORAGE, conseiljs.TezosParameterFormat.Michelson)
+                            .withArgs(testconfig.provider, keystore, amount, undefined,
+                                      fee, '', storageLimit, gasLimit, 
+                                      CONTRACT_CODE, initStorageValue, conseiljs.TezosParameterFormat.Michelson)
                             .returns(sendContractOriginationOperation.applied);
 
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
@@ -83,9 +88,9 @@ describe('Smart Contract Operations', async () => {
 
             stubAddNewContract = sandbox
                                 .stub(contract, 'addNewContract')
-                                .withArgs(CONTRACT_DEPLOY_LABEL, CONTRACT_ADDRESS, BOOTSTRAPPED_ACCOUNT, testconfig.provider);
+                                .withArgs(contractLabel, contractAbsolutePath, account, testconfig.provider);
                                 
-            await contract.deployContract([CONTRACT_DEPLOY_LABEL, './MichelsonCodeFile.tz', CONTRACT_INITIAL_STORAGE, BOOTSTRAPPED_ACCOUNT]);
+            await contract.deployContract({ contractLabel, contractAbsolutePath, initStorageValue, account, amount, fee, storageLimit, gasLimit });
             sinon.assert.calledOnce(stubReadFileSync);
             sinon.assert.calledOnce(stubConseil);
             sinon.assert.calledOnce(stubAddNewContract);
@@ -95,7 +100,7 @@ describe('Smart Contract Operations', async () => {
             const conseiljs = require(CONSEIL_JS);
             stubReadFileSync = sandbox
                                 .stub(fs, 'readFileSync')
-                                .withArgs('./MichelsonCodeFile.tz')
+                                .withArgs(contractAbsolutePath)
                                 .returns(CONTRACT_CODE);
 
             stubKeys = sandbox
@@ -110,10 +115,10 @@ describe('Smart Contract Operations', async () => {
                         });
 
             stubConseil = sandbox
-                            .stub(conseiljs.TezosNodeWriter, 'sendContractOriginationOperation')
-                            .withArgs(testconfig.provider, keystore, 0, undefined,
-                                      100000, '', 10000, 500000, 
-                                      CONTRACT_CODE, CONTRACT_INITIAL_STORAGE, conseiljs.TezosParameterFormat.Michelson)
+                        .stub(conseiljs.TezosNodeWriter, 'sendContractOriginationOperation')
+                        .withArgs(testconfig.provider, keystore, amount, undefined,
+                                  fee, '', storageLimit, gasLimit, 
+                                  CONTRACT_CODE, initStorageValue, conseiljs.TezosParameterFormat.Michelson)
                             .returns(sendContractOriginationOperation.failed);
 
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
@@ -123,7 +128,7 @@ describe('Smart Contract Operations', async () => {
             stubAddNewContract = sandbox
                                 .stub(contract, 'addNewContract');
 
-            await contract.deployContract([CONTRACT_DEPLOY_LABEL, './MichelsonCodeFile.tz', CONTRACT_INITIAL_STORAGE, BOOTSTRAPPED_ACCOUNT]);
+            await contract.deployContract({ contractLabel, contractAbsolutePath, initStorageValue, account, amount, fee, storageLimit, gasLimit });
             sinon.assert.calledOnce(stubReadFileSync);
             sinon.assert.calledOnce(stubConseil);
             sinon.assert.callCount(stubAddNewContract, 0);
@@ -132,29 +137,24 @@ describe('Smart Contract Operations', async () => {
         it('should throw error as key is not present', async () => {
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
             stubLoggerError = sandbox.stub(Logger, 'error');
-            await contract.deployContract([CONTRACT_DEPLOY_LABEL, './MichelsonCodeFile.tz', CONTRACT_INITIAL_STORAGE, INCORRECT_BOOTSTRAPPED_ACCOUNT]);
+            await contract.deployContract({ contractLabel, contractAbsolutePath, initStorageValue, INCORRECT_BOOTSTRAPPED_ACCOUNT, amount, fee, storageLimit, gasLimit });
             sinon.assert.calledOnce(stubLoggerError);
         });
 
         it('should throw error as contract label already exists', async () => {
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
             stubLoggerError = sandbox.stub(Logger, 'error');
-            await contract.deployContract([CONTRACT_LABEL, './MichelsonCodeFile.tz', CONTRACT_INITIAL_STORAGE, BOOTSTRAPPED_ACCOUNT]);
+            await contract.deployContract({ contractLabel, contractAbsolutePath, initStorageValue, BOOTSTRAPPED_ACCOUNT, amount, fee, storageLimit, gasLimit });
             sinon.assert.calledOnce(stubLoggerError);
         });
 
-        it('invalid number of arguments', async () => {
-            stubLoggerWarn = sandbox.stub(Logger, 'warn');
-            await contract.deployContract([CONTRACT_LABEL, CONTRACT_INITIAL_STORAGE, BOOTSTRAPPED_ACCOUNT]);
-            sinon.assert.calledOnce(stubLoggerWarn);
-        });
     });
 
     context('invoke-contract', async () => {
         it('must call sendContractInvocationOperation function with applied status', async () => {
             const conseiljs = require(CONSEIL_JS);
             stubHelper = sandbox.stub(Helper, 'findKeyObj')
-                        .withArgs(testconfig.contracts, CONTRACT_LABEL)
+                        .withArgs(testconfig.contracts, contractLabel)
                         .returns({
                             "label": "samplecontract",
                             "pkh": "KT1WvyJ1qUrWzShA2T6QeL7AW4DR6GspUimM",
@@ -174,9 +174,9 @@ describe('Smart Contract Operations', async () => {
 
             stubConseil = sandbox
                             .stub(conseiljs.TezosNodeWriter, 'sendContractInvocationOperation')
-                            .withArgs(testconfig.provider, keystore, CONTRACT_ADDRESS, 0,
-                                      100000, '', 10000, 100000, undefined,
-                                      CONTRACT_INVOCATION_STORAGE, conseiljs.TezosParameterFormat.Michelson)
+                            .withArgs(testconfig.provider, keystore, contractAbsolutePath, amount,
+                                      fee, '', storageLimit, 501664, undefined,
+                                      argumentValue, conseiljs.TezosParameterFormat.Michelson)
                             .returns(sendContractInvocationOperation.applied);
 
             stubAddTransaction = sandbox
@@ -186,31 +186,68 @@ describe('Smart Contract Operations', async () => {
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
             stubLoggerInfo = sandbox.stub(Logger, 'info');
             
-            await contract.callContract([CONTRACT_LABEL, CONTRACT_INVOCATION_STORAGE, BOOTSTRAPPED_ACCOUNT]);
+            await contract.callContract({ contractLabel, argumentValue, account, amount, fee, storageLimit, gasLimit });
             sinon.assert.calledOnce(stubHelper);
             sinon.assert.calledOnce(stubKeys);
             sinon.assert.calledOnce(stubConseil);
         });
 
+        it('must call sendContractInvocationOperation function with failed status', async () => {
+            const conseiljs = require(CONSEIL_JS);
+            stubHelper = sandbox.stub(Helper, 'findKeyObj')
+                        .withArgs(testconfig.contracts, contractLabel)
+                        .returns({
+                            "label": "samplecontract",
+                            "pkh": "KT1WvyJ1qUrWzShA2T6QeL7AW4DR6GspUimM",
+                            "identity": "localnode - samplecontract"
+                            });
+
+            stubKeys = sandbox.stub(contract, 'getKeys')
+                        .withArgs(BOOTSTRAPPED_ACCOUNT)
+                        .returns({
+                            pk: 'edpkuBknW28nW72KG6RoHtYW7p12T6GKc7nAbwYX5m8Wd9sDVC9yav',
+                            sk: 'edskRuR1azSfboG86YPTyxrQgosh5zChf5bVDmptqLTb5EuXAm9rsnDYfTKhq7rDQujdn5WWzwUMeV3agaZ6J2vPQT58jJAJPi',
+                            pkh: 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
+                            seed: '',
+                            storeType: 1
+                        });
+            const opHash = sendContractInvocationOperation.applied.operationGroupID.slice(1,sendContractInvocationOperation.applied.operationGroupID.length-2);
+
+            stubConseil = sandbox
+                            .stub(conseiljs.TezosNodeWriter, 'sendContractInvocationOperation')
+                            .withArgs(testconfig.provider, keystore, contractAbsolutePath, amount,
+                                      fee, '', storageLimit, 501664, undefined,
+                                      argumentValue, conseiljs.TezosParameterFormat.Michelson)
+                            .returns(sendContractInvocationOperation.failed);
+
+            stubAddTransaction = sandbox
+                                .stub(contract, 'addTransaction')
+                                .withArgs('contract-call', opHash, keystore.publicKeyHash, CONTRACT_LABEL, 0);
+
+            stubLoggerWarn = sandbox.stub(Logger, 'warn');
+            stubLoggerError = sandbox.stub(Logger, 'error');
+            
+            await contract.callContract({ contractLabel, argumentValue, account, amount, fee, storageLimit, gasLimit });
+            sinon.assert.calledOnce(stubHelper);
+            sinon.assert.calledOnce(stubKeys);
+            sinon.assert.calledOnce(stubConseil);
+            sinon.assert.calledOnce(stubLoggerError);
+        });
+
         it('should throw error as key is not present', async () => {
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
             stubLoggerError = sandbox.stub(Logger, 'error');
-            await contract.callContract([CONTRACT_LABEL, CONTRACT_INVOCATION_STORAGE, INCORRECT_BOOTSTRAPPED_ACCOUNT]);
+            await contract.callContract({ contractLabel, argumentValue, INCORRECT_BOOTSTRAPPED_ACCOUNT, amount, fee, storageLimit, gasLimit });
             sinon.assert.calledOnce(stubLoggerError);
         });
 
         it('should throw error as contract label is not present', async () => {
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
             stubLoggerError = sandbox.stub(Logger, 'error');
-            await contract.callContract([INCORRECT_CONTRACT_LABEL, CONTRACT_INVOCATION_STORAGE, BOOTSTRAPPED_ACCOUNT]);
+            await contract.callContract({ contractLabel, argumentValue, account, fee, storageLimit, gasLimit });
             sinon.assert.calledOnce(stubLoggerError);
         });
 
-        it('invalid number of arguments', async () => {
-            stubLoggerWarn = sandbox.stub(Logger, 'warn');
-            await contract.callContract([CONTRACT_LABEL, CONTRACT_INITIAL_STORAGE]);
-            sinon.assert.calledOnce(stubLoggerWarn);
-        });
     });
 
     context('get-storage', async () => {
@@ -228,7 +265,30 @@ describe('Smart Contract Operations', async () => {
 
             stubConseil = sandbox
                             .stub(conseiljs.TezosNodeReader, 'getContractStorage')
-                            .withArgs(testconfig.provider, CONTRACT_ADDRESS);
+                            .withArgs(testconfig.provider, contractAbsolutePath);
+
+            sandbox.stub(Logger, 'info');
+
+            await contract.getStorage([CONTRACT_LABEL]);
+            sinon.assert.calledOnce(stubHelper);
+            sinon.assert.calledOnce(stubConseil);
+        });
+
+        it('should be able to catch error', async () => {
+            const conseiljs = require(CONSEIL_JS);
+
+            stubHelper = sandbox
+                        .stub(Helper, 'findKeyObj')
+                        .withArgs(testconfig.contracts, CONTRACT_LABEL)
+                        .returns({
+                            "label": "samplecontract",
+                            "pkh": "KT1WvyJ1qUrWzShA2T6QeL7AW4DR6GspUimM",
+                            "identity": "localnode - samplecontract"
+                            });
+
+            stubConseil = sandbox
+                            .stub(conseiljs.TezosNodeReader, 'getContractStorage')
+                            .withArgs(testconfig.provider, contractAbsolutePath);
 
             sandbox.stub(Logger, 'info');
 
@@ -255,17 +315,17 @@ describe('Smart Contract Operations', async () => {
 
             stubAddNewContract = sandbox
                                 .stub(contract, 'addNewContract')
-                                .withArgs(NEW_CONTRACT_LABEL, CONTRACT_ADDRESS, '', testconfig.provider);
+                                .withArgs(NEW_CONTRACT_LABEL, contractAbsolutePath, '', testconfig.provider);
 
             sandbox.stub(Logger, 'info');
-            await contract.addContract([NEW_CONTRACT_LABEL, CONTRACT_ADDRESS]);
+            await contract.addContract([NEW_CONTRACT_LABEL, contractAbsolutePath]);
             sinon.assert.calledOnce(stubHelper);
             sinon.assert.calledOnce(stubAddNewContract);
         });
 
         it('should throw error as contract label is not present', async () => {
             stubLoggerError = sandbox.stub(Logger, 'error');
-            await contract.addContract([CONTRACT_LABEL, CONTRACT_ADDRESS]);
+            await contract.addContract([CONTRACT_LABEL, contractAbsolutePath]);
             sinon.assert.calledOnce(stubLoggerError);
         });
     
@@ -281,7 +341,7 @@ describe('Smart Contract Operations', async () => {
             const stubHelper = sandbox
                             .stub(Helper, 'findKeyObj')
                             .withArgs(testconfig.contracts, CONTRACT_LABEL)
-                            .returns(CONTRACT_ADDRESS);
+                            .returns(contractAbsolutePath);
             const stubLoggerInfo =  sandbox.stub(Logger, 'info');
             const stubSplice =  sandbox.stub(testconfig.contracts, 'splice');
             const stubWriteFile =  sandbox
