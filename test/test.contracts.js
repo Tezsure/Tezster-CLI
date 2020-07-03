@@ -30,6 +30,9 @@ const tezosNode = 'http://localhost:18731',
       fee = 100000,
       storageLimit = 10000,
       gasLimit = 500000,
+      TESTNET_NAME = 'carthagenet',
+      CONSEIL_SERVER_APIKEY = '04c98bd2-7cc5-49f2-9108-2d48efcbd660',
+      CONSEIL_SERVER_URL = 'https://conseil-dev.cryptonomic-infra.tech',
       CONTRACT_CODE = `parameter string;
                        storage string;
                        code {CAR; NIL operation; PAIR;};`,
@@ -401,8 +404,8 @@ describe('Smart Contract Operations', async () => {
                                         .returns([
                                             'parameter string;',
                                             'storage string;',
-                                            'code {CAR; NIL operation; PAIR;};'
-                                        ]);
+                                            'code { CAR ; NIL operation ; PAIR }'
+                                          ]);
 
             stubLoggerInfo = sandbox.stub(Logger, 'info');
 
@@ -411,6 +414,41 @@ describe('Smart Contract Operations', async () => {
             sinon.assert.calledOnce(stubHelper);
             sinon.assert.calledOnce(stubConseilEntryPoint);
             sinon.assert.calledOnce(stubConseilStorageFormat);
+        });
+
+        it('list entry points using contract addresss', async () => {
+            const conseiljs = require(CONSEIL_JS);
+            let conseilServer = { 'url': CONSEIL_SERVER_URL, 'apiKey': CONSEIL_SERVER_APIKEY, 'network': TESTNET_NAME };
+
+            stubHelper = sandbox
+                        .stub(conseiljs.TezosConseilClient, 'getAccount')
+                        .withArgs(conseilServer, conseilServer.network, CONTRACT_ADDRESS)
+                        .returns({
+                            block_level: 534743,
+                            is_activated: false,
+                            balance: 0,
+                            is_baker: false,
+                            delegate_value: null,
+                            spendable: null,
+                            account_id: 'KT1DJ6JTNgZQKFayozj8ce4FVhqHqdtFmdim',
+                            manager: null,
+                            storage: '"ka"',
+                            counter: null,
+                            block_id: 'BLjB76Efqrv9mwo7rw8czWgh973WFv5gu3KA7J4XD52o8nC6ayB',
+                            script: CONTRACT_CODE,
+                            delegate_setable: null
+                          });
+
+            stubConseilEntryPoint = sandbox
+                        .stub(conseiljs.TezosContractIntrospector, 'generateEntryPointsFromCode')
+                        .withArgs(CONTRACT_CODE)
+                        .returns(TezosContractIntrospector);
+
+            stubLoggerInfo = sandbox.stub(Logger, 'info');
+
+            await contract.getEntryPoints([CONTRACT_ADDRESS]);
+            sinon.assert.calledOnce(stubHelper);
+            sinon.assert.calledOnce(stubConseilEntryPoint);
         });
 
         it(`should throw error as contract path/address doesn't exist`, async () => {
