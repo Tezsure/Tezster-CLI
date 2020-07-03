@@ -228,7 +228,7 @@ program
 });
 
 if (process.argv.length <= 2){
-    console.log('\x1b[31m%s\x1b[0m', 'Error: ' +'Please enter a command!');
+    program.help();
 }
 
 var commands=process.argv[2];
