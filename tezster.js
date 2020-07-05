@@ -6,6 +6,7 @@ const program = require('commander'),
       fs = require('fs'),
       { TezsterManager } = require('./tezster-manager'),
       { confFile } = require('./modules/cli-constants'),
+      { accountSetProviderParameters } = require('./utils/account.setProvider.parameters'),
       { contractDeployParameters } = require('./utils/contract_deploy_parameters'),
       { contractCallParameters } = require('./utils/contract_call_parameters');
 
@@ -48,10 +49,15 @@ program.command('node-status')
 /******* To set the Provider */
 program
     .command('set-provider')
-    .usage('[http://<ip>:<port>]')
     .description('To change the default provider')
     .action(function(){  
-        tezstermanager.setProvider();
+        if (process.argv.length > 3) {
+            console.log('Incorrect usage of set-provider command. Correct usage: - tezster set-provider');
+            return;
+        }
+        prompt(accountSetProviderParameters).then(accountSetProviderParameterValues => {
+            tezstermanager.setProvider(accountSetProviderParameterValues);
+    });
 });
 
 /******* To get the Provider */
