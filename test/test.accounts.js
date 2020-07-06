@@ -13,7 +13,6 @@ const sinon = require("sinon"),
       { Helper } = require('../modules/helper'),
       AccountClass = require('../modules/accounts/accounts'),
       faucetFile = require('./responses/faucet'),
-      incorrectFaucetFile = require('./responses/faucet'),
       { ActivationOperation, RevealOperation } = require('./responses/AccountOperations.responses');
 
 const BOOTSTRAPPED_ACCOUNT = 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
@@ -56,12 +55,29 @@ describe('Faucet Account Operations', async () => {
         it('should call method and replace current provider', async () => { 
             spySetProviderAccounts = sinon.spy(account, 'setProviderAccounts');
             stubLoggerInfo = sandbox.stub(Logger, 'info');
-            sandbox.stub(jsonfile, 'writeFile')
-                .withArgs(confFile, testconfig);
+            const stubWriteFile = sandbox.stub(jsonfile, 'writeFile')
+                                        .withArgs(confFile, testconfig);
 
             await account.setProvider([tezosNode]);
             sinon.assert.calledOnce(stubLoggerInfo);
             sinon.assert.calledOnce(spySetProviderAccounts);
+            sinon.assert.calledOnce(stubWriteFile);
+        });
+
+        it('should be able to set provider on windows system', async () => { 
+            spySetProviderAccounts = sinon.spy(account, 'setProviderAccounts');
+            stubLoggerInfo = sandbox.stub(Logger, 'info');
+            const stubWriteFile = sandbox.stub(jsonfile, 'writeFile')
+                                        .withArgs(confFile, testconfig);
+
+            const stubHelper = sandbox.stub(Helper, 'isWindows')
+                                      .returns(true);
+
+            await account.setProvider([tezosNode]);
+            sinon.assert.calledOnce(stubLoggerInfo);
+            sinon.assert.calledOnce(spySetProviderAccounts);
+            sinon.assert.calledOnce(stubWriteFile);
+            sinon.assert.calledOnce(stubHelper);
         });
 
         it('invalid number of arguments', async () => { 

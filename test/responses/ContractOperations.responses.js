@@ -186,16 +186,35 @@ const sendContractInvocationOperation = {
 }
 
 const TezosContractIntrospector = 
-  [
-    {
-      name: 'default',
-      parameters: [ { name: 'default', type: 'string' } ],
-      structure: '$PARAM',
-      generateInvocationString: function generateInvocationString(){},
-      generateInvocationPair: function generateInvocationPair(){},
-      generateSampleInvocation: function generateSampleInvocation(){}
-    }
-  ]
+[
+  {
+    name: 'default',
+    parameters: [ { name: 'default', type: 'string' } ],
+    structure: '$PARAM',
+    generateInvocationString: function generateInvocationString(){},
+    generateInvocationPair: function generateInvocationPair(){},
+    generateSampleInvocation: function generateSampleInvocation(){}
+  }
+]
+
+const TezosConseilClientGetAccount = 
+{
+  block_level: 534743,
+  is_activated: false,
+  balance: 0,
+  is_baker: false,
+  delegate_value: null,
+  spendable: null,
+  account_id: 'KT1DJ6JTNgZQKFayozj8ce4FVhqHqdtFmdim',
+  manager: null,
+  storage: '"ka"',
+  counter: null,
+  block_id: 'BLjB76Efqrv9mwo7rw8czWgh973WFv5gu3KA7J4XD52o8nC6ayB',
+  script: `parameter string;
+                       storage string;
+                       code {CAR; NIL operation; PAIR;};`,
+  delegate_setable: null
+}
 
 
-module.exports = { sendContractOriginationOperation, sendContractInvocationOperation, TezosContractIntrospector };
+module.exports = { sendContractOriginationOperation, sendContractInvocationOperation, TezosContractIntrospector, TezosConseilClientGetAccount };
