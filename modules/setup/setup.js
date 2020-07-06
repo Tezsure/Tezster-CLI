@@ -25,6 +25,11 @@ class Setup {
 
             docker.getContainer(CONTAINER_NAME).inspect().then((result) => {
                 if(result.State.Status === 'exited' || result.State.Status === 'running') {
+                    if(result.Config.Image !== IMAGE_TAG) {
+                        Helper.errorLogHandler(`Container was up with previous image tag....`,
+                                                `Restart the nodes after running 'tezster stop-nodes'....`);
+                        return;
+                    }
                     this.startExistingContainer();
                 } else {
                     Helper.errorLogHandler(`Error occurred while starting the nodes: ${error}`,
