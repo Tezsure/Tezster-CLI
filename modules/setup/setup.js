@@ -145,6 +145,7 @@ class Setup {
                         clearInterval(progressInterval);
                         progressbar.update(100);
                         progressbar.stop();
+                        Logger.warn('Network might be slow, wait a bit....');
                         return;
                     }
                     progressbar.update(progress);
