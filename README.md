@@ -88,9 +88,9 @@ There are many ways to contribute, from writing tutorials or blog posts, improvi
 
 ### Reporting bugs and Support
 
-To know about common errors and fixes follow our [error section](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix). To report bugs, please create an issue on [issue page](https://github.com/Tezsure/Tezster-CLI/issues).
+To know about common errors and fixes follow our [common errors](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix). To report bugs, please create an issue on [issue page](https://github.com/Tezsure/Tezster-CLI/issues).
 
-**You can get in touch with us for any open discussion and 24*7 support through our [telegram channel](https://t.me/tezster).**
+**You can get in touch with us for any open discussion and 24*7 support through our [Telegram](https://t.me/tezster).**
 
 
 ## Extra
