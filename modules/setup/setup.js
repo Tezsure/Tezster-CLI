@@ -23,14 +23,15 @@ class Setup {
         Logger.verbose('Command : tezster start-nodes');
         docker.getImage(IMAGE_TAG).inspect().then((result) => {
 
-            docker.getContainer(CONTAINER_NAME).inspect().then((result) => {
+            docker.getContainer(CONTAINER_NAME).inspect().then(async(result) => {
                 if(result.State.Status === 'exited' || result.State.Status === 'running') {
                     if(result.Config.Image !== IMAGE_TAG) {
-                        Helper.errorLogHandler(`Container was up with previous image tag....`,
-                                                `Restart the nodes after running 'tezster stop-nodes'....`);
+                        await this.stopAndRemoveContainer();
+                        this.runContainer();
                         return;
+                    } else {
+                        this.startExistingContainer();
                     }
-                    this.startExistingContainer();
                 } else {
                     Helper.errorLogHandler(`Error occurred while starting the nodes: ${error}`,
                                            `Error occurred while starting the nodes....`);
@@ -48,24 +49,17 @@ class Setup {
     stopNodes() {
         Logger.verbose('Command : tezster stop-nodes');
 
-            docker.getContainer(CONTAINER_NAME).inspect().then((result) => {
-                if(result.State.Status === 'exited' || result.State.Status === 'running') {
-                    Logger.warn(`stopping the nodes....`);
-                    const container = docker.getContainer(CONTAINER_NAME);
-                    container.stop(function (error, data){
-                        if(error) {
-                            Logger.verbose(`Error occurred while stopping the nodes: ${error}`);
-                        }
-                    });
-                    container.remove({force: true});
-                    Logger.info(`Nodes have been stopped. Run 'tezster start-nodes' to restart.`);
-                } else {
-                    Logger.error('No Nodes are running....');
-                }
-            })
-            .catch(error => Helper.errorLogHandler(`Error occurred while stopping the nodes: ${error}`,
-                                                   'No Nodes are running....'));
-
+        docker.getContainer(CONTAINER_NAME).inspect().then((result) => {
+            if(result.State.Status === 'exited' || result.State.Status === 'running') {
+                Logger.warn(`stopping the nodes....`);
+                this.stopAndRemoveContainer();
+                Logger.info(`Nodes have been stopped. Run 'tezster start-nodes' to restart.`);
+            } else {
+                Logger.error('No Nodes are running....');
+            }
+        })
+        .catch(error => Helper.errorLogHandler(`Error occurred while stopping the nodes: ${error}`,
+                                                'No Nodes are running....'));
     }
 
     getLogFiles() {
@@ -164,6 +158,16 @@ class Setup {
                     });
                 }
         });                     
+    }
+
+    async stopAndRemoveContainer() {
+        const container = docker.getContainer(CONTAINER_NAME);
+        container.stop(function (error, data){
+            if(error) {
+                Logger.verbose(`Error occurred while stopping the nodes: ${error}`);
+            }
+        });
+        await container.remove({force: true});
     }
 
     startExistingContainer() {
