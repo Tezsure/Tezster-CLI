@@ -2,8 +2,8 @@ const Logger = require('./logger'),
       { Helper } = require('./helper');
 
 const EMPTY_IMPLICIT_CONTRACT = 'Account is not yet revealed on the blockchain. You can reveal the account by sending some tezos to the account.',
-      EMPTY_TRANSACTION = `please wait.... contract might take some time to get deployed on the tezos network`,
-      NOT_FOUND_404 = `make sure current network is same as the network smart contract got deployed....`,
+      EMPTY_TRANSACTION = `Make sure current network is same as the network smart contract got deployed....`,
+      NOT_FOUND_404 = `Make sure current network is same as the network smart contract got deployed....`,
       CONNECT_ECONNREFUSED = 'Error occurred while establishing the connection with node provider....',
       ABSOLUTE_URL_ARE_SUPPORTED = 'Current provider URL is not supported by network provider....',
       GETADDRINFO = 'Current provider URL is not supported by network provider....',

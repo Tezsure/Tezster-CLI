@@ -6,9 +6,10 @@ const program = require('commander'),
       fs = require('fs'),
       { TezsterManager } = require('./tezster-manager'),
       { confFile } = require('./modules/cli-constants'),
+      { setupStopNodesParameters } = require('./utils/setup.stopNodes.parameters'),
       { accountSetProviderParameters } = require('./utils/account.setProvider.parameters'),
-      { contractDeployParameters } = require('./utils/contract_deploy_parameters'),
-      { contractCallParameters } = require('./utils/contract_call_parameters');
+      { contractDeployParameters } = require('./utils/contracts.deploy.parameters'),
+      { contractCallParameters } = require('./utils/contracts.call.parameters');
 
 if(!fs.existsSync(confFile)) {
     require('./postinstall');
@@ -36,7 +37,15 @@ program.command('start-nodes')
 program.command('stop-nodes')
     .description('Stops Tezos nodes')
     .action(function() {
-        tezstermanager.stopNodes();
+        if (process.argv.length > 3) {
+            console.log('Incorrect usage of stop-nodes command. Correct usage: - tezster stop-nodes');
+            return;
+        }
+        prompt(setupStopNodesParameters).then((setupStopNodesParametersResponse) => {
+                if(setupStopNodesParametersResponse.response) {
+                    tezstermanager.stopNodes();
+                }
+        });
 });
 
 /******* To get local nodes current status*/
@@ -50,14 +59,14 @@ program.command('node-status')
 program
     .command('set-provider')
     .description('To change the default provider')
-    .action(function(){  
+    .action(function() {
         if (process.argv.length > 3) {
             console.log('Incorrect usage of set-provider command. Correct usage: - tezster set-provider');
             return;
         }
         prompt(accountSetProviderParameters).then(accountSetProviderParameterValues => {
             tezstermanager.setProvider(accountSetProviderParameterValues);
-    });
+        });
 });
 
 /******* To get the Provider */
@@ -149,7 +158,7 @@ program
         }
         prompt(contractDeployParameters).then(deployParamaterValues => {
             tezstermanager.deployContract(deployParamaterValues);
-    });
+        });
 });
 
 
@@ -164,7 +173,7 @@ program
         }
         prompt(contractCallParameters).then(callParamaterValues => {
             tezstermanager.callContract(callParamaterValues);
-    });
+        });
 });
 
 /*******gets storage for a contract*/
