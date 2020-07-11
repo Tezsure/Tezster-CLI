@@ -18,11 +18,7 @@ class Accounts{
 
     async setProvider(args){
         Logger.verbose(`Command : tezster set-provider ${args}`);
-        if (args.length < 1){ 
-            Logger.warn('Incorrect usage - tezster set-provider http://<ip>:<port>');
-            return;
-        }
-        this.setProviderAccounts(args);
+        this.setProviderAccounts(args.newNodeProvider);
     }
 
     async getProvider() {
@@ -97,8 +93,8 @@ class Accounts{
         await this.deleteAccount(args[0]);
     }
 
-    setProviderAccounts(args){    
-        config.provider = args[0];
+    setProviderAccounts(new_provider){    
+        config.provider = new_provider;
 
         if(Helper.isWindows() && config.provider.includes('localhost')) {
             let current_docker_machine_ip;
@@ -164,7 +160,6 @@ class Accounts{
             const keystore = await conseiljs.TezosWalletUtil.unlockIdentityWithMnemonic(mnemonic, '');
             this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, config.provider);     
-            jsonfile.writeFile(confFile, config);
             Logger.info(`Successfully created wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
             Logger.warn(`We suggest you to store following Mnemonic Pharase which can be used to restore wallet in case you lost wallet:\n'${mnemonic}'`);
         } catch(error) {
@@ -184,7 +179,6 @@ class Accounts{
             const keystore = await conseiljs.TezosWalletUtil.unlockIdentityWithMnemonic(mnemonic, '');
             this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, config.provider);     
-            jsonfile.writeFile(confFile, config);
             Logger.info(`Successfully restored the wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
         } catch(error) {
             Logger.error(`Error occurred while restoring the wallet:\n${error}`);
