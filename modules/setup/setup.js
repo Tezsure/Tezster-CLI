@@ -1,13 +1,20 @@
 const Docker = require('dockerode');
 var docker = new Docker({ socketPath: '/var/run/docker.sock', hosts: 'tcp://0.0.0.0:2376' });
 
-const { IMAGE_TAG, CONTAINER_NAME, LOCAL_NODE_URL, PROGRESS_REFRESH_INTERVAL, LOG_FOLDER_PATH_INSIDE_DOCKER, LOGS_ZIPFILE_PATH, LOGS_ZIPFILE_NAME, START_NODES_PROGRESS_BAR_INTERVAL_WIN, NODE_CONFIRMATION_TIMEOUT_WIN } = require('../cli-constants');
+const { confFile, IMAGE_TAG, CONTAINER_NAME, LOCAL_NODE_URL, PROGRESS_REFRESH_INTERVAL, LOG_FOLDER_PATH_INSIDE_DOCKER, LOGS_ZIPFILE_PATH, LOGS_ZIPFILE_NAME, START_NODES_PROGRESS_BAR_INTERVAL_WIN, NODE_CONFIRMATION_TIMEOUT_WIN } = require('../cli-constants');
 let { Node_Confirmation_Timeout, Start_Nodes_Progress_Bar_Interval } = require('../cli-constants');
-const Logger = require('../logger'),
+const jsonfile = require('jsonfile'),
+      Logger = require('../logger'),
       { Helper } = require('../helper'),
       { RpcRequest } = require('../rpc-util');
 
+let config;
+
 class Setup {
+
+    constructor() {
+        config = jsonfile.readFileSync(confFile);
+    }
 
     setup() {
         Logger.verbose('Command : tezster setup');
@@ -101,16 +108,43 @@ class Setup {
     async nodeStatus() {
         Logger.verbose('Command : tezster node-status');
 
-        try {
-            let response = await RpcRequest.checkNodeStatus(LOCAL_NODE_URL);
-            if(response.protocol.startsWith('PsCARTHAG')){
-                Logger.info('Local nodes are in running state....');
-            } else {
-                Logger.error('Nodes are not running....');
+        if(config.provider.includes('localhost')) {
+            try {
+                let response = await RpcRequest.checkNodeStatusForLocalNodes(LOCAL_NODE_URL);
+                if(response.protocol.startsWith('PsCARTHAG')){
+                    Logger.info('Local nodes are in running state....');
+                    Logger.warn(`Name: Tezos`);
+                    Logger.warn(`Network: Local`);
+                    Logger.warn(`Protocol: ${response.protocol}`);
+                    Logger.warn(`Chain ID: ${response.chain_id}`);
+                    Logger.warn(`Block Hash: ${response.hash}`);
+                    Logger.warn(`Baker: ${response.metadata.baker}`);
+                    Logger.warn(`Cycle: ${response.metadata.level.cycle}`);
+                    Logger.warn(`Latest Block: ${response.header.level}`);
+                } else {
+                    Logger.error('Local nodes are not running....');
+                }
+            } catch (error) {
+                Helper.errorLogHandler(`Error occurred while confirming node status: ${error}`,
+                                        'Local nodes are not running....');
             }
-        } catch (error) {
-            Helper.errorLogHandler(`Error occurred while confirming node status: ${error}`,
-                                   'Nodes are not running....');
+        } else {
+            try {
+                let response = await RpcRequest.fetchCurrentBlockForRemoteNodes();
+                Logger.warn(`Name: ${response[1].name}`);
+                Logger.warn(`Network: ${response[1].network}`);
+                Logger.warn(`Protocol: ${response[1].protocol}`);
+                Logger.warn(`Chain ID: ${response[1].chain_id}`);
+                Logger.warn(`Block Hash: ${response[0].hash}`);
+                Logger.warn(`Baker: ${response[0].baker}`);
+                Logger.warn(`Cycle: ${response[0].cycle}`);
+                Logger.warn(`Latest Block: ${response[0].height}`);
+                Logger.warn(`Blocks Per Cycle: ${response[1].blocks_per_cycle}`);
+                Logger.warn(`Endorsement Reward: ${response[1].endorsement_reward}`);
+            } catch (error) {
+                Helper.errorLogHandler(`Error occurred while confirming node status: ${error}`,
+                                        'Error occurred while fetching block details....');
+            }
         }
     }
 
@@ -177,7 +211,7 @@ class Setup {
                 Logger.verbose(`Error occurred while starting the nodes: ${error}`);
 
                 try {
-                    let response = await RpcRequest.checkNodeStatus(LOCAL_NODE_URL);
+                    let response = await RpcRequest.checkNodeStatusForLocalNodes(LOCAL_NODE_URL);
                     if(response.protocol.startsWith('PsCARTHAG')){
                         Logger.info('Nodes are in running state....');
                     } else {
@@ -279,7 +313,7 @@ class Setup {
             );
 
             const interval = setInterval(() => {
-                RpcRequest.checkNodeStatus(LOCAL_NODE_URL).then(function(statusData) {
+                RpcRequest.checkNodeStatusForLocalNodes(LOCAL_NODE_URL).then(function(statusData) {
                     if(statusData.protocol.startsWith('PsCARTHAG')){
                         progressbar.update(100);
                         progressbar.stop();

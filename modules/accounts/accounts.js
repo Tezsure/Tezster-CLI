@@ -17,12 +17,12 @@ class Accounts{
     }
 
     async setProvider(args){
-        Logger.verbose(`Command : tezster set-provider ${args}`);
+        Logger.verbose(`Command : tezster set-rpc-node ${args}`);
         this.setProviderAccounts(args.newNodeProvider);
     }
 
     async getProvider() {
-        Logger.verbose(`Command : tezster get-provider`);
+        Logger.verbose(`Command : tezster get-rpc-node`);
         this.getProviderAccounts();
     }
 
@@ -107,14 +107,14 @@ class Accounts{
         }
 
         jsonfile.writeFile(confFile, config);
-        Logger.info('Provider updated to ' + config.provider);
+        Logger.info('Active RPC node updated to ' + config.provider);
     }
 
     getProviderAccounts(){    
         if (config.provider) {
             Logger.info(config.provider);
         } else {
-            Logger.warn('No provider is set');
+            Logger.warn('No rpc node is set');
         } 
     }
 
@@ -233,7 +233,7 @@ class Accounts{
         }
 
         if(Helper.confirmNodeProvider(tezosNode)) {
-            Logger.error('Make sure your current provider is set to remote node provider.');
+            Logger.error('Make sure your current rpc-node is set to remote node.');
             return;
         }
 
