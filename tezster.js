@@ -55,13 +55,13 @@ program.command('node-status')
         tezstermanager.nodeStatus();
 });
 
-/******* To set the Provider */
+/******* To set the rpc-node */
 program
-    .command('set-provider')
-    .description('To change the default provider')
+    .command('set-rpc-node')
+    .description('To change the default rpc node provider')
     .action(function() {
         if (process.argv.length > 3) {
-            console.log('Incorrect usage of set-provider command. Correct usage: - tezster set-provider');
+            console.log('Incorrect usage of set-rpc-node command. Correct usage: - tezster set-rpc-node');
             return;
         }
         prompt(accountSetProviderParameters).then(accountSetProviderParameterValues => {
@@ -69,10 +69,10 @@ program
         });
 });
 
-/******* To get the Provider */
+/******* To get the current rpc-node */
 program
-    .command('get-provider')
-    .description('To fetch the current provider')
+    .command('get-rpc-node')
+    .description('To fetch the current rpc node')
     .action(function(){        
         tezstermanager.getProvider();
 });
@@ -253,8 +253,8 @@ const validCommands = [
     'stop-nodes',
     'node-status',
     'get-logs',
-    'get-provider',
-    'set-provider',
+    'get-rpc-node',
+    'set-rpc-node',
     'transfer',
     'get-balance',
     'list-entry-points', 
