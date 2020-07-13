@@ -5,4 +5,6 @@ export declare namespace TezosWalletUtil {
     function generateMnemonic(strength?: number): string;
     function unlockIdentityWithMnemonic(mnemonic: string, passphrase?: string): Promise<KeyStore>;
     function getKeysFromMnemonicAndPassphrase(mnemonic: string, passphrase: string, storeType: StoreType, pkh?: string): Promise<KeyStore>;
+    function signText(keyStore: KeyStore, message: string): Promise<string>;
+    function checkSignature(signature: string, message: string, publicKey: any): Promise<boolean>;
 }

@@ -1,6 +1,7 @@
 import { KeyStore } from '../../../types/wallet/KeyStore';
 export declare namespace Tzip7ReferenceTokenHelper {
     function verifyDestination(server: string, address: string): Promise<boolean>;
+    function verifyScript(script: string): boolean;
     function deployContract(server: string, keystore: KeyStore, fee: number, administrator: string, pause?: boolean, supply?: number, gas?: number, freight?: number): Promise<string>;
     function getAccountBalance(server: string, mapid: number, account: string): Promise<number>;
     function getAccountAllowance(server: string, mapid: number, account: string, source: string): Promise<any>;

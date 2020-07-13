@@ -1,8 +1,20 @@
 #!/usr/bin/env node
 'use strict';
 
-const program = require('commander');
-const { TezsterManager } = require('./tezster-manager');
+const program = require('commander'),
+      { prompt } = require('inquirer'),
+      fs = require('fs'),
+      { TezsterManager } = require('./tezster-manager'),
+      { confFile } = require('./modules/cli-constants'),
+      { setupStopNodesParameters } = require('./utils/setup.stopNodes.parameters'),
+      { accountSetProviderParameters } = require('./utils/account.setProvider.parameters'),
+      { contractDeployParameters } = require('./utils/contracts.deploy.parameters'),
+      { contractCallParameters } = require('./utils/contracts.call.parameters');
+
+if(!fs.existsSync(confFile)) {
+    require('./postinstall');
+}
+
 const tezstermanager = new TezsterManager();
 
 /******* To setup tezos nodes on user system */
@@ -16,16 +28,25 @@ program
 
 /******* To start local tezos nodes on user system*/
 program.command('start-nodes')
-    .description('Starts Tezos nodes')
+    .description(`Starts local Tezos nodes`)
     .action(function(){  
         tezstermanager.startNodes();
 });
 
 /******* To stop local tezos nodes on user system*/
 program.command('stop-nodes')
-    .description('Stops Tezos nodes')
+    .usage(`\n(This command provides the interactive shell)`)
+    .description(`Stops local Tezos nodes`)
     .action(function() {
-        tezstermanager.stopNodes();
+        if (process.argv.length > 3) {
+            console.log('Incorrect usage of stop-nodes command. Correct usage: - tezster stop-nodes');
+            return;
+        }
+        prompt(setupStopNodesParameters).then((setupStopNodesParametersResponse) => {
+                if(setupStopNodesParametersResponse.response) {
+                    tezstermanager.stopNodes();
+                }
+        });
 });
 
 /******* To get local nodes current status*/
@@ -35,19 +56,25 @@ program.command('node-status')
         tezstermanager.nodeStatus();
 });
 
-/******* To set the Provider */
+/******* To set the rpc-node */
 program
-    .command('set-provider')
-    .usage('[http://<ip>:<port>]')
-    .description('To change the default provider')
-    .action(function(){  
-        tezstermanager.setProvider();
+    .command('set-rpc-node')
+    .usage(`\n(This command provides the interactive shell)`)
+    .description('To change the default rpc node provider')
+    .action(function() {
+        if (process.argv.length > 3) {
+            console.log('Incorrect usage of set-rpc-node command. Correct usage: - tezster set-rpc-node');
+            return;
+        }
+        prompt(accountSetProviderParameters).then(accountSetProviderParameterValues => {
+            tezstermanager.setProvider(accountSetProviderParameterValues);
+        });
 });
 
-/******* To get the Provider */
+/******* To get the current rpc-node */
 program
-    .command('get-provider')
-    .description('To fetch the current provider')
+    .command('get-rpc-node')
+    .description('To fetch the current rpc node')
     .action(function(){        
         tezstermanager.getProvider();
 });
@@ -74,7 +101,7 @@ program
     .command('create-wallet')
     .usage('<wallet-label>')
     .description('To create a new account')
-    .action(async function(){  
+    .action(function(){  
         tezstermanager.createWallet(); 
 });
 
@@ -101,7 +128,7 @@ program
     .command('restore-wallet')
     .usage(`<wallet-label/identity/hash> <mnemonic-phrase> \n(Note: Mnemonic phrase must be enclose between '')`)
     .description('To restore an existing wallet using mnemonic')
-    .action(async function(){  
+    .action(function(){  
         tezstermanager.restoreWallet(); 
 });
 
@@ -110,7 +137,7 @@ program
     .command('remove-account')
     .usage('<account-label/identity/hash>')
     .description('To remove an existing account')
-    .action(async function(){  
+    .action(function(){  
         tezstermanager.removeAccount(); 
 });
 
@@ -125,21 +152,32 @@ program
 /*******deploy contract written in Michelson*/
 program
     .command('deploy')
-    .usage('<contract-label> <contract-absolute-path> <init-storage-value> <account>')
+    .usage(`\n(This command provides the interactive shell)`)
     .description('Deploys a smart contract written in Michelson')
-    .option('-a, --amount <amount>', 'Initial funding amount to new account')
-    .action(function(){
-        tezstermanager.deployContract();
+    .action(function() {
+        if (process.argv.length > 3) {
+            console.log('Incorrect usage of deploy command. Correct usage: - tezster deploy');
+            return;
+        }
+        prompt(contractDeployParameters).then(deployParamaterValues => {
+            tezstermanager.deployContract(deployParamaterValues);
+        });
 });
+
 
 /*******calls contract written in Michelson*/
 program
     .command('call')
-    .usage('<contract-name/address> <argument-value> <account>')
+    .usage(`\n(This command provides the interactive shell)`)
     .description('Calls a smart contract with given value provided in Michelson format')
-    .option('-a, --amount <amount>', 'Funding amount to deployed contract')
-    .action(function(){
-        tezstermanager.callContract();
+    .action(function() {
+        if (process.argv.length > 3) {
+            console.log('Incorrect usage of call command. Correct usage: - tezster call');
+            return;
+        }
+        prompt(contractCallParameters).then(callParamaterValues => {
+            tezstermanager.callContract(callParamaterValues);
+        });
 });
 
 /*******gets storage for a contract*/
@@ -156,7 +194,7 @@ program
     .command('add-contract')
     .usage('<label> <address>')
     .description('Adds a smart contract with label for interaction')
-    .action(async function(){  
+    .action(function(){  
         tezstermanager.addContract();    
 });
 
@@ -165,7 +203,7 @@ program
     .command('remove-contract')
     .usage('<contract-label>')
     .description('To remove deployed contract from list')
-    .action(async function(){  
+    .action(function(){  
         tezstermanager.removeContract(); 
 });
 
@@ -189,7 +227,7 @@ program
 /* list down all the entry points and initial storage format from smart contract */
 program
     .command('list-entry-points')
-    .usage('<contract-absolute-path>')
+    .usage('<contract-absolute-path/contract-address>')
     .description('List down all entry points and initial storage format from smart contract')
     .action(function(){
         tezstermanager.listEntryPoints();
@@ -209,7 +247,7 @@ program
 });
 
 if (process.argv.length <= 2){
-    console.log('\x1b[31m%s\x1b[0m', 'Error: ' +'Please enter a command!');
+    program.help();
 }
 
 var commands=process.argv[2];
@@ -219,8 +257,8 @@ const validCommands = [
     'stop-nodes',
     'node-status',
     'get-logs',
-    'get-provider',
-    'set-provider',
+    'get-rpc-node',
+    'set-rpc-node',
     'transfer',
     'get-balance',
     'list-entry-points', 

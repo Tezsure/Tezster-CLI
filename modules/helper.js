@@ -1,7 +1,7 @@
-const confFile = __dirname + '/../config.json';
-const jsonfile = require('jsonfile');
-var config = jsonfile.readFileSync(confFile);
-const Logger = require('./logger');
+const { confFile, WIN_OS_PLATFORM, WIN_WSL_OS_RELEASE } = require('./cli-constants'),
+      os = require('os'),
+      Logger = require('./logger'),
+      jsonfile = require('jsonfile');
 
 class Helper {
     
@@ -28,6 +28,14 @@ class Helper {
         return false;
     }
 
+    static isWindows(){
+        return os.platform().includes(WIN_OS_PLATFORM);
+    }
+
+    static isWSL(){
+        return os.release().includes(WIN_WSL_OS_RELEASE);
+    }
+
     static confirmNodeProvider(tezosNode) {
         return tezosNode.includes('localhost');
     }
@@ -38,6 +46,7 @@ class Helper {
     }
 
     static clearContractAndAccountForLocalNode() {   
+        const config = jsonfile.readFileSync(confFile);
         let contractObjectIndex , accountObjectIndex;
         for (contractObjectIndex=0; contractObjectIndex<config.contracts.length; contractObjectIndex++) {
             if(config.contracts[contractObjectIndex].identity.includes('localnode')) {

@@ -1,30 +1,28 @@
-const confFile = __dirname + '/../../config.json';
-const jsonfile = require('jsonfile');
-var config = jsonfile.readFileSync(confFile);
+const { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL, TEZSTER_FOLDER_PATH } = require('../cli-constants');
 
-const CONSEIL_JS = '../../lib/conseiljs',
-      TESTNET_NAME = 'carthagenet',
-      CONSEIL_SERVER_APIKEY = 'f979f858-1941-4c4b-b231-d40d41df5377',
-      CONSEIL_SERVER_URL = 'https://conseil-dev.cryptonomic-infra.tech:443';
+const jsonfile = require('jsonfile'),
+      os = require('os'),
+      Logger = require('../logger'),
+      { Helper } = require('../helper'),
+      { RpcRequest } = require('../rpc-util'),
+      docker_machine_ip = require('docker-ip'),
+      { ExceptionHandler } = require('../exceptionHandler');
 
-const Logger = require('../logger');
-const { Helper } = require('../helper');
-const { RpcRequest } = require('../rpc-util');
-const { ExceptionHandler } = require('../exceptionHandler');
+let config;
 
 class Accounts{
 
+    constructor(){
+        config = jsonfile.readFileSync(confFile);
+    }
+
     async setProvider(args){
-        Logger.verbose(`Command : tezster set-provider ${args}`);
-        if (args.length < 1){ 
-            Logger.warn('Incorrect usage - tezster set-provider http://<ip>:<port>');
-            return;
-        }
-        this.setProviderAccounts(args);
+        Logger.verbose(`Command : tezster set-rpc-node ${args}`);
+        this.setProviderAccounts(args.newNodeProvider);
     }
 
     async getProvider() {
-        Logger.verbose(`Command : tezster get-provider`);
+        Logger.verbose(`Command : tezster get-rpc-node`);
         this.getProviderAccounts();
     }
 
@@ -95,17 +93,28 @@ class Accounts{
         await this.deleteAccount(args[0]);
     }
 
-    setProviderAccounts(args){    
-        config.provider = args[0];
+    setProviderAccounts(new_provider){    
+        config.provider = new_provider;
+
+        if(Helper.isWindows() && config.provider.includes('localhost')) {
+            let current_docker_machine_ip;
+            try { 
+                current_docker_machine_ip = docker_machine_ip();
+            } catch(error) {
+                Helper.errorLogHandler(`Error occurred while fetching docker machine ip address: ${error}`, 'Make sure docker-machine is in running state....');
+            }
+            config.provider = config.provider.replace('localhost', current_docker_machine_ip);
+        }
+
         jsonfile.writeFile(confFile, config);
-        Logger.info('Provider updated to ' + config.provider);
+        Logger.info('Active RPC node updated to ' + config.provider);
     }
 
     getProviderAccounts(){    
         if (config.provider) {
             Logger.info(config.provider);
         } else {
-            Logger.warn('No provider is set');
+            Logger.warn('No rpc node is set');
         } 
     }
 
@@ -139,6 +148,7 @@ class Accounts{
     async createTestnetWallet(args) {
         const accountLabel = args[0];
         const conseiljs = require(CONSEIL_JS);
+
         const keys = this.getKeys(accountLabel);
         if(keys) {
             Logger.error(`Account with this label already exists.`);
@@ -150,7 +160,6 @@ class Accounts{
             const keystore = await conseiljs.TezosWalletUtil.unlockIdentityWithMnemonic(mnemonic, '');
             this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, config.provider);     
-            jsonfile.writeFile(confFile, config);
             Logger.info(`Successfully created wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
             Logger.warn(`We suggest you to store following Mnemonic Pharase which can be used to restore wallet in case you lost wallet:\n'${mnemonic}'`);
         } catch(error) {
@@ -170,7 +179,6 @@ class Accounts{
             const keystore = await conseiljs.TezosWalletUtil.unlockIdentityWithMnemonic(mnemonic, '');
             this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, config.provider);     
-            jsonfile.writeFile(confFile, config);
             Logger.info(`Successfully restored the wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
         } catch(error) {
             Logger.error(`Error occurred while restoring the wallet:\n${error}`);
@@ -185,6 +193,7 @@ class Accounts{
             Logger.error(`Account with this label already exists.`);
             return;
         }
+
         try {
             let accountJSON = fs.readFileSync(accountFilePath, 'utf8');
             accountJSON = accountJSON && JSON.parse(accountJSON);
@@ -224,7 +233,7 @@ class Accounts{
         }
 
         if(Helper.confirmNodeProvider(tezosNode)) {
-            Logger.error('Make sure your current provider is set to remote node provider.');
+            Logger.error('Make sure your current rpc-node is set to remote node.');
             return;
         }
 
@@ -237,11 +246,15 @@ class Accounts{
         };
 
         try {
-            Logger.warn('Activating the account....');
+            Logger.warn('Activating the account, this could take a while....');
             let activationResult = await conseiljs.TezosNodeWriter.sendIdentityActivationOperation(tezosNode, keystore, keys.secret);
             
-            const activationGroupid = this.clearRPCOperationGroupHash(activationResult.operationGroupID);
-            await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, activationGroupid, 10, 30+1);
+            try {
+                await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, JSON.parse(activationResult.operationGroupID), 15, 10);
+            } catch(error) {
+                Helper.errorLogHandler(`Error occurred in operation confirmation: ${error}`,
+                                       'Account activation operation confirmation failed ....');
+            }
 
             const revealResult = await conseiljs.TezosNodeWriter.sendKeyRevealOperation(tezosNode, keystore);
             Logger.info(`Testnet faucet account successfully activated: ${keys.label} - ${keys.pkh} \nWith tx hash: ${JSON.stringify(revealResult.operationGroupID)}`);
@@ -278,10 +291,6 @@ class Accounts{
         }
     }
 
-    clearRPCOperationGroupHash(ids) {
-        return ids.replace(/\'/g, '').replace(/\n/, '');
-    }
-
     getKeys(account) {
         let keys,f;
         if (f = Helper.findKeyObj(config.identities, account)) {
@@ -306,7 +315,7 @@ class Accounts{
     }
 
     addAccount(label, pkh, identity, nodeType) {
-        if(nodeType.includes('localhost')) {
+        if(nodeType.includes('localhost') || nodeType.includes('192.168')) {
             nodeType = 'localnode';
         } else {
             nodeType = 'carthagenet'

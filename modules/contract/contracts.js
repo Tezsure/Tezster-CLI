@@ -1,14 +1,17 @@
-const confFile = __dirname + '/../../config.json';
-const jsonfile = require('jsonfile');
-var config = jsonfile.readFileSync(confFile);
-const CONSEIL_JS = '../../lib/conseiljs';
-const TESTNET_NAME = 'carthagenet';
+const { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL, TEZSTER_FOLDER_PATH } = require('../cli-constants');
+      
+const jsonfile = require('jsonfile'),
+      Logger = require('../logger'),
+      { Helper } = require('../helper'),
+      { ExceptionHandler } = require('../exceptionHandler');
 
-const Logger = require('../logger');
-const { Helper } = require('../helper');
-const { ExceptionHandler } = require('../exceptionHandler');
-
+let config;
+      
 class Contracts {
+
+    constructor(){
+        config = jsonfile.readFileSync(confFile);
+    }
 
     async listContracts() {
         Logger.verbose('Command : tezster list-contracts');
@@ -23,23 +26,15 @@ class Contracts {
 
     async deployContract(args) {
         Logger.verbose(`Command : tezster deploy ${args}`);
-        if (args.length < 4) {
-            Logger.warn('Incorrect usage of deploy command \nCorrect usage: - tezster deploy <contract-label> <contract-absolute-path> <init-storage-value> <account> [options]');
-            return;
-        }
     
-        await this.deploy(args[0], args[1], args[2], args[3], args[5]);
+        await this.deploy(args.contractLabel, args.contractAbsolutePath, args.initStorageValue, args.account, args.amount, args.fee, args.storageLimit, args.gasLimit);
         Logger.warn(`If you're using ${TESTNET_NAME} node, use https://${TESTNET_NAME}.tzstats.com to check contract/transactions`);
     }
 
     async callContract(args) {
         Logger.verbose(`Command : tezster call ${args}`);
-        if (args.length < 3) {
-            Logger.warn('Incorrect usage of call command \nCorrect usage: - tezster call <contract-name> <argument-value> <account> [options]');
-            return;
-        }
         
-        await this.invokeContract(args[0], args[1], args[2], args[4]);
+        await this.invokeContract(args.contractName, args.argumentValue, args.account, args.amount, args.fee, args.storageLimit, args.gasLimit);
         Logger.warn(`If you're using ${TESTNET_NAME} node, use https://${TESTNET_NAME}.tzstats.com to check contract/transactions`);
     }
 
@@ -65,7 +60,7 @@ class Contracts {
     async getEntryPoints(args) {
         Logger.verbose(`Command : tezster list-entry-points ${args}`);
         if (args.length < 1) {
-            Logger.warn('Incorrect usage - tezster list-entry-points <contract-absolute-path>');
+            Logger.warn('Incorrect usage - tezster list-entry-points <contract-absolute-path/contract-address>');
             return;
         }
         this.listEntryPoints(args[0]);
@@ -83,15 +78,32 @@ class Contracts {
     async listEntryPoints(contractPath) {
         const fs = require('fs');
         const conseiljs = require(CONSEIL_JS);
+        let conseilServer = { 'url': CONSEIL_SERVER_URL, 'apiKey': CONSEIL_SERVER_APIKEY, 'network': TESTNET_NAME };
+        let contractCode, contractAddress;
+        let contractObj = Helper.findKeyObj(config.contracts, contractPath);
+        if (contractObj) {
+            contractAddress = contractObj.pkh;
+        }
+      
+        if (!contractAddress && !fs.existsSync(contractPath)) {
+            Logger.error(`Couldn't find the contract, please make sure contract label or address is correct!`);
+            return;
+        }
 
         try {
-            const contractCode = fs.readFileSync(contractPath, 'utf8');
+            if(contractAddress) {
+                const account = await conseiljs.TezosConseilClient.getAccount(conseilServer, conseilServer.network, contractAddress);
+                contractCode = account.script;
+            } else {
+                contractCode = fs.readFileSync(contractPath, 'utf8');
+            }
+
             const entryPoints = await conseiljs.TezosContractIntrospector.generateEntryPointsFromCode(contractCode);
             const storageFormat = await conseiljs.TezosLanguageUtil.preProcessMichelsonScript(contractCode);
             Logger.info(`\nInitial Storage input must be of type : ${storageFormat[1].slice(8)}`);
             entryPoints.forEach(p => {
                 Logger.info('-------------------------------------------------------------------------------------------------------------------------------------');
-                Logger.info(`\nName => ${p.name}\n\nParameters => (${p.parameters.map(pp => (pp.name || '') + pp.type).join(', ')})\n\nStructure => ${p.structure}\n\nExample => ${p.generateSampleInvocation()}\n`);
+                Logger.info(`\nName => ${p.name}\n\nParameters => (${p.parameters.map(pp => (pp.name || '') + pp.type).join(', ')})\n\nStructure => ${p.structure}\n`);
             });
         }
         catch(error) {
@@ -99,10 +111,11 @@ class Contracts {
         }
     }
 
-    async deploy(contractLabel, contractPath, initValue, account, amount) {
+    async deploy(contractLabel, contractPath, initValue, account, amount, fee, storageLimit, gasLimit) {
         const fs = require('fs');
         const conseiljs = require(CONSEIL_JS);
         const tezosNode = config.provider;  
+        let conseilServer = { 'url': CONSEIL_SERVER_URL, 'apiKey': CONSEIL_SERVER_APIKEY, 'network': TESTNET_NAME };
 
         const keys = this.getKeys(account);
         if(!keys) {
@@ -124,19 +137,33 @@ class Contracts {
         }
 
         amount = amount | 0;
+        fee = fee | 100000;
+        storageLimit = storageLimit | 10000;
+        gasLimit = gasLimit | 500000;
       
+        Logger.warn('Deploying the contract, this could take a while....');
         try {
             const contract = fs.readFileSync(contractPath, 'utf8');
             const result = await conseiljs.TezosNodeWriter.sendContractOriginationOperation(
                                       tezosNode, keystore, amount*1000000, undefined,
-                                      100000, '', 10000, 500000, 
-                                      contract, initValue, conseiljs.TezosParameterFormat.Michelson);         
+                                      fee, '', storageLimit, gasLimit,
+                                      contract, initValue, conseiljs.TezosParameterFormat.Michelson);        
+                                      
+            if(!tezosNode.includes('localhost') && !tezosNode.includes('192.168')) {
+                try {
+                    await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, JSON.parse(result.operationGroupID), 15, 10);
+                } catch(error) {
+                    Helper.errorLogHandler(`Error occurred in operation confirmation: ${error}`,
+                                           'Contract deployment operation confirmation failed ....');
+                }
+            }
+            
             if (result.results) {
                 switch(result.results.contents[0].metadata.operation_result.status) {
                     case 'applied':
                         let opHash = result.results.contents[0].metadata.operation_result.originated_contracts;
                         this.addNewContract(contractLabel, opHash[0] , keys.pkh , config.provider);
-                        Logger.info(`contract '${contractLabel}' has been deployed at ${opHash}`);
+                        Logger.info(`Contract '${contractLabel}' has been deployed with ${opHash}`);
                         return;
                     case 'failed':
                     default:
@@ -151,7 +178,7 @@ class Contracts {
         }
     }
 
-    async invokeContract(contract, argument, account, amount) {
+    async invokeContract(contract, argument, account, amount, fee, storageLimit, gasLimit) {
         const conseiljs = require(CONSEIL_JS);
         const tezosNode = config.provider;
         const keys = this.getKeys(account);
@@ -179,10 +206,13 @@ class Contracts {
         }
 
         amount = amount | 0;
+        fee = fee | 100000;
+        storageLimit = storageLimit | 10000;
+        gasLimit = gasLimit | 100000;
       
         try {
           const result = await conseiljs.TezosNodeWriter.sendContractInvocationOperation(
-                                      tezosNode, keystore, contractAddress, amount*1000000, 100000, '', 10000, 100000, undefined, 
+                                      tezosNode, keystore, contractAddress, amount*1000000, fee, '', storageLimit, gasLimit, undefined, 
                                       argument, conseiljs.TezosParameterFormat.Michelson);
           
           if (result.results) {
@@ -262,7 +292,7 @@ class Contracts {
     }
 
     addNewContract(label, opHash, pkh, nodeType) {
-        if(nodeType.includes('localhost')) {
+        if(nodeType.includes('localhost') || nodeType.includes('192.168')) {
             nodeType = 'localnode';
         } else {
             nodeType = 'carthagenet'

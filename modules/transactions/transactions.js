@@ -1,13 +1,17 @@
-const confFile = __dirname + '/../../config.json';
-const jsonfile = require('jsonfile');
-var config = jsonfile.readFileSync(confFile);
-const CONSEIL_JS = '../../lib/conseiljs';
-const TESTNET_NAME = 'carthagenet';
-const Logger = require('../logger');
-const { Helper } = require('../helper');
-const { ExceptionHandler } = require('../exceptionHandler');
+const { confFile, CONSEIL_JS, TESTNET_NAME } = require('../cli-constants');
+
+const jsonfile = require('jsonfile'),      
+      Logger = require('../logger'),
+      { Helper } = require('../helper'),
+      { ExceptionHandler } = require('../exceptionHandler');
+
+let config;
 
 class Transactions {
+
+    constructor(){
+        config = jsonfile.readFileSync(confFile);
+    }
 
     async transfer(args) {
         Logger.verbose(`Command : tezster transfer ${args}`);
@@ -18,7 +22,7 @@ class Transactions {
         this.transferAmount(args);
     }
 
-    async listTransactions() {       
+    async listTransactions() {      
         Logger.verbose(`Command : tezster list-transactions`);
         Logger.warn(`For transactions done on ${TESTNET_NAME} node ,you can visit https://${TESTNET_NAME}.tzstats.com for more information`);
         if(Object.keys(config.transactions).length > 0) {        
@@ -35,24 +39,25 @@ class Transactions {
         
         const conseiljs = require(CONSEIL_JS);
         const tezosNode = config.provider;
-        let keys = this.getKeys(from);
-        if(!keys) {
-            Logger.error(`Sender account label doesn't exist.`);
+        let keys = this.getKeys(from), keystore;
+
+        if(isNaN(amount)) {
+            Logger.error('please enter amount value in integer....');
             return;
         }
 
-        if(!this.getKeys(to)) {
-            Logger.error(`Receiver account doesn't exist.`);
+        try {
+            keystore = {
+                publicKey: keys.pk,
+                privateKey: keys.sk,
+                publicKeyHash: keys.pkh,
+                seed: '',
+                storeType: conseiljs.StoreType.Fundraiser
+            };
+        } catch(error) {
+            Logger.error(`Sender account doesn't exist. Run 'tezster list-accounts' to get all accounts.`);
             return;
         }
-
-        const keystore = {
-            publicKey: keys.pk,
-            privateKey: keys.sk,
-            publicKeyHash: keys.pkh,
-            seed: '',
-            storeType: conseiljs.StoreType.Fundraiser
-        };
 
         if (f = Helper.findKeyObj(config.identities, from)) {
             keys = f;

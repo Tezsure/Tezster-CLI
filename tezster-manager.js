@@ -34,8 +34,8 @@ class TezsterManager{
         this.setup.getLogFiles();
     }
 
-    setProvider(){
-        this.accounts.setProvider(args);
+    setProvider(accountSetProviderParameterValues){
+        this.accounts.setProvider(accountSetProviderParameterValues);
     }
 
     getProvider(){
@@ -74,12 +74,12 @@ class TezsterManager{
         this.accounts.removeAccount(args);
     }
 
-    deployContract(){
-        this.contracts.deployContract(args);
+    deployContract(deployParamaterValues){
+        this.contracts.deployContract(deployParamaterValues);
     }
 
-    callContract(){
-        this.contracts.callContract(args);
+    callContract(callParamaterValues){
+        this.contracts.callContract(callParamaterValues);
     }
 
     getStorage(){

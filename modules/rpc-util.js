@@ -1,4 +1,7 @@
-const request = require('request');
+const request = require('request'),
+      docker_machine_ip = require('docker-ip'),
+      { Helper } = require('./helper'),
+      { TZSTAT_BLOCK_CHAIN_CONFIG_API, TZSTAT_BLOCK_HEAD_API } = require('./cli-constants');
 
 class RpcRequest {
 
@@ -21,9 +24,19 @@ class RpcRequest {
         });
     }
 
-    static checkNodeStatus(provider) {
+    static checkNodeStatusForLocalNodes(provider) {
         return new Promise(function(resolve, reject) {
-            request(`${provider}/chains/main/blocks/head/protocols`, function (error, response, body) {
+            if(Helper.isWindows()) {
+                let current_docker_machine_ip;
+                try { 
+                    current_docker_machine_ip = docker_machine_ip();
+                } catch(error) {
+                    reject(error);
+                }
+                provider = provider.replace('localhost', current_docker_machine_ip);
+            }
+            
+            request(`${provider}/chains/main/blocks/head`, function (error, response, body) {
                 if(error){
                     reject(error);
                 } else {
@@ -36,6 +49,31 @@ class RpcRequest {
                 }
             });
         });
+    }
+    
+    static fetchCurrentBlockForRemoteNodes() {
+        return Promise.all(
+            [ TZSTAT_BLOCK_HEAD_API, TZSTAT_BLOCK_CHAIN_CONFIG_API ].map((url, i)=> {   
+                return new Promise(function(resolve, reject){
+                    try {
+                        request.get({ url: url }, function(error, response, body) {
+                        if(error) {
+                            reject(error);
+                        } else {
+                            try {
+                                let statusData = JSON.parse(body);
+                                resolve(statusData);
+                            } catch(error) {
+                                reject(error);
+                            }
+                        }
+                    });
+                    } catch(error) {
+                        reject(error);
+                    }
+                });        
+            })
+        );
     }
     
 }
