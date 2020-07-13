@@ -2,7 +2,7 @@
 
 <img src="https://tezster.s3-ap-southeast-1.amazonaws.com/TEZSTER_CLI/1_jDB5enULQVo2UfeiwD32qA.png" alt="Tezster CLI banner" align="center" />
 <div align="center"><strong>A complete toolbox to build, deploy and interact with the applications on Tezos sandbox and Tezos testnets.</strong></div>
-<div align="center">Tezster-CLI comes in an npm package with a set of easy commands to kickstart the development or interaction with Tezos blockchain. It allows you to interact with local nodes as well as remote testnet nodes and deploy or call smart contracts. To get complete understanding of components usage and visual demo follow <a href="https://docs.tezster.tech/tezster-cli"><strong>Tezster-CLI Guide</strong></a>.
+<div align="center">Tezster-CLI comes in an npm package with a set of easy commands to kickstart the development or interaction with Tezos blockchain. It allows you to interact with local nodes as well as remote testnet nodes and deploy or call smart contracts. To get complete understanding of components usage and visual demo follow <a href="https://docs.cli.tezster.tech/"><strong>Tezster-CLI Guide</strong></a>.
 </div>
 
 # Getting Started
@@ -38,7 +38,7 @@ For Ubuntu/Linux run :  ```sudo apt install docker.io``` <br />
 For Debian refer this [link](https://docs.docker.com/engine/install/debian/). <br />
 For MAC refer this [link](https://docs.docker.com/docker-for-mac/release-notes/#docker-desktop-community-2303). (Docker Desktop stable v2.3.0.2 or later) <br />
 
-*Note: If you are using **windows**, please follow docker installation steps as detailed in [docker installation steps for windows](https://docs.tezster.tech/tezster-cli#docker-installation-steps-for-windows).*
+*Note: If you are using **windows**, please follow docker installation steps as detailed in [docker installation steps for windows](https://docs.cli.tezster.tech/getting-started/prerequisites#docker-installation-for-windows).*
 
 ### Post Docker Installation Guide (Skip if using windows or docker-desktop)
 Make sure after installing docker you have added $USER to the docker group, if not run the following commands:
@@ -78,7 +78,7 @@ To list down all the tezster commands, run:
 tezster --help
 ```
 
-Congratulations, you are all set to use Tezster-CLI commands. For usage guidance follow our **[documentation page](https://docs.tezster.tech/tezster-cli#playground-setup)**.
+Congratulations, you are all set to use Tezster-CLI commands. For usage guidance follow our **[documentation page](https://docs.cli.tezster.tech/playgrouns-setup/local-tezos-nodes)**.
 
 
 ## Contributing
@@ -90,7 +90,7 @@ There are many ways to contribute, from writing tutorials or blog posts, improvi
 
 ### Reporting bugs and Support
 
-To know about common errors and fixes follow our [common errors](https://docs.tezster.tech/tezster-cli#common-errors-with-possible-fix). To report bugs, please create an issue on [issue page](https://github.com/Tezsure/Tezster-CLI/issues).
+To know about common errors and fixes follow our [common errors](https://docs.cli.tezster.tech/common-errors/common-errors-with-possible-fix). To report bugs, please create an issue on [issue page](https://github.com/Tezsure/Tezster-CLI/issues).
 
 **You can get in touch with us for any open discussion and 24*7 support via [Telegram](https://t.me/tezster).**
 
