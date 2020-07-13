@@ -28,14 +28,15 @@ program
 
 /******* To start local tezos nodes on user system*/
 program.command('start-nodes')
-    .description('Starts Tezos nodes')
+    .description(`Starts local Tezos nodes`)
     .action(function(){  
         tezstermanager.startNodes();
 });
 
 /******* To stop local tezos nodes on user system*/
 program.command('stop-nodes')
-    .description('Stops Tezos nodes')
+    .usage(`\n(This command provides the interactive shell)`)
+    .description(`Stops local Tezos nodes`)
     .action(function() {
         if (process.argv.length > 3) {
             console.log('Incorrect usage of stop-nodes command. Correct usage: - tezster stop-nodes');
@@ -55,13 +56,14 @@ program.command('node-status')
         tezstermanager.nodeStatus();
 });
 
-/******* To set the Provider */
+/******* To set the rpc-node */
 program
-    .command('set-provider')
-    .description('To change the default provider')
+    .command('set-rpc-node')
+    .usage(`\n(This command provides the interactive shell)`)
+    .description('To change the default rpc node provider')
     .action(function() {
         if (process.argv.length > 3) {
-            console.log('Incorrect usage of set-provider command. Correct usage: - tezster set-provider');
+            console.log('Incorrect usage of set-rpc-node command. Correct usage: - tezster set-rpc-node');
             return;
         }
         prompt(accountSetProviderParameters).then(accountSetProviderParameterValues => {
@@ -69,10 +71,10 @@ program
         });
 });
 
-/******* To get the Provider */
+/******* To get the current rpc-node */
 program
-    .command('get-provider')
-    .description('To fetch the current provider')
+    .command('get-rpc-node')
+    .description('To fetch the current rpc node')
     .action(function(){        
         tezstermanager.getProvider();
 });
@@ -150,6 +152,7 @@ program
 /*******deploy contract written in Michelson*/
 program
     .command('deploy')
+    .usage(`\n(This command provides the interactive shell)`)
     .description('Deploys a smart contract written in Michelson')
     .action(function() {
         if (process.argv.length > 3) {
@@ -165,6 +168,7 @@ program
 /*******calls contract written in Michelson*/
 program
     .command('call')
+    .usage(`\n(This command provides the interactive shell)`)
     .description('Calls a smart contract with given value provided in Michelson format')
     .action(function() {
         if (process.argv.length > 3) {
@@ -253,8 +257,8 @@ const validCommands = [
     'stop-nodes',
     'node-status',
     'get-logs',
-    'get-provider',
-    'set-provider',
+    'get-rpc-node',
+    'set-rpc-node',
     'transfer',
     'get-balance',
     'list-entry-points', 
