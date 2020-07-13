@@ -108,7 +108,7 @@ class Setup {
     async nodeStatus() {
         Logger.verbose('Command : tezster node-status');
 
-        if(config.provider.includes('localhost')) {
+        if(config.provider.includes('localhost') || config.provider.includes('192.168')) {
             try {
                 let response = await RpcRequest.checkNodeStatusForLocalNodes(LOCAL_NODE_URL);
                 if(response.protocol.startsWith('PsCARTHAG')){
