@@ -10,8 +10,10 @@ Follow below steps to get started with Tezster-CLI.
 
 ## Prerequisites
 
-1. Node v. 12.x+
+1. Node v. 12.x.x
 2. Docker v. 2.3.0.2+
+
+*Note: We recommend to install Node LTS version i.e. 12.x.x.*
 
 ### OS Support
 1. Linux (Ubuntu and Debian)
