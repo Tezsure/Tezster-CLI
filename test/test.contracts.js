@@ -16,6 +16,7 @@ const sinon = require('sinon'),
 const contractAbsolutePath = './michelson.tz',
       CONTRACT_ADDRESS = 'KT1WvyJ1qUrWzShA2T6QeL7AW4DR6GspUimM',
       CONTRACT_LABEL = 'samplecontract',
+      contractName = 'samplecontract',
       NEW_CONTRACT_LABEL = 'newcontract',
       INCORRECT_CONTRACT_LABEL = 'notavailablecontract',
       contractLabel = 'deployedcontract',
@@ -161,7 +162,7 @@ describe('Smart Contract Operations', async () => {
         it('must call sendContractInvocationOperation function with applied status', async () => {
             const conseiljs = require(CONSEIL_JS);
             stubHelper = sandbox.stub(Helper, 'findKeyObj')
-                        .withArgs(testconfig.contracts, contractLabel)
+                        .withArgs(testconfig.contracts, contractName)
                         .returns(NEW_CONTRACT);
 
             stubKeys = sandbox.stub(contract, 'getKeys')
@@ -183,7 +184,7 @@ describe('Smart Contract Operations', async () => {
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
             stubLoggerInfo = sandbox.stub(Logger, 'info');
             
-            await contract.callContract({ contractLabel, argumentValue, account, amount, fee, storageLimit, gasLimit });
+            await contract.callContract({ contractName, argumentValue, account, amount, fee, storageLimit, gasLimit });
             sinon.assert.calledOnce(stubHelper);
             sinon.assert.calledOnce(stubKeys);
             sinon.assert.calledOnce(stubConseil);
@@ -192,7 +193,7 @@ describe('Smart Contract Operations', async () => {
         it('must call sendContractInvocationOperation function with failed status', async () => {
             const conseiljs = require(CONSEIL_JS);
             stubHelper = sandbox.stub(Helper, 'findKeyObj')
-                        .withArgs(testconfig.contracts, contractLabel)
+                        .withArgs(testconfig.contracts, contractName)
                         .returns(NEW_CONTRACT);
 
             stubKeys = sandbox.stub(contract, 'getKeys')
@@ -214,7 +215,7 @@ describe('Smart Contract Operations', async () => {
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
             stubLoggerError = sandbox.stub(Logger, 'error');
             
-            await contract.callContract({ contractLabel, argumentValue, account, amount, fee, storageLimit, gasLimit });
+            await contract.callContract({ contractName, argumentValue, account, amount, fee, storageLimit, gasLimit });
             sinon.assert.calledOnce(stubHelper);
             sinon.assert.calledOnce(stubKeys);
             sinon.assert.calledOnce(stubConseil);
@@ -224,14 +225,14 @@ describe('Smart Contract Operations', async () => {
         it('should throw error as key is not present', async () => {
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
             stubLoggerError = sandbox.stub(Logger, 'error');
-            await contract.callContract({ contractLabel, argumentValue, INCORRECT_BOOTSTRAPPED_ACCOUNT, amount, fee, storageLimit, gasLimit });
+            await contract.callContract({ contractName, argumentValue, INCORRECT_BOOTSTRAPPED_ACCOUNT, amount, fee, storageLimit, gasLimit });
             sinon.assert.calledOnce(stubLoggerError);
         });
 
         it('should throw error as contract label is not present', async () => {
             stubLoggerWarn = sandbox.stub(Logger, 'warn');
             stubLoggerError = sandbox.stub(Logger, 'error');
-            await contract.callContract({ contractLabel, argumentValue, account, fee, storageLimit, gasLimit });
+            await contract.callContract({ contractName, argumentValue, account, fee, storageLimit, gasLimit });
             sinon.assert.calledOnce(stubLoggerError);
         });
 
