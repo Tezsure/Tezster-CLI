@@ -80,12 +80,6 @@ describe('Faucet Account Operations', async () => {
             sinon.assert.calledOnce(stubWriteFile);
             sinon.assert.calledOnce(stubHelper);
         });
-
-        // it('invalid number of arguments', async () => { 
-        //     stubLoggerWarn = sandbox.stub(Logger, 'warn');
-        //     await account.setProvider();
-        //     sinon.assert.calledOnce(stubLoggerWarn);
-        // });
     });
 
     context('get-provider', async () => {
