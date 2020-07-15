@@ -1,8 +1,8 @@
 const contractCallParameters = [
     {
       type : 'input',
-      name : 'contractLabel',
-      message : 'Enter contract label: '
+      name : 'contractName',
+      message : 'Enter contract name: '
     },
     {
       type : 'input',
