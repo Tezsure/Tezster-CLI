@@ -17,16 +17,12 @@ class Accounts{
     }
 
     async setProvider(args){
-        Logger.verbose(`Command : tezster set-provider ${args}`);
-        if (args.length < 1){ 
-            Logger.warn('Incorrect usage - tezster set-provider http://<ip>:<port>');
-            return;
-        }
-        this.setProviderAccounts(args);
+        Logger.verbose(`Command : tezster set-rpc-node ${args}`);
+        this.setProviderAccounts(args.newNodeProvider);
     }
 
     async getProvider() {
-        Logger.verbose(`Command : tezster get-provider`);
+        Logger.verbose(`Command : tezster get-rpc-node`);
         this.getProviderAccounts();
     }
 
@@ -97,8 +93,8 @@ class Accounts{
         await this.deleteAccount(args[0]);
     }
 
-    setProviderAccounts(args){    
-        config.provider = args[0];
+    setProviderAccounts(new_provider){    
+        config.provider = new_provider;
 
         if(Helper.isWindows() && config.provider.includes('localhost')) {
             let current_docker_machine_ip;
@@ -111,14 +107,14 @@ class Accounts{
         }
 
         jsonfile.writeFile(confFile, config);
-        Logger.info('Provider updated to ' + config.provider);
+        Logger.info('Active RPC node updated to ' + config.provider);
     }
 
     getProviderAccounts(){    
         if (config.provider) {
             Logger.info(config.provider);
         } else {
-            Logger.warn('No provider is set');
+            Logger.warn('No rpc node is set');
         } 
     }
 
@@ -237,7 +233,7 @@ class Accounts{
         }
 
         if(Helper.confirmNodeProvider(tezosNode)) {
-            Logger.error('Make sure your current provider is set to remote node provider.');
+            Logger.error('Make sure your current rpc-node is set to remote node.');
             return;
         }
 

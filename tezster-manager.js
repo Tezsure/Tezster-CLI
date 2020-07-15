@@ -34,8 +34,8 @@ class TezsterManager{
         this.setup.getLogFiles();
     }
 
-    setProvider(){
-        this.accounts.setProvider(args);
+    setProvider(accountSetProviderParameterValues){
+        this.accounts.setProvider(accountSetProviderParameterValues);
     }
 
     getProvider(){

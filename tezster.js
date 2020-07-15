@@ -6,8 +6,10 @@ const program = require('commander'),
       fs = require('fs'),
       { TezsterManager } = require('./tezster-manager'),
       { confFile } = require('./modules/cli-constants'),
-      { contractDeployParameters } = require('./utils/contract_deploy_parameters'),
-      { contractCallParameters } = require('./utils/contract_call_parameters');
+      { setupStopNodesParameters } = require('./utils/setup.stopNodes.parameters'),
+      { accountSetProviderParameters } = require('./utils/account.setProvider.parameters'),
+      { contractDeployParameters } = require('./utils/contracts.deploy.parameters'),
+      { contractCallParameters } = require('./utils/contracts.call.parameters');
 
 if(!fs.existsSync(confFile)) {
     require('./postinstall');
@@ -17,7 +19,7 @@ const tezstermanager = new TezsterManager();
 
 /******* To setup tezos nodes on user system */
 program
-    .version('0.2.4', '-v, --version')
+    .version('0.2.7', '-v, --version')
     .command('setup')
     .description('To set up Tezos nodes')
     .action(function(){  
@@ -26,16 +28,25 @@ program
 
 /******* To start local tezos nodes on user system*/
 program.command('start-nodes')
-    .description('Starts Tezos nodes')
+    .description(`Starts local Tezos nodes`)
     .action(function(){  
         tezstermanager.startNodes();
 });
 
 /******* To stop local tezos nodes on user system*/
 program.command('stop-nodes')
-    .description('Stops Tezos nodes')
+    .usage(`\n(This command provides the interactive shell)`)
+    .description(`Stops local Tezos nodes`)
     .action(function() {
-        tezstermanager.stopNodes();
+        if (process.argv.length > 3) {
+            console.log('Incorrect usage of stop-nodes command. Correct usage: - tezster stop-nodes');
+            return;
+        }
+        prompt(setupStopNodesParameters).then((setupStopNodesParametersResponse) => {
+                if(setupStopNodesParametersResponse.response) {
+                    tezstermanager.stopNodes();
+                }
+        });
 });
 
 /******* To get local nodes current status*/
@@ -45,19 +56,25 @@ program.command('node-status')
         tezstermanager.nodeStatus();
 });
 
-/******* To set the Provider */
+/******* To set the rpc-node */
 program
-    .command('set-provider')
-    .usage('[http://<ip>:<port>]')
-    .description('To change the default provider')
-    .action(function(){  
-        tezstermanager.setProvider();
+    .command('set-rpc-node')
+    .usage(`\n(This command provides the interactive shell)`)
+    .description('To change the default rpc node provider')
+    .action(function() {
+        if (process.argv.length > 3) {
+            console.log('Incorrect usage of set-rpc-node command. Correct usage: - tezster set-rpc-node');
+            return;
+        }
+        prompt(accountSetProviderParameters).then(accountSetProviderParameterValues => {
+            tezstermanager.setProvider(accountSetProviderParameterValues);
+        });
 });
 
-/******* To get the Provider */
+/******* To get the current rpc-node */
 program
-    .command('get-provider')
-    .description('To fetch the current provider')
+    .command('get-rpc-node')
+    .description('To fetch the current rpc node')
     .action(function(){        
         tezstermanager.getProvider();
 });
@@ -135,6 +152,7 @@ program
 /*******deploy contract written in Michelson*/
 program
     .command('deploy')
+    .usage(`\n(This command provides the interactive shell)`)
     .description('Deploys a smart contract written in Michelson')
     .action(function() {
         if (process.argv.length > 3) {
@@ -143,13 +161,14 @@ program
         }
         prompt(contractDeployParameters).then(deployParamaterValues => {
             tezstermanager.deployContract(deployParamaterValues);
-    });
+        });
 });
 
 
 /*******calls contract written in Michelson*/
 program
     .command('call')
+    .usage(`\n(This command provides the interactive shell)`)
     .description('Calls a smart contract with given value provided in Michelson format')
     .action(function() {
         if (process.argv.length > 3) {
@@ -158,7 +177,7 @@ program
         }
         prompt(contractCallParameters).then(callParamaterValues => {
             tezstermanager.callContract(callParamaterValues);
-    });
+        });
 });
 
 /*******gets storage for a contract*/
@@ -228,7 +247,7 @@ program
 });
 
 if (process.argv.length <= 2){
-    console.log('\x1b[31m%s\x1b[0m', 'Error: ' +'Please enter a command!');
+    program.help();
 }
 
 var commands=process.argv[2];
@@ -238,8 +257,8 @@ const validCommands = [
     'stop-nodes',
     'node-status',
     'get-logs',
-    'get-provider',
-    'set-provider',
+    'get-rpc-node',
+    'set-rpc-node',
     'transfer',
     'get-balance',
     'list-entry-points', 

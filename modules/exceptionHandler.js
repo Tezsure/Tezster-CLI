@@ -2,16 +2,16 @@ const Logger = require('./logger'),
       { Helper } = require('./helper');
 
 const EMPTY_IMPLICIT_CONTRACT = 'Account is not yet revealed on the blockchain. You can reveal the account by sending some tezos to the account.',
-      EMPTY_TRANSACTION = `please wait.... contract might take some time to get deployed on the tezos network`,
-      NOT_FOUND_404 = `make sure current network is same as the network smart contract got deployed....`,
-      CONNECT_ECONNREFUSED = 'Error occurred while establishing the connection with node provider....',
-      ABSOLUTE_URL_ARE_SUPPORTED = 'Current provider URL is not supported by network provider....',
-      GETADDRINFO = 'Current provider URL is not supported by network provider....',
-      HTTP_PROTOCOL = 'Current provider URL is not supported by network provider....',
-      CANNOT_READ_PROPERTY = 'Current provider URL is not supported by network provider....',
+      EMPTY_TRANSACTION = `Make sure current network is same as the network smart contract got deployed....`,
+      NOT_FOUND_404 = `Make sure current network is same as the network smart contract got deployed....`,
+      CONNECT_ECONNREFUSED = 'Error occurred while establishing the connection with rpc-node....',
+      ABSOLUTE_URL_ARE_SUPPORTED = 'Current rpc-node URL is not supported by the network....',
+      GETADDRINFO = 'Current rpc-node URL is not supported by the network....',
+      HTTP_PROTOCOL = 'Current rpc-node URL is not supported by  the network....',
+      CANNOT_READ_PROPERTY = 'Current rpc-node URL is not supported by the network....',
       CHECKSUM = `Account doesn't  exists or not revealed on the network.... To list down all accounts run 'tezster list-accounts'.`,
-      INVALID = 'Current provider URL is not supported by network provider....',
-      UNEXPECTED_END_OF_JSON_INPUT = 'Make sure account is revealed on the current provider....';
+      INVALID = 'Current rpc-node URL is not supported by the network....',
+      UNEXPECTED_END_OF_JSON_INPUT = 'Make sure account is revealed on the current rpc-node....';
 
 class ExceptionHandler {
 
