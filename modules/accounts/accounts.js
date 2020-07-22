@@ -18,7 +18,13 @@ class Accounts{
 
     async setProvider(args){
         Logger.verbose(`Command : tezster set-rpc-node ${args}`);
-        this.setProviderAccounts(args.newNodeProvider);
+        let providerToSet;
+        if(args.newCustomNodeProvider) {
+            providerToSet = args.newCustomNodeProvider;
+        } else {
+            providerToSet = args.newNodeProvider;
+        }
+        this.setProviderAccounts(providerToSet);
     }
 
     async getProvider() {
@@ -64,13 +70,14 @@ class Accounts{
         this.addFaucetAccount(args[0], args[1]);
     }
 
-    async restoreWallet(args) {  
-        Logger.verbose(`Command : tezster restore-wallet ${args}`);
-        if (args.length < 2) {
-            Logger.warn(`Incorrect usage of restore-wallet command \nCorrect usage: - tezster restore-wallet <wallet-label> <mnemonic-phrase> \n(Note: Mnemonic phrase must be enclose between '')`);
-            return;
-        }
-        this.restoreExistingWallet(args[0], args[1]);
+    async restoreWalletUsingMnemonic(label, mnemonic) {  
+        Logger.verbose(`Command : tezster restore-wallet ${label} ${mnemonic}`);
+        this.restoreExistingWalletUsingMnemonic(label, mnemonic);
+    }
+
+    async restoreWalletUsingPkh(label, pkh) {  
+        Logger.verbose(`Command : tezster restore-wallet ${label} ${pkh}`);
+        this.restoreExistingWalletUsingPkh(label, pkh);
     }
 
     async activateTestnetAccount(args) {  
@@ -127,12 +134,14 @@ class Accounts{
             pkh = f.pkh;
         } else if (f = Helper.findKeyObj(config.contracts, pkh)) {
             pkh = f.pkh;
+        } else {
+            pkh = account;
         }
 
         const keys = this.getKeys(account);
         const contractObj = Helper.findKeyObj(config.contracts, account);
 
-        if(!keys && !contractObj.label && !contractObj.pkh) {
+        if(!keys && !contractObj.label && !contractObj.pkh && !pkh.includes('tz1')) {
             Logger.error(`Account with label '${account}' doesn't exists.`);
             return;
         }
@@ -167,7 +176,7 @@ class Accounts{
         }
     }
 
-    async restoreExistingWallet(accountLabel, mnemonic) {
+    async restoreExistingWalletUsingMnemonic(accountLabel, mnemonic) {
         const conseiljs = require(CONSEIL_JS);
         const keys = this.getKeys(accountLabel);
         if(keys) {
@@ -177,6 +186,24 @@ class Accounts{
 
         try {
             const keystore = await conseiljs.TezosWalletUtil.unlockIdentityWithMnemonic(mnemonic, '');
+            this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
+            this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, config.provider);     
+            Logger.info(`Successfully restored the wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
+        } catch(error) {
+            Logger.error(`Error occurred while restoring the wallet:\n${error}`);
+        }
+    }
+
+    async restoreExistingWalletUsingPkh(accountLabel, pkh) {
+        const conseiljs = require(CONSEIL_JS);
+        const keys = this.getKeys(accountLabel);
+        if(keys) {
+            Logger.error(`Account with this label already exists.`);
+            return;
+        }
+
+        try {
+            const keystore = await conseiljs.TezosWalletUtil.restoreIdentityWithSecretKey(pkh);
             this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, config.provider);     
             Logger.info(`Successfully restored the wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
@@ -317,6 +344,8 @@ class Accounts{
     addAccount(label, pkh, identity, nodeType) {
         if(nodeType.includes('localhost') || nodeType.includes('192.168')) {
             nodeType = 'localnode';
+        } else if(nodeType.includes('mainnet')) {
+            nodeType = 'mainnet'
         } else {
             nodeType = 'carthagenet'
         }

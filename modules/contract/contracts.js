@@ -294,6 +294,8 @@ class Contracts {
     addNewContract(label, opHash, pkh, nodeType) {
         if(nodeType.includes('localhost') || nodeType.includes('192.168')) {
             nodeType = 'localnode';
+        } else if(nodeType.includes('mainnet')) {
+            nodeType = 'mainnet'
         } else {
             nodeType = 'carthagenet'
         }
