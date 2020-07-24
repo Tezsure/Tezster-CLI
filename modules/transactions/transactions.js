@@ -79,6 +79,8 @@ class Transactions {
             to = f.pkh;
         } else if (f = Helper.findKeyObj(config.contracts, to)) {
             to = f.pkh;
+        } else {
+            to = to;
         }
 
         fees = fees || 1500;
