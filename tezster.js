@@ -221,7 +221,7 @@ program
 /******* To transfer the amount */
 program
     .command('transfer')
-    .usage('<amount> <from> <to>')
+    .usage('<amount> <from> <to>  <--optional gas-fee>')
     .description('To transfer the funds between accounts')
     .action(function(){
         tezstermanager.transfer();
