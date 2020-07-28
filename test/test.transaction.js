@@ -1,4 +1,5 @@
 const sinon = require('sinon'),
+      expect = require('chai').expect,
       path = require('path'),
       jsonfile = require('jsonfile'),
 
@@ -61,6 +62,7 @@ describe('Transaction Operations', async () => {
             sinon.assert.calledOnce(stubLoggerInfo);
             sinon.assert.calledOnce(stubConseil);
             sinon.assert.calledOnce(stubWriteFile);
+            expect({ stubConseil }).to.be.an('object');
         });
 
         it('should throw error as amount is not an integer', async () => {
@@ -84,6 +86,7 @@ describe('Transaction Operations', async () => {
 
             await transaction.transfer([40, ACCOUNT1_PKH, ACCOUNT2_PKH]);
             sinon.assert.calledOnce(stubLoggerError);
+            expect({ stubConseil }).to.be.an('object');
         });
 
         it('invalid number of arguments', async () => {

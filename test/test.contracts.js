@@ -1,4 +1,6 @@
 const sinon = require('sinon'),
+      expect = require('chai').expect,
+
       fs = require('fs'),
       path = require('path'),
       jsonfile = require('jsonfile'),
@@ -108,6 +110,7 @@ describe('Smart Contract Operations', async () => {
             sinon.assert.calledOnce(stubReadFileSync);
             sinon.assert.calledOnce(stubConseil);
             sinon.assert.calledOnce(stubAddNewContract);
+            expect({ stubConseil }).to.be.an('object');
         });
 
         it('must call conseil function with failed status', async () => {
@@ -140,6 +143,7 @@ describe('Smart Contract Operations', async () => {
             sinon.assert.calledOnce(stubReadFileSync);
             sinon.assert.calledOnce(stubConseil);
             sinon.assert.callCount(stubAddNewContract, 0);
+            expect({ stubConseil }).to.be.an('object');
         });
 
         it('should throw error as key is not present', async () => {
@@ -188,6 +192,7 @@ describe('Smart Contract Operations', async () => {
             sinon.assert.calledOnce(stubHelper);
             sinon.assert.calledOnce(stubKeys);
             sinon.assert.calledOnce(stubConseil);
+            expect({ stubConseil }).to.be.an('object');
         });
 
         it('must call sendContractInvocationOperation function with failed status', async () => {
@@ -220,6 +225,7 @@ describe('Smart Contract Operations', async () => {
             sinon.assert.calledOnce(stubKeys);
             sinon.assert.calledOnce(stubConseil);
             sinon.assert.calledOnce(stubLoggerError);
+            expect({ stubConseil }).to.be.an('object');
         });
 
         it('should throw error as key is not present', async () => {
@@ -256,6 +262,7 @@ describe('Smart Contract Operations', async () => {
             await contract.getStorage([CONTRACT_LABEL]);
             sinon.assert.calledOnce(stubHelper);
             sinon.assert.calledOnce(stubConseil);
+            expect({ stubConseil }).to.be.an('object');
         });
 
         it('should be able to catch error', async () => {
@@ -275,6 +282,7 @@ describe('Smart Contract Operations', async () => {
             await contract.getStorage([CONTRACT_LABEL]);
             sinon.assert.calledOnce(stubHelper);
             sinon.assert.calledOnce(stubConseil);
+            expect({ stubConseil }).to.be.an('object');
         });
 
         it('should throw error as contract label is not present', async () => {
@@ -386,6 +394,8 @@ describe('Smart Contract Operations', async () => {
             sinon.assert.calledOnce(stubHelper);
             sinon.assert.calledOnce(stubConseilEntryPoint);
             sinon.assert.calledOnce(stubConseilStorageFormat);
+            expect({ stubConseilEntryPoint }).to.be.an('object');
+            expect({ stubConseilStorageFormat }).to.be.an('object');
         });
 
         it('list entry points using contract addresss', async () => {
@@ -407,6 +417,7 @@ describe('Smart Contract Operations', async () => {
             await contract.getEntryPoints([CONTRACT_ADDRESS]);
             sinon.assert.calledOnce(stubHelper);
             sinon.assert.calledOnce(stubConseilEntryPoint);
+            expect({ stubConseilEntryPoint }).to.be.an('object');
         });
 
         it(`should throw error as contract path/address doesn't exist`, async () => {

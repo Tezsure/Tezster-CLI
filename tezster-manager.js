@@ -3,7 +3,6 @@ const { Accounts } = require('./modules/accounts/accounts.js'),
       { Setup } = require('./modules/setup/setup.js'),
       { Contracts } = require('./modules/contract/contracts.js'),
       { Transactions } = require('./modules/transactions/transactions.js');
-var args = process.argv.slice(3);
 
 class TezsterManager{
 
@@ -46,23 +45,23 @@ class TezsterManager{
         this.accounts.listAccounts();
     }
 
-    getBalance(){
+    getBalance(args){
         this.accounts.getBalance(args);
     }
 
-    createWallet(){
+    createWallet(args){
         this.accounts.createWallet(args);
     }
 
-    addTestnetAccount(){
+    addTestnetAccount(args){
         this.accounts.addTestnetAccount(args);
     }
 
-    activateTestnetAccount(){
+    activateTestnetAccount(args){
         this.accounts.activateTestnetAccount(args);
     }
 
-    restoreWallet(){
+    restoreWallet(args){
         this.accounts.restoreWallet(args);
     }
 
@@ -70,7 +69,7 @@ class TezsterManager{
         this.contracts.listContracts();
     }
 
-    removeAccount(){
+    removeAccount(args){
         this.accounts.removeAccount(args);
     }
 
@@ -82,23 +81,23 @@ class TezsterManager{
         this.contracts.callContract(callParamaterValues);
     }
 
-    getStorage(){
+    getStorage(args){
         this.contracts.getStorage(args);
     }
 
-    addContract(){
+    addContract(args){
         this.contracts.addContract(args);
     }
 
-    listEntryPoints(){
+    listEntryPoints(args){
         this.contracts.getEntryPoints(args);
     }
 
-    removeContract(){
+    removeContract(args){
         this.contracts.removeContract(args);
     }
 
-    transfer(){
+    transfer(args){
         this.transactions.transfer(args);
     }
 

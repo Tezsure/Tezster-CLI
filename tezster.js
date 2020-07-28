@@ -93,7 +93,7 @@ program
     .usage('<account/contract(pkh)>')
     .description('To get the balance of account/contracts')
     .action(function(){
-        tezstermanager.getBalance();
+        tezstermanager.getBalance(process.argv.slice(3));
 });
 
 /******* To Create an account */
@@ -102,7 +102,7 @@ program
     .usage('<wallet-label>')
     .description('To create a new account')
     .action(function(){  
-        tezstermanager.createWallet(); 
+        tezstermanager.createWallet(process.argv.slice(3)); 
 });
 
 /* Restores an testnet faucet account */
@@ -111,7 +111,7 @@ program
     .usage('<account-label> <absolut-path-to-json-file>')
     .description('Restores a testnet faucet account from json file')
     .action(function(){
-        tezstermanager.addTestnetAccount();
+        tezstermanager.addTestnetAccount(process.argv.slice(3));
 });
 
 /* Restores an testnet faucet account */
@@ -120,7 +120,7 @@ program
     .usage('<account-label>')
     .description('Activates a testnet faucet account resored using tezster')
     .action(function(){
-        tezstermanager.activateTestnetAccount();
+        tezstermanager.activateTestnetAccount(process.argv.slice(3));
 });
 
 /******* To restore an existing wallet */
@@ -129,7 +129,7 @@ program
     .usage(`<wallet-label/identity/hash> <mnemonic-phrase> \n(Note: Mnemonic phrase must be enclose between '')`)
     .description('To restore an existing wallet using mnemonic')
     .action(function(){  
-        tezstermanager.restoreWallet(); 
+        tezstermanager.restoreWallet(process.argv.slice(3)); 
 });
 
 /******* To remove an account */
@@ -138,7 +138,7 @@ program
     .usage('<account-label/identity/hash>')
     .description('To remove an existing account')
     .action(function(){  
-        tezstermanager.removeAccount(); 
+        tezstermanager.removeAccount(process.argv.slice(3)); 
 });
 
 /******* TO get the list Contracts */
@@ -186,7 +186,7 @@ program
     .usage('<contract-name/address>')
     .description('Returns current storage for given smart contract')
     .action(function(){
-        tezstermanager.getStorage();
+        tezstermanager.getStorage(process.argv.slice(3));
 });
 
 /******* To Create an contract */
@@ -195,7 +195,7 @@ program
     .usage('<label> <address>')
     .description('Adds a smart contract with label for interaction')
     .action(function(){  
-        tezstermanager.addContract();    
+        tezstermanager.addContract(process.argv.slice(3));    
 });
 
 /******* To remove a contract */
@@ -204,7 +204,7 @@ program
     .usage('<contract-label>')
     .description('To remove deployed contract from list')
     .action(function(){  
-        tezstermanager.removeContract(); 
+        tezstermanager.removeContract(process.argv.slice(3)); 
 });
 
 /******* To transfer the amount */
@@ -213,7 +213,7 @@ program
     .usage('<amount> <from> <to>')
     .description('To transfer the funds between accounts')
     .action(function(){
-        tezstermanager.transfer();
+        tezstermanager.transfer(process.argv.slice(3));
 });
 
 /* list transactions done with tezster */
@@ -230,7 +230,7 @@ program
     .usage('<contract-absolute-path/contract-address>')
     .description('List down all entry points and initial storage format from smart contract')
     .action(function(){
-        tezstermanager.listEntryPoints();
+        tezstermanager.listEntryPoints(process.argv.slice(3));
 });
 
 /* Get all logs file in archive file fromat on user system */

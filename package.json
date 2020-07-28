@@ -5,7 +5,8 @@
   "main": "tezster.js",
   "scripts": {
     "postinstall": "node ./postinstall.js",
-    "test": "mocha",
+    "test": "mocha \"test/*.js\"",
+    "integration-test": "mocha \"integration_test/test.js\" --exit",
     "coverage": "nyc mocha --include-all-sources"
   },
   "bin": {
@@ -52,7 +53,8 @@
   },
   "nyc": {
     "include": [
-      "modules/**/*.js"
+      "modules/**/*.js",
+      "*.js"
     ],
     "exclude": [
       "modules/*.js"

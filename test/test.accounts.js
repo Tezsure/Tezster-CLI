@@ -1,4 +1,6 @@
 const sinon = require("sinon"),
+      expect = require('chai').expect,
+
       fs = require('fs'),
       path = require('path'),
       jsonfile = require('jsonfile'),
@@ -52,7 +54,7 @@ describe('Faucet Account Operations', async () => {
       sandbox.restore();
     })
 
-    context('set-provider', async () => { 
+    context('set-rpc-node', async () => { 
         it('should call method and replace current provider', async () => { 
             spySetProviderAccounts = sinon.spy(account, 'setProviderAccounts');
             stubLoggerInfo = sandbox.stub(Logger, 'info');
@@ -82,7 +84,7 @@ describe('Faucet Account Operations', async () => {
         });
     });
 
-    context('get-provider', async () => {
+    context('get-rpc-node', async () => {
         it('should fetch current provider', async () => { 
             spyGetProviderAccounts = sinon.spy(account, 'getProviderAccounts');
             stubLoggerInfo = sandbox.stub(Logger, 'info');
@@ -192,6 +194,8 @@ describe('Faucet Account Operations', async () => {
             sinon.assert.calledOnce(stubConseilKeystore);
             sinon.assert.calledOnce(stubLoggerInfo);
             sinon.assert.calledOnce(stubLoggerWarn);
+            expect({ stubConseilMnemonic }).to.be.an('object');
+            expect({ stubConseilKeystore }).to.be.an('object');
         });
 
         it('should catch error via conseiljs function', async () => { 
@@ -208,6 +212,7 @@ describe('Faucet Account Operations', async () => {
             await account.createWallet([NEW_WALLET]);
             sinon.assert.calledOnce(stubConseilMnemonic);
             sinon.assert.calledOnce(stubLoggerError);
+            expect({ stubConseilMnemonic }).to.be.an('object');
         });
 
         it('should throw error as account already exists', async () => { 
@@ -247,6 +252,7 @@ describe('Faucet Account Operations', async () => {
             sinon.assert.calledOnce(stubReadFileSync);
             sinon.assert.calledOnce(stubConseil);
             sinon.assert.calledOnce(stubLoggerInfo);
+            expect({ stubConseil }).to.be.an('object');
         });
 
         it('should trigger error as empty JSON file', async () => { 
@@ -302,6 +308,10 @@ describe('Faucet Account Operations', async () => {
             sinon.assert.calledOnce(stubOperationConfirmation);
             sinon.assert.calledOnce(stubConseilReveal);
             sinon.assert.calledOnce(stubLoggerInfo);
+            expect({ stubConseilActivation }).to.be.an('object');
+            expect({ stubOperationConfirmation }).to.be.an('object');
+            expect({ stubConseilReveal }).to.be.an('object');
+
         });
 
         it('should be able to catch error in operation confirmation hook', async () => { 
@@ -320,6 +330,7 @@ describe('Faucet Account Operations', async () => {
 
             await account.activateTestnetAccount([NON_BOOTSTRAPPED_ACCOUNT]);
             sinon.assert.calledTwice(stubLoggerError);
+            expect({ stubConseilActivation }).to.be.an('object');
         });
 
         it('should throw error for current provider as local nodes', async () => { 
@@ -365,6 +376,7 @@ describe('Faucet Account Operations', async () => {
             sinon.assert.calledOnce(stubLoggerInfo);
             sinon.assert.calledOnce(stubAddIdentity);
             sinon.assert.calledOnce(stubAddAccount);
+            expect({ stubConseil }).to.be.an('object');
         });
 
         it('should return error as keys already exist', async () => { 
