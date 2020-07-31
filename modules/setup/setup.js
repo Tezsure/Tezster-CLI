@@ -243,21 +243,13 @@ class Setup {
             {
                 name: `${CONTAINER_NAME}`,
                 ExposedPorts: {
-                    '18731/tcp': {},
-                    '18732/tcp': {},
-                    '18733/tcp': {},
+                    '18731/tcp': {}
                 },
                 Hostconfig: {
                     'PortBindings': {
                         '18731/tcp': [{
-                            'HostPort': '18731'
-                        }],
-                        '18732/tcp': [{
                             'HostPort': '18732'
-                        }],
-                        '18733/tcp': [{
-                            'HostPort': '18733'
-                        }],
+                        }]
                     }
                 },
             },

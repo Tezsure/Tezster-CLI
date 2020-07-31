@@ -11,7 +11,7 @@ const accountSetProviderParameters = [
         name : 'newNodeProvider',
         message : 'Select new rpc-node: ',
         choices: [
-                  'http://localhost:18731', 
+                  'http://localhost:18732', 
                   'https://testnet.tezster.tech', 
                   'https://tezos-dev.cryptonomic-infra.tech', 
                   'https://carthagenet.SmartPy.io', 
