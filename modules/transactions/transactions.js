@@ -16,7 +16,7 @@ class Transactions {
     async transfer(args) {
         Logger.verbose(`Command : tezster transfer ${args}`);
         if (args.length < 2) {
-            Logger.error('Incorrect usage - tezster transfer <amount> <from> <to> <--optional gas-fee>');
+            Logger.error('Incorrect usage - tezster transfer <amount(ꜩ)> <from> <to> <--optional gas-fee(muꜩ, default is 3000 muꜩ)>');
             return;
         }
         this.transferAmount(args);
@@ -83,7 +83,7 @@ class Transactions {
             to = to;
         }
 
-        fees = fees || 30000;
+        fees = fees || 3000;
         amount = amount * 1000000 ;
 
         try {

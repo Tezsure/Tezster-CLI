@@ -18,12 +18,7 @@ class Accounts{
 
     async setProvider(args){
         Logger.verbose(`Command : tezster set-rpc-node ${args}`);
-        let providerToSet;
-        if(args.newCustomNodeProvider) {
-            providerToSet = args.newCustomNodeProvider;
-        } else {
-            providerToSet = args.newNodeProvider;
-        }
+        let providerToSet = args.newCustomNodeProvider ? args.newCustomNodeProvider : args.newNodeProvider;
         this.setProviderAccounts(providerToSet);
     }
 
@@ -75,9 +70,9 @@ class Accounts{
         this.restoreExistingWalletUsingMnemonic(label, mnemonic);
     }
 
-    async restoreWalletUsingPkh(label, pkh) {  
+    async restoreWalletUsingSecret(label, pkh) {  
         Logger.verbose(`Command : tezster restore-wallet ${label} ${pkh}`);
-        this.restoreExistingWalletUsingPkh(label, pkh);
+        this.restoreExistingWalletUsingSecret(label, pkh);
     }
 
     async activateTestnetAccount(args) {  
@@ -194,7 +189,7 @@ class Accounts{
         }
     }
 
-    async restoreExistingWalletUsingPkh(accountLabel, pkh) {
+    async restoreExistingWalletUsingSecret(accountLabel, pkh) {
         const conseiljs = require(CONSEIL_JS);
         const keys = this.getKeys(accountLabel);
         if(keys) {

@@ -138,7 +138,7 @@ program
             if(Object.values(accountRestoreWalletParameterValues)[0] === 'Mnemonic Phrases') {
                 tezstermanager.restoreWalletUsingMnemonic(process.argv[3], Object.values(accountRestoreWalletParameterValues)[1]);
             } else {
-                tezstermanager.restoreWalletUsingPkh(process.argv[3], Object.values(accountRestoreWalletParameterValues)[1]);
+                tezstermanager.restoreWalletUsingSecret(process.argv[3], Object.values(accountRestoreWalletParameterValues)[1]);
             }
         });
     });
@@ -221,7 +221,7 @@ program
 /******* To transfer the amount */
 program
     .command('transfer')
-    .usage('<amount> <from> <to>  <--optional gas-fee>')
+    .usage('<amount(ꜩ)> <from> <to> <--optional gas-fee(muꜩ, default is 3000 muꜩ)>')
     .description('To transfer the funds between accounts')
     .action(function(){
         tezstermanager.transfer();

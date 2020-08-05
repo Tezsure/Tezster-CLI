@@ -66,8 +66,8 @@ class TezsterManager{
         this.accounts.restoreWalletUsingMnemonic(label, accountRestoreWalletParameterValues);
     }
 
-    restoreWalletUsingPkh(label, accountRestoreWalletParameterValues){
-        this.accounts.restoreWalletUsingPkh(label, accountRestoreWalletParameterValues);
+    restoreWalletUsingSecret(label, accountRestoreWalletParameterValues){
+        this.accounts.restoreWalletUsingSecret(label, accountRestoreWalletParameterValues);
     }
 
     listContracts(){
