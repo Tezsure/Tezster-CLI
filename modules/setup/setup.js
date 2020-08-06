@@ -130,7 +130,7 @@ class Setup {
             }
         } else {
             try {
-                let response = await RpcRequest.fetchCurrentBlockForRemoteNodes();
+                let response = await RpcRequest.fetchBlockDetailsForRemoteNodes(config.provider);
                 Logger.warn(`Name: ${response[1].name}`);
                 Logger.warn(`Network: ${response[1].network}`);
                 Logger.warn(`Protocol: ${response[1].protocol}`);
