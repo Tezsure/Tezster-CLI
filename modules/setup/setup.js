@@ -143,7 +143,7 @@ class Setup {
                 Logger.warn(`Endorsement Reward: ${response[1].endorsement_reward}`);
             } catch (error) {
                 Helper.errorLogHandler(`Error occurred while confirming node status: ${error}`,
-                                        'Error occurred while fetching block details....');
+                                        'Block details are not available for current rpc node....');
             }
         }
     }

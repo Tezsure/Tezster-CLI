@@ -339,6 +339,8 @@ class Accounts{
     addAccount(label, pkh, identity, nodeType) {
         if(nodeType.includes('localhost') || nodeType.includes('192.168')) {
             nodeType = 'localnode';
+        } else if(nodeType.includes('dalphanet')) {
+            nodeType = 'dalphanet'
         } else if(nodeType.includes('mainnet')) {
             nodeType = 'mainnet'
         } else {
