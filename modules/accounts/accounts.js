@@ -70,9 +70,9 @@ class Accounts{
         this.restoreExistingWalletUsingMnemonic(label, mnemonic);
     }
 
-    async restoreWalletUsingSecret(label, pkh) {  
-        Logger.verbose(`Command : tezster restore-wallet ${label} ${pkh}`);
-        this.restoreExistingWalletUsingSecret(label, pkh);
+    async restoreWalletUsingSecret(label, secret) {  
+        Logger.verbose(`Command : tezster restore-wallet ${label} ${secret}`);
+        this.restoreExistingWalletUsingSecret(label, secret);
     }
 
     async activateTestnetAccount(args) {  
@@ -189,7 +189,7 @@ class Accounts{
         }
     }
 
-    async restoreExistingWalletUsingSecret(accountLabel, pkh) {
+    async restoreExistingWalletUsingSecret(accountLabel, secret) {
         const conseiljs = require(CONSEIL_JS);
         const keys = this.getKeys(accountLabel);
         if(keys) {
@@ -198,7 +198,7 @@ class Accounts{
         }
 
         try {
-            const keystore = await conseiljs.TezosWalletUtil.restoreIdentityWithSecretKey(pkh);
+            const keystore = await conseiljs.TezosWalletUtil.restoreIdentityWithSecretKey(secret);
             this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, config.provider);     
             Logger.info(`Successfully restored the wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);

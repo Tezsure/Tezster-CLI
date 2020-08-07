@@ -127,11 +127,11 @@ program
 /******* To restore an existing wallet */
 program
     .command('restore-wallet')
-    .usage(`<wallet-label/identity/hash> <mnemonic-phrase> \n(Note: Mnemonic phrase must be enclose between '')`)
+    .usage(`<wallet-label>`)
     .description('To restore an existing wallet using mnemonic')
     .action(function(){  
         if (process.argv.length <=3 || process.argv.length > 4) {
-            console.log('Incorrect usage of restore-wallet command. Correct usage: - tezster restore-wallet <label>');
+            console.log('Incorrect usage of restore-wallet command. Correct usage: - tezster restore-wallet <wallet-label>');
             return;
         }
         prompt(accountRestoreWalletParameters).then(accountRestoreWalletParameterValues => {
