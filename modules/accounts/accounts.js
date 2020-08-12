@@ -1,4 +1,4 @@
-const { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL, TEZSTER_FOLDER_PATH } = require('../cli-constants');
+const { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL, NODE_TYPE } = require('../cli-constants');
 
 const jsonfile = require('jsonfile'),
       os = require('os'),
@@ -337,14 +337,14 @@ class Accounts{
     }
 
     addAccount(label, pkh, identity, nodeType) {
-        if(nodeType.includes('localhost') || nodeType.includes('192.168')) {
-            nodeType = 'localnode';
-        } else if(nodeType.includes('dalphanet')) {
-            nodeType = 'dalphanet'
-        } else if(nodeType.includes('mainnet')) {
-            nodeType = 'mainnet'
+        if(nodeType.includes(NODE_TYPE.LOCALHOST) || nodeType.includes(NODE_TYPE.WIN_LOCALHOST)) {
+            nodeType = NODE_TYPE.LOCALHOST;
+        } else if(nodeType.includes(NODE_TYPE.DALPHANET)) {
+            nodeType = NODE_TYPE.DALPHANET;
+        } else if(nodeType.includes(NODE_TYPE.MAINNET)) {
+            nodeType = NODE_TYPE.MAINNET;
         } else {
-            nodeType = 'carthagenet'
+            nodeType = NODE_TYPE.CARTHAGENET;
         }
         config.accounts.push({
             label : `${nodeType}_`+label,

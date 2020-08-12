@@ -16,6 +16,7 @@ const accountSetProviderParameters = [
                   'https://tezos-dev.cryptonomic-infra.tech', 
                   'https://carthagenet.SmartPy.io', 
                   'https://mainnet.smartpy.io', 
+                  'https://dalphanet.smartpy.io', 
                   'Enter Own Custom Url'
                 ]
     }, 
