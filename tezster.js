@@ -8,6 +8,7 @@ const program = require('commander'),
       { confFile } = require('./modules/cli-constants'),
       { setupStopNodesParameters } = require('./utils/setup.stopNodes.parameters'),
       { accountSetProviderParameters } = require('./utils/account.setProvider.parameters'),
+      { accountRestoreWalletParameters } = require('./utils/account.restoreWallet.parameters'),
       { contractDeployParameters } = require('./utils/contracts.deploy.parameters'),
       { contractCallParameters } = require('./utils/contracts.call.parameters');
 
@@ -126,11 +127,21 @@ program
 /******* To restore an existing wallet */
 program
     .command('restore-wallet')
-    .usage(`<wallet-label/identity/hash> <mnemonic-phrase> \n(Note: Mnemonic phrase must be enclose between '')`)
+    .usage(`<wallet-label>`)
     .description('To restore an existing wallet using mnemonic')
     .action(function(){  
-        tezstermanager.restoreWallet(); 
-});
+        if (process.argv.length <=3 || process.argv.length > 4) {
+            console.log('Incorrect usage of restore-wallet command. Correct usage: - tezster restore-wallet <wallet-label>');
+            return;
+        }
+        prompt(accountRestoreWalletParameters).then(accountRestoreWalletParameterValues => {
+            if(Object.values(accountRestoreWalletParameterValues)[0] === 'Mnemonic Phrases') {
+                tezstermanager.restoreWalletUsingMnemonic(process.argv[3], Object.values(accountRestoreWalletParameterValues)[1]);
+            } else {
+                tezstermanager.restoreWalletUsingSecret(process.argv[3], Object.values(accountRestoreWalletParameterValues)[1]);
+            }
+        });
+    });
 
 /******* To remove an account */
 program
@@ -210,7 +221,7 @@ program
 /******* To transfer the amount */
 program
     .command('transfer')
-    .usage('<amount> <from> <to>')
+    .usage('<amount(ꜩ)> <from> <to> <--optional gas-fee(muꜩ, default is 3000 muꜩ)>')
     .description('To transfer the funds between accounts')
     .action(function(){
         tezstermanager.transfer();

@@ -130,7 +130,7 @@ class Setup {
             }
         } else {
             try {
-                let response = await RpcRequest.fetchCurrentBlockForRemoteNodes();
+                let response = await RpcRequest.fetchBlockDetailsForRemoteNodes(config.provider);
                 Logger.warn(`Name: ${response[1].name}`);
                 Logger.warn(`Network: ${response[1].network}`);
                 Logger.warn(`Protocol: ${response[1].protocol}`);
@@ -143,7 +143,7 @@ class Setup {
                 Logger.warn(`Endorsement Reward: ${response[1].endorsement_reward}`);
             } catch (error) {
                 Helper.errorLogHandler(`Error occurred while confirming node status: ${error}`,
-                                        'Error occurred while fetching block details....');
+                                        'Block details are not available for current rpc node....');
             }
         }
     }
@@ -243,21 +243,13 @@ class Setup {
             {
                 name: `${CONTAINER_NAME}`,
                 ExposedPorts: {
-                    '18731/tcp': {},
-                    '18732/tcp': {},
-                    '18733/tcp': {},
+                    '18731/tcp': {}
                 },
                 Hostconfig: {
                     'PortBindings': {
                         '18731/tcp': [{
-                            'HostPort': '18731'
-                        }],
-                        '18732/tcp': [{
                             'HostPort': '18732'
-                        }],
-                        '18733/tcp': [{
-                            'HostPort': '18733'
-                        }],
+                        }]
                     }
                 },
             },

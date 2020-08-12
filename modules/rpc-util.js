@@ -1,7 +1,6 @@
 const request = require('request'),
       docker_machine_ip = require('docker-ip'),
-      { Helper } = require('./helper'),
-      { TZSTAT_BLOCK_CHAIN_CONFIG_API, TZSTAT_BLOCK_HEAD_API } = require('./cli-constants');
+      { Helper } = require('./helper');
 
 class RpcRequest {
 
@@ -51,9 +50,10 @@ class RpcRequest {
         });
     }
     
-    static fetchCurrentBlockForRemoteNodes() {
+    static fetchBlockDetailsForRemoteNodes(provider) {
+        provider = provider.includes('mainnet') ? 'https://api.tzstats.com' : 'https://api.carthagenet.tzstats.com';
         return Promise.all(
-            [ TZSTAT_BLOCK_HEAD_API, TZSTAT_BLOCK_CHAIN_CONFIG_API ].map((url, i)=> {   
+            [ `${provider}/explorer/block/head/op`, `${provider}/explorer/config/head` ].map((url, i)=> {   
                 return new Promise(function(resolve, reject){
                     try {
                         request.get({ url: url }, function(error, response, body) {

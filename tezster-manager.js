@@ -62,8 +62,12 @@ class TezsterManager{
         this.accounts.activateTestnetAccount(args);
     }
 
-    restoreWallet(){
-        this.accounts.restoreWallet(args);
+    restoreWalletUsingMnemonic(label, accountRestoreWalletParameterValues){
+        this.accounts.restoreWalletUsingMnemonic(label, accountRestoreWalletParameterValues);
+    }
+
+    restoreWalletUsingSecret(label, accountRestoreWalletParameterValues){
+        this.accounts.restoreWalletUsingSecret(label, accountRestoreWalletParameterValues);
     }
 
     listContracts(){

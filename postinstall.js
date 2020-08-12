@@ -65,7 +65,7 @@ function setProviderForWindows() {
             current_docker_machine_ip = 'localhost';
         }
         
-        config.provider = `http://${current_docker_machine_ip}:18731`;
+        config.provider = `http://${current_docker_machine_ip}:18732`;
         jsonfile.writeFile(confFile, config);
     }
 
