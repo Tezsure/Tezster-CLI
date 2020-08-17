@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 const { confFile, CONSEIL_SERVER, CONSEIL_JS, TESTNET_NAME, NODE_TYPE } = require('../cli-constants');
+=======
+const { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL, NODE_TYPE } = require('../cli-constants');
+>>>>>>> a61d6ca8db92ef4b6a6147efc4335dc7e1fb972c
       
 const jsonfile = require('jsonfile'),
       writeJsonFile = require('write-json-file'),
