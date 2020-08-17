@@ -82,8 +82,20 @@ class TezsterManager{
         this.contracts.deployContract(deployParamaterValues);
     }
 
-    callContract(callParamaterValues){
-        this.contracts.callContract(callParamaterValues);
+    deployContractNonInterativeMode(){
+        this.contracts.deployContract(args[0], args[1], args[2], args[3], args[4]);
+    }
+
+    deployContractInterativeMode(deployParamaterValues){
+        this.contracts.deployContract(deployParamaterValues.contractLabel, deployParamaterValues.contractAbsolutePath, deployParamaterValues.initStorageValue, deployParamaterValues.account, deployParamaterValues.amount, deployParamaterValues.fee, deployParamaterValues.storageLimit, deployParamaterValues.gasLimit);
+    }
+
+    callContractNonInterativeMode(){
+        this.contracts.callContract(args[0], args[1], args[2], args[3]);
+    }
+
+    callContractInterativeMode(callParamaterValues){
+        this.contracts.callContract(callParamaterValues.contractLabel, callParamaterValues.argumentValue, callParamaterValues.account, callParamaterValues.amount, callParamaterValues.fee, callParamaterValues.storageLimit, callParamaterValues.gasLimit);
     }
 
     getStorage(){

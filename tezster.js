@@ -10,7 +10,8 @@ const program = require('commander'),
       { accountSetProviderParameters } = require('./utils/account.setProvider.parameters'),
       { accountRestoreWalletParameters } = require('./utils/account.restoreWallet.parameters'),
       { contractDeployParameters } = require('./utils/contracts.deploy.parameters'),
-      { contractCallParameters } = require('./utils/contracts.call.parameters');
+      { contractCallParameters } = require('./utils/contracts.call.parameters'),
+      { version } = require('./package.json');
 
 if(!fs.existsSync(confFile)) {
     require('./postinstall');
@@ -20,7 +21,7 @@ const tezstermanager = new TezsterManager();
 
 /******* To setup tezos nodes on user system */
 program
-    .version('0.2.7', '-v, --version')
+    .version(version, '-v, --version')
     .command('setup')
     .description('To set up Tezos nodes')
     .action(function(){  
@@ -127,11 +128,11 @@ program
 /******* To restore an existing wallet */
 program
     .command('restore-wallet')
-    .usage(`<wallet-label/identity/hash> <mnemonic-phrase> \n(Note: Mnemonic phrase must be enclose between '')`)
-    .description('To restore an existing wallet using mnemonic')
+    .usage(`<wallet-label>)`)
+    .description('Interactive command to restore an existing wallet using mnemonic-phrase or secret/private key')
     .action(function(){  
         if (process.argv.length <=3 || process.argv.length > 4) {
-            console.log('Incorrect usage of restore-wallet command. Correct usage: - tezster restore-wallet <label>');
+            console.log('Incorrect usage of restore-wallet command. Correct usage: - tezster restore-wallet <wallet-label>');
             return;
         }
         prompt(accountRestoreWalletParameters).then(accountRestoreWalletParameterValues => {
@@ -163,32 +164,42 @@ program
 /*******deploy contract written in Michelson*/
 program
     .command('deploy')
-    .usage(`\n(This command provides the interactive shell)`)
+    .option('-i', '--interactive', 'use interactive mode')
+    .usage(`\n(This command provides the interactive shell to deploy a smart contract)`)
     .description('Deploys a smart contract written in Michelson')
     .action(function() {
-        if (process.argv.length > 3) {
-            console.log('Incorrect usage of deploy command. Correct usage: - tezster deploy');
+        if(process.argv[3] != '-i' && process.argv.length > 6) {
+            tezstermanager.deployContractNonInterativeMode();
             return;
+        } else if(process.argv[3] === '-i' && process.argv.length < 6) {
+            prompt(contractDeployParameters).then(deployParamaterValues => {
+                tezstermanager.deployContractInterativeMode(deployParamaterValues);
+            });
+            return;
+        } else {
+            console.log('Incorrect usage of deploy command. Correct usage:- tezster deploy <contract-label> <contract-file-path> <initial-storage> <account> <--optional amount>\nTo run command in interactive mode:- tezster deploy -i');
         }
-        prompt(contractDeployParameters).then(deployParamaterValues => {
-            tezstermanager.deployContract(deployParamaterValues);
-        });
 });
 
 
 /*******calls contract written in Michelson*/
 program
     .command('call')
-    .usage(`\n(This command provides the interactive shell)`)
+    .option('-i', '--interactive', 'use interactive mode')
+    .usage(`\n(This command provides the interactive shell to call deployed smart contract)`)
     .description('Calls a smart contract with given value provided in Michelson format')
     .action(function() {
-        if (process.argv.length > 3) {
-            console.log('Incorrect usage of call command. Correct usage: - tezster call');
+        if(process.argv[3] != '-i' && process.argv.length > 5) {
+            tezstermanager.callContractNonInterativeMode();
             return;
+        } else if(process.argv[3] === '-i' && process.argv.length < 5) {
+            prompt(contractCallParameters).then(callParamaterValues => {
+                tezstermanager.callContractInterativeMode(callParamaterValues);
+            });
+            return;
+        } else {
+            console.log('Incorrect usage of call command. Correct usage:- tezster call <contract-label> <argument-value> <account> <--optional amount>\nTo run command in interactive mode:- tezster call -i');
         }
-        prompt(contractCallParameters).then(callParamaterValues => {
-            tezstermanager.callContract(callParamaterValues);
-        });
 });
 
 /*******gets storage for a contract*/

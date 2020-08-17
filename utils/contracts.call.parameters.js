@@ -8,8 +8,8 @@ const confirmAnswerValidator = async (input) => {
 const contractCallParameters = [
     {
       type : 'input',
-      name : 'contractName',
-      message : 'Enter contract name: ',
+      name : 'contractLabel',
+      message : 'Enter contract Label: ',
       validate: confirmAnswerValidator
     },
     {

@@ -1,8 +1,9 @@
-name: npm-package
+name: Tezster-CLI
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -12,7 +13,6 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-      - run: npm ci
 
   publish-npm:
     needs: build
@@ -23,8 +23,20 @@ jobs:
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/
-      - run: npm ci
-      - run: npm publish
+
+      - name: get-package-version
+        uses: tyankatsu0105/read-package-version-actions@v1
+        id: package-version
+
+      - name: Publish latest release
+        run: npm publish
+        if: "!contains(steps.package-version.outputs.version, 'beta')"
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
-          
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}  
+            
+      - name: Publish beta release
+        run: npm publish --tag beta
+        if: contains(steps.package-version.outputs.version, 'beta')
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+    

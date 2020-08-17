@@ -1,22 +1,21 @@
-const { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL, TEZSTER_FOLDER_PATH } = require('../cli-constants');
+const { confFile, CONSEIL_SERVER, CONSEIL_JS, TESTNET_NAME, NODE_TYPE } = require('../cli-constants');
       
 const jsonfile = require('jsonfile'),
+      writeJsonFile = require('write-json-file'),
       Logger = require('../logger'),
       { Helper } = require('../helper'),
       { ExceptionHandler } = require('../exceptionHandler');
 
-let config;
-      
 class Contracts {
 
     constructor(){
-        config = jsonfile.readFileSync(confFile);
+        this.config = jsonfile.readFileSync(confFile);
     }
 
     async listContracts() {
         Logger.verbose('Command : tezster list-contracts');
-        if(Object.keys(config.contracts).length > 0) {  
-            config.contracts.forEach(function (contracts){
+        if(Object.keys(this.config.contracts).length > 0) {  
+            this.config.contracts.forEach(function (contracts){
                 Logger.info(contracts.label + ' - ' +contracts.pkh + ' (' + contracts.identity + ')');
             });
         } else {
@@ -24,18 +23,18 @@ class Contracts {
         }
     }
 
-    async deployContract(args) {
-        Logger.verbose(`Command : tezster deploy ${args}`);
+    async deployContract(contractLabel, contractAbsolutePath, initStorageValue, account, amount, fee, storageLimit, gasLimit) {
+        Logger.verbose(`Command : tezster deploy ${contractLabel}, ${contractAbsolutePath}, ${initStorageValue}, ${account}, ${amount}, ${fee}, ${storageLimit}, ${gasLimit}}`);
     
-        await this.deploy(args.contractLabel, args.contractAbsolutePath, args.initStorageValue, args.account, args.amount, args.fee, args.storageLimit, args.gasLimit);
-        Logger.warn(`If you're using ${TESTNET_NAME} node, use https://${TESTNET_NAME}.tzstats.com to check contract/transactions`);
+        await this.deploy(contractLabel, contractAbsolutePath, initStorageValue, account, amount, fee, storageLimit, gasLimit);
+        Logger.warn(`If you're using carthagenet or mainnet node, use 'https://carthagenet.tzstats.com' or 'https://tzstats.com' respectively to check contract/transactions`);
     }
 
-    async callContract(args) {
-        Logger.verbose(`Command : tezster call ${args}`);
-        
-        await this.invokeContract(args.contractName, args.argumentValue, args.account, args.amount, args.fee, args.storageLimit, args.gasLimit);
-        Logger.warn(`If you're using ${TESTNET_NAME} node, use https://${TESTNET_NAME}.tzstats.com to check contract/transactions`);
+    async callContract(contractLabel, argumentValue, account, amount, fee, storageLimit, gasLimit) {
+        Logger.verbose(`Command : tezster call ${contractLabel}, ${argumentValue}, ${account}, ${amount}, ${fee}, ${storageLimit}, ${gasLimit}}`);
+
+        await this.invokeContract(contractLabel, argumentValue, account, amount, fee, storageLimit, gasLimit);
+        Logger.warn(`If you're using carthagenet or mainnet node, use 'https://carthagenet.tzstats.com' or 'https://tzstats.com' respectively to check contract/transactions`);
     }
 
     async getStorage(args) {
@@ -75,27 +74,40 @@ class Contracts {
         await this.deleteContract(args[0]);
     }
 
-    async listEntryPoints(contractPath) {
+    async listEntryPoints(contract) {
+        const tezosNode = this.config.provider;  
         const fs = require('fs');
         const conseiljs = require(CONSEIL_JS);
-        let conseilServer = { 'url': CONSEIL_SERVER_URL, 'apiKey': CONSEIL_SERVER_APIKEY, 'network': TESTNET_NAME };
+
+        let carthagenetConseilServer = { 'url': CONSEIL_SERVER.Carthagenet.url, 'apiKey': CONSEIL_SERVER.Carthagenet.apiKey, 'network': 'carthagenet' };
+        let mainnetConseilServer = { 'url': CONSEIL_SERVER.Mainnet.url, 'apiKey': CONSEIL_SERVER.Mainnet.apiKey, 'network': 'mainnet' };
+
         let contractCode, contractAddress;
-        let contractObj = Helper.findKeyObj(config.contracts, contractPath);
+        let contractObj = Helper.findKeyObj(this.config.contracts, contract);
         if (contractObj) {
             contractAddress = contractObj.pkh;
         }
+
+        if(contract.startsWith('KT')) {
+            contractAddress = contract;
+        }
       
-        if (!contractAddress && !fs.existsSync(contractPath)) {
-            Logger.error(`Couldn't find the contract, please make sure contract label or address is correct!`);
+        if (!contractAddress && !fs.existsSync(contract)) {
+            Logger.error(`Couldn't find the contract, please make sure contract-file-path/contract-label/contract-address is correct.`);
             return;
         }
 
         try {
             if(contractAddress) {
-                const account = await conseiljs.TezosConseilClient.getAccount(conseilServer, conseilServer.network, contractAddress);
-                contractCode = account.script;
+                if(Helper.isCarthagenetNode(tezosNode)) {
+                    const account = await conseiljs.TezosConseilClient.getAccount(carthagenetConseilServer, carthagenetConseilServer.network, contractAddress);
+                    contractCode = account.script;                    
+                } else if(Helper.isMainnetNode(tezosNode)) {
+                    const account = await conseiljs.TezosConseilClient.getAccount(mainnetConseilServer, mainnetConseilServer.network, contractAddress);
+                    contractCode = account.script;                   
+                }
             } else {
-                contractCode = fs.readFileSync(contractPath, 'utf8');
+                contractCode = fs.readFileSync(contract, 'utf8');
             }
 
             const entryPoints = await conseiljs.TezosContractIntrospector.generateEntryPointsFromCode(contractCode);
@@ -114,8 +126,9 @@ class Contracts {
     async deploy(contractLabel, contractPath, initValue, account, amount, fee, storageLimit, gasLimit) {
         const fs = require('fs');
         const conseiljs = require(CONSEIL_JS);
-        const tezosNode = config.provider;  
-        let conseilServer = { 'url': CONSEIL_SERVER_URL, 'apiKey': CONSEIL_SERVER_APIKEY, 'network': TESTNET_NAME };
+        const tezosNode = this.config.provider;  
+        let carthagenetConseilServer = { 'url': CONSEIL_SERVER.Carthagenet.url, 'apiKey': CONSEIL_SERVER.Carthagenet.apiKey, 'network': 'carthagenet' };
+        let mainnetConseilServer = { 'url': CONSEIL_SERVER.Mainnet.url, 'apiKey': CONSEIL_SERVER.Mainnet.apiKey, 'network': 'mainnet' };
 
         const keys = this.getKeys(account);
         if(!keys) {
@@ -130,16 +143,16 @@ class Contracts {
             storeType: conseiljs.StoreType.Fundraiser
         };
       
-        let contractObj = Helper.findKeyObj(config.contracts, contractLabel);
+        let contractObj = Helper.findKeyObj(this.config.contracts, contractLabel);
         if (contractObj) {
             Logger.error(`This contract label is already in use. Please use a different one.`);
             return;
         }
 
-        amount = amount | 0;
-        fee = fee | 100000;
-        storageLimit = storageLimit | 10000;
-        gasLimit = gasLimit | 500000;
+        amount = amount ? amount : 0;
+        fee = fee ? fee : 100000;
+        storageLimit = storageLimit ? storageLimit : 10000;
+        gasLimit = gasLimit ? gasLimit : 500000;
       
         Logger.warn('Deploying the contract, this could take a while....');
         try {
@@ -149,9 +162,16 @@ class Contracts {
                                       fee, '', storageLimit, gasLimit,
                                       contract, initValue, conseiljs.TezosParameterFormat.Michelson);        
                                       
-            if(!tezosNode.includes('localhost') && !tezosNode.includes('192.168')) {
+            if(Helper.isCarthagenetNode(tezosNode)) {
                 try {
-                    await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, JSON.parse(result.operationGroupID), 15, 10);
+                    await conseiljs.TezosConseilClient.awaitOperationConfirmation(carthagenetConseilServer, carthagenetConseilServer.network, JSON.parse(result.operationGroupID), 15, 10);
+                } catch(error) {
+                    Helper.errorLogHandler(`Error occurred in operation confirmation: ${error}`,
+                                           'Contract deployment operation confirmation failed ....');
+                }
+            } else if(Helper.isMainnetNode(tezosNode)) {
+                try {
+                    await conseiljs.TezosConseilClient.awaitOperationConfirmation(mainnetConseilServer, mainnetConseilServer.network, JSON.parse(result.operationGroupID), 15, 10);
                 } catch(error) {
                     Helper.errorLogHandler(`Error occurred in operation confirmation: ${error}`,
                                            'Contract deployment operation confirmation failed ....');
@@ -162,7 +182,7 @@ class Contracts {
                 switch(result.results.contents[0].metadata.operation_result.status) {
                     case 'applied':
                         let opHash = result.results.contents[0].metadata.operation_result.originated_contracts;
-                        this.addNewContract(contractLabel, opHash[0] , keys.pkh , config.provider);
+                        this.addNewContract(contractLabel, opHash[0] , keys.pkh , this.config.provider);
                         Logger.info(`Contract '${contractLabel}' has been deployed with ${opHash}`);
                         return;
                     case 'failed':
@@ -180,7 +200,7 @@ class Contracts {
 
     async invokeContract(contract, argument, account, amount, fee, storageLimit, gasLimit) {
         const conseiljs = require(CONSEIL_JS);
-        const tezosNode = config.provider;
+        const tezosNode = this.config.provider;
         const keys = this.getKeys(account);
         if(!keys) {
             Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster. Run 'tezster list-accounts' to get all accounts`);
@@ -195,7 +215,7 @@ class Contracts {
         };
       
         let contractAddress = '';
-        let contractObj = Helper.findKeyObj(config.contracts, contract);
+        let contractObj = Helper.findKeyObj(this.config.contracts, contract);
         if (contractObj) {
           contractAddress = contractObj.pkh;
         }
@@ -205,10 +225,10 @@ class Contracts {
           return;
         }
 
-        amount = amount | 0;
-        fee = fee | 100000;
-        storageLimit = storageLimit | 10000;
-        gasLimit = gasLimit | 100000;
+        amount = amount ? amount : 0;
+        fee = fee ? fee : 100000;
+        storageLimit = storageLimit ? storageLimit : 10000;
+        gasLimit = gasLimit ? gasLimit : 500000;
       
         try {
           const result = await conseiljs.TezosNodeWriter.sendContractInvocationOperation(
@@ -239,9 +259,9 @@ class Contracts {
 
     async getContractStorage(contract) {
         const conseiljs = require(CONSEIL_JS);
-        const tezosNode = config.provider;
+        const tezosNode = this.config.provider;
         let contractAddress = '';
-        let contractObj = Helper.findKeyObj(config.contracts, contract);
+        let contractObj = Helper.findKeyObj(this.config.contracts, contract);
         if (contractObj) {
             contractAddress = contractObj.pkh;
         }
@@ -261,28 +281,34 @@ class Contracts {
     }
 
     addContractToConfig(contractLabel, contractAddr) {
-        let contractObj = Helper.findKeyObj(config.contracts, contractLabel);
+        let contractObj = Helper.findKeyObj(this.config.contracts, contractLabel);
+
+        if(this.config.provider.includes('localhost')) {
+            Logger.error(`Contract can't be added for localnodes. Please select relevant rpc node to add contract.`);
+            return;
+        }
+        
         if (contractObj) {
             Logger.error('This contract label is already in use. Please use a different one.');
             return;
         }
-        this.addNewContract(contractLabel, contractAddr, '', config.provider);
+        this.addNewContract(contractLabel, contractAddr, '', this.config.provider);
         Logger.info(`Contract '${contractAddr} has been added successfully with label '${contractLabel}'`)
     }
 
     async deleteContract(contract) {
-        let contractObj = Helper.findKeyObj(config.contracts, contract);
+        let contractObj = Helper.findKeyObj(this.config.contracts, contract);
         if (!contractObj) {
             Logger.error(`Please make sure the contract with label '${contract}' exists.`);
             return;
         }
 
         try {
-            for(var contractIndex=0; contractIndex<config.contracts.length; contractIndex++) {
-                if(config.contracts[contractIndex].pkh === contract  || config.contracts[contractIndex].label === contract) {
+            for(var contractIndex=0; contractIndex<this.config.contracts.length; contractIndex++) {
+                if(this.config.contracts[contractIndex].pkh === contract  || this.config.contracts[contractIndex].label === contract) {
                     Logger.info(`Contract-'${contract}' successfully removed`);
-                    config.contracts.splice(contractIndex, 1);
-                    jsonfile.writeFile(confFile, config);
+                    this.config.contracts.splice(contractIndex, 1);
+                    await writeJsonFile(confFile, this.config);
                 }
             }
         }
@@ -291,43 +317,43 @@ class Contracts {
         }
     }
 
-    addNewContract(label, opHash, pkh, nodeType) {
-        if(nodeType.includes('localhost') || nodeType.includes('192.168')) {
-            nodeType = 'localnode';
-        } else if(nodeType.includes('dalphanet')) {
-            nodeType = 'dalphanet'
-        } else if(nodeType.includes('mainnet')) {
-            nodeType = 'mainnet'
+    async addNewContract(label, opHash, pkh, nodeType) {
+        if(nodeType.includes(NODE_TYPE.LOCALHOST) || nodeType.includes(NODE_TYPE.WIN_LOCALHOST)) {
+            nodeType = NODE_TYPE.LOCALHOST;
+        } else if(nodeType.includes(NODE_TYPE.DALPHANET)) {
+            nodeType = NODE_TYPE.DALPHANET;
+        } else if(nodeType.includes(NODE_TYPE.MAINNET)) {
+            nodeType = NODE_TYPE.MAINNET;
         } else {
-            nodeType = 'carthagenet'
+            nodeType = NODE_TYPE.CARTHAGENET;
         }
-        config.contracts.push({
+        this.config.contracts.push({
             label : label,
             pkh : opHash,
             identity : `${nodeType} - ` + pkh,
         });
-        jsonfile.writeFile(confFile, config);
+        await writeJsonFile(confFile, this.config);
     }
 
-    addTransaction(operation, opHash, from, to, amount) {
-        config.transactions.push({
+    async addTransaction(operation, opHash, from, to, amount) {
+        this.config.transactions.push({
             operation : operation,
             hash : opHash,
             from : from,
             to: to,
             amount: amount
         });
-        jsonfile.writeFile(confFile, config);
+        await writeJsonFile(confFile, this.config);
     }
 
     getKeys(account) {
         let keys,f;
-        if (f = Helper.findKeyObj(config.identities, account)) {
+        if (f = Helper.findKeyObj(this.config.identities, account)) {
             keys = f;
-        } else if (f = Helper.findKeyObj(config.accounts, account)) {
-            keys = Helper.findKeyObj(config.identities, f.identity);
-        } else if (f = Helper.findKeyObj(config.contracts, account)) {
-            keys = Helper.findKeyObj(config.identities, f.identity);
+        } else if (f = Helper.findKeyObj(this.config.accounts, account)) {
+            keys = Helper.findKeyObj(this.config.identities, f.identity);
+        } else if (f = Helper.findKeyObj(this.config.contracts, account)) {
+            keys = Helper.findKeyObj(this.config.identities, f.identity);
         }
         return keys;
     }
