@@ -1,4 +1,4 @@
-const { confFile, CONSEIL_JS, TESTNET_NAME, NODE_TYPE, CONSEIL_SERVER } = require('../cli-constants');
+const { confFile, CONSEIL_JS, NODE_TYPE, CONSEIL_SERVER } = require('../cli-constants');
 
 const jsonfile = require('jsonfile'),
       writeJsonFile = require('write-json-file'),
@@ -81,7 +81,7 @@ class Accounts{
         }
         
         await this.activateAlphanetAccount(args[0]);
-        Logger.warn(`If this account has already been activated, it may throw 'invalid_activation' error. You can visit https://carthagenet.tzstats.com for more information on this account`);
+        Logger.warn(`If this account has already been activated, it may throw 'invalid_activation' error. You can visit https://${NODE_TYPE.TESTNET}.tzstats.com for more information on this account`);
     }
 
     async removeAccount(args) {
@@ -244,7 +244,7 @@ class Accounts{
     async activateAlphanetAccount(account) {
         const conseiljs = require(CONSEIL_JS);
         const tezosNode = this.config.provider;
-        let carthagenetConseilServer = { 'url': CONSEIL_SERVER.Carthagenet.url, 'apiKey': CONSEIL_SERVER.Carthagenet.apiKey, 'network': 'carthagenet' };
+        let conseilServer = { 'url': `${CONSEIL_SERVER.TESTNET.url}`, 'apiKey': `${CONSEIL_SERVER.TESTNET.apiKey}`, 'network': `${NODE_TYPE.TESTNET}` };
 
         const keys = this.getKeys(account);
         if(!keys || !keys.secret) {
@@ -252,8 +252,8 @@ class Accounts{
             return;
         }
 
-        if(Helper.isCarthagenetNode(tezosNode)) {
-            Logger.error('Make sure your current rpc-node is set to carthagenet node.\nYou can activate the account by sending some tezos to the account.');
+        if(Helper.isTestnetNode(tezosNode)) {
+            Logger.error(`Make sure your current rpc-node is set to ${NODE_TYPE.TESTNET} node.\nYou can activate the account by sending some tezos to the account.`);
             return;
         }
 
@@ -270,7 +270,7 @@ class Accounts{
             let activationResult = await conseiljs.TezosNodeWriter.sendIdentityActivationOperation(tezosNode, keystore, keys.secret);
             
             try {
-                await conseiljs.TezosConseilClient.awaitOperationConfirmation(carthagenetConseilServer, carthagenetConseilServer.network, JSON.parse(activationResult.operationGroupID), 15, 10);
+                await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, JSON.parse(activationResult.operationGroupID), 15, 10);
             } catch(error) {
                 Helper.errorLogHandler(`Error occurred in operation confirmation: ${error}`,
                                        'Account activation operation confirmation failed ....');
@@ -342,7 +342,7 @@ class Accounts{
         } else if(nodeType.includes(NODE_TYPE.MAINNET)) {
             nodeType = NODE_TYPE.MAINNET;
         } else {
-            nodeType = NODE_TYPE.CARTHAGENET;
+            nodeType = `${NODE_TYPE.TESTNET}`;
         }
         this.config.accounts.push({
             label : `${nodeType}_`+label,

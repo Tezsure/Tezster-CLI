@@ -1,4 +1,4 @@
-const { confFile, CONSEIL_JS, TESTNET_NAME } = require('../cli-constants');
+const { confFile, CONSEIL_JS, NODE_TYPE } = require('../cli-constants');
 
 const jsonfile = require('jsonfile'),      
       writeJsonFile = require('write-json-file'),
@@ -23,7 +23,7 @@ class Transactions {
 
     async listTransactions() {      
         Logger.verbose(`Command : tezster list-transactions`);
-        Logger.warn(`For transactions done on ${TESTNET_NAME} node ,you can visit https://${TESTNET_NAME}.tzstats.com for more information`);
+        Logger.warn(`For transactions done on ${NODE_TYPE.TESTNET} node ,you can visit https://${NODE_TYPE.TESTNET}.tzstats.com for more information`);
         if(Object.keys(this.config.transactions).length > 0) {        
             for(var i in this.config.transactions) {
                 Logger.info(JSON.stringify(this.config.transactions[i]));

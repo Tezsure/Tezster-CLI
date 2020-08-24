@@ -95,7 +95,7 @@ class TezsterManager{
     }
 
     callContractInterativeMode(callParamaterValues){
-        this.contracts.callContract(callParamaterValues.contractLabel, callParamaterValues.argumentValue, callParamaterValues.account, callParamaterValues.amount, callParamaterValues.fee, callParamaterValues.storageLimit, callParamaterValues.gasLimit);
+        this.contracts.callContract(callParamaterValues.contractLabel, callParamaterValues.contractArgs, callParamaterValues.account, callParamaterValues.amount, callParamaterValues.fee, callParamaterValues.storageLimit, callParamaterValues.gasLimit);
     }
 
     getStorage(){

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - tezster-dev
 
 jobs:
   build:
@@ -24,7 +25,12 @@ jobs:
           node-version: 12
           registry-url: https://registry.npmjs.org/
 
-      - name: get-package-version
+      - name:  'Automated Version Bump'
+        uses:  'phips28/gh-action-bump-version@master'
+        with:
+          tag-prefix:  ''
+
+      - name: Fetch Package Version
         uses: tyankatsu0105/read-package-version-actions@v1
         id: package-version
 

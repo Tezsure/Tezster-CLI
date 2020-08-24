@@ -1,4 +1,4 @@
-const { confFile, CONSEIL_SERVER, CONSEIL_JS, TESTNET_NAME, NODE_TYPE } = require('../cli-constants');
+const { confFile, CONSEIL_SERVER, CONSEIL_JS, NODE_TYPE } = require('../cli-constants');
 
 const jsonfile = require('jsonfile'),
       writeJsonFile = require('write-json-file'),
@@ -27,14 +27,14 @@ class Contracts {
         Logger.verbose(`Command : tezster deploy ${contractLabel}, ${contractAbsolutePath}, ${initStorageValue}, ${account}, ${amount}, ${fee}, ${storageLimit}, ${gasLimit}}`);
     
         await this.deploy(contractLabel, contractAbsolutePath, initStorageValue, account, amount, fee, storageLimit, gasLimit);
-        Logger.warn(`If you're using carthagenet or mainnet node, use 'https://carthagenet.tzstats.com' or 'https://tzstats.com' respectively to check contract/transactions`);
+        Logger.warn(`If you're using ${NODE_TYPE.TESTNET} or mainnet node, use 'https://${NODE_TYPE.TESTNET}.tzstats.com' or 'https://tzstats.com' respectively to check contract/transactions`);
     }
 
-    async callContract(contractLabel, argumentValue, account, amount, fee, storageLimit, gasLimit) {
-        Logger.verbose(`Command : tezster call ${contractLabel}, ${argumentValue}, ${account}, ${amount}, ${fee}, ${storageLimit}, ${gasLimit}}`);
+    async callContract(contractLabel, contractArgs, account, amount, fee, storageLimit, gasLimit) {
+        Logger.verbose(`Command : tezster call ${contractLabel}, ${contractArgs}, ${account}, ${amount}, ${fee}, ${storageLimit}, ${gasLimit}}`);
 
-        await this.invokeContract(contractLabel, argumentValue, account, amount, fee, storageLimit, gasLimit);
-        Logger.warn(`If you're using carthagenet or mainnet node, use 'https://carthagenet.tzstats.com' or 'https://tzstats.com' respectively to check contract/transactions`);
+        await this.invokeContract(contractLabel, contractArgs, account, amount, fee, storageLimit, gasLimit);
+        Logger.warn(`If you're using ${NODE_TYPE.TESTNET} or mainnet node, use 'https://${NODE_TYPE.TESTNET}.tzstats.com' or 'https://tzstats.com' respectively to check contract/transactions`);
     }
 
     async getStorage(args) {
@@ -78,11 +78,17 @@ class Contracts {
         const tezosNode = this.config.provider;  
         const fs = require('fs');
         const conseiljs = require(CONSEIL_JS);
+        let Network_type;
 
-        let carthagenetConseilServer = { 'url': CONSEIL_SERVER.Carthagenet.url, 'apiKey': CONSEIL_SERVER.Carthagenet.apiKey, 'network': 'carthagenet' };
-        let mainnetConseilServer = { 'url': CONSEIL_SERVER.Mainnet.url, 'apiKey': CONSEIL_SERVER.Mainnet.apiKey, 'network': 'mainnet' };
+        if(!Helper.isTestnetNode(tezosNode)) {
+            Network_type = 'TESTNET';
+        } else if(Helper.isMainnetNode(tezosNode)) {
+            Network_type = 'MAINNET';
+        }
 
-        let contractCode, contractAddress;
+        let conseilServer = { 'url': `${CONSEIL_SERVER[Network_type].url}`, 'apiKey': `${CONSEIL_SERVER[Network_type].apiKey}`, 'network': `${NODE_TYPE[Network_type]}` };
+
+        let contractCode, contractAddress, contractPath;
         let contractObj = Helper.findKeyObj(this.config.contracts, contract);
         if (contractObj) {
             contractAddress = contractObj.pkh;
@@ -90,24 +96,27 @@ class Contracts {
 
         if(contract.startsWith('KT')) {
             contractAddress = contract;
+        } else {
+            contractPath = contract;
+        }
+
+        if(Helper.isTestnetNode(tezosNode)) {
+            Network = NODE_TYPE.TESTNET;
+        } else if(Helper.isMainnetNode(tezosNode)) {
+            Network = MAINNET;
         }
       
-        if (!contractAddress && !fs.existsSync(contract)) {
+        if (!contractAddress && !fs.existsSync(contractPath)) {
             Logger.error(`Couldn't find the contract, please make sure contract-file-path/contract-label/contract-address is correct.`);
             return;
         }
 
         try {
             if(contractAddress) {
-                if(Helper.isCarthagenetNode(tezosNode)) {
-                    const account = await conseiljs.TezosConseilClient.getAccount(carthagenetConseilServer, carthagenetConseilServer.network, contractAddress);
-                    contractCode = account.script;                    
-                } else if(Helper.isMainnetNode(tezosNode)) {
-                    const account = await conseiljs.TezosConseilClient.getAccount(mainnetConseilServer, mainnetConseilServer.network, contractAddress);
-                    contractCode = account.script;                   
-                }
+                const account = await conseiljs.TezosConseilClient.getAccount(conseilServer, conseilServer.network, contractAddress);
+                contractCode = account.script;
             } else {
-                contractCode = fs.readFileSync(contract, 'utf8');
+                contractCode = fs.readFileSync(contractPath, 'utf8');
             }
 
             const entryPoints = await conseiljs.TezosContractIntrospector.generateEntryPointsFromCode(contractCode);
@@ -127,8 +136,15 @@ class Contracts {
         const fs = require('fs');
         const conseiljs = require(CONSEIL_JS);
         const tezosNode = this.config.provider;  
-        let carthagenetConseilServer = { 'url': CONSEIL_SERVER.Carthagenet.url, 'apiKey': CONSEIL_SERVER.Carthagenet.apiKey, 'network': 'carthagenet' };
-        let mainnetConseilServer = { 'url': CONSEIL_SERVER.Mainnet.url, 'apiKey': CONSEIL_SERVER.Mainnet.apiKey, 'network': 'mainnet' };
+        let Network_type;
+
+        if(!Helper.isTestnetNode(tezosNode)) {
+            Network_type = 'TESTNET';
+        } else if(Helper.isMainnetNode(tezosNode)) {
+            Network_type = 'MAINNET';
+        }
+
+        let conseilServer = { 'url': `${CONSEIL_SERVER[Network_type].url}`, 'apiKey': `${CONSEIL_SERVER[Network_type].apiKey}`, 'network': `${NODE_TYPE[Network_type]}` };
 
         const keys = this.getKeys(account);
         if(!keys) {
@@ -160,18 +176,11 @@ class Contracts {
             const result = await conseiljs.TezosNodeWriter.sendContractOriginationOperation(
                                       tezosNode, keystore, amount*1000000, undefined,
                                       fee, '', storageLimit, gasLimit,
-                                      contract, initValue, conseiljs.TezosParameterFormat.Michelson);        
-                                      
-            if(Helper.isCarthagenetNode(tezosNode)) {
+                                      contract, initValue, conseiljs.TezosParameterFormat.Michelson);      
+                                             
+            if(Helper.isTestnetNode(tezosNode)) {
                 try {
-                    await conseiljs.TezosConseilClient.awaitOperationConfirmation(carthagenetConseilServer, carthagenetConseilServer.network, JSON.parse(result.operationGroupID), 15, 10);
-                } catch(error) {
-                    Helper.errorLogHandler(`Error occurred in operation confirmation: ${error}`,
-                                           'Contract deployment operation confirmation failed ....');
-                }
-            } else if(Helper.isMainnetNode(tezosNode)) {
-                try {
-                    await conseiljs.TezosConseilClient.awaitOperationConfirmation(mainnetConseilServer, mainnetConseilServer.network, JSON.parse(result.operationGroupID), 15, 10);
+                    await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, JSON.parse(result.operationGroupID), 15, 10);
                 } catch(error) {
                     Helper.errorLogHandler(`Error occurred in operation confirmation: ${error}`,
                                            'Contract deployment operation confirmation failed ....');
@@ -325,7 +334,7 @@ class Contracts {
         } else if(nodeType.includes(NODE_TYPE.MAINNET)) {
             nodeType = NODE_TYPE.MAINNET;
         } else {
-            nodeType = NODE_TYPE.CARTHAGENET;
+            nodeType = `NODE_TYPE.${NODE_TYPE.TESTNET}`;
         }
         this.config.contracts.push({
             label : label,

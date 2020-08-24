@@ -168,10 +168,10 @@ program
     .usage(`\n(This command provides the interactive shell to deploy a smart contract)`)
     .description('Deploys a smart contract written in Michelson')
     .action(function() {
-        if(process.argv[3] != '-i' && process.argv.length > 6) {
+        if(process.argv[3] !== '-i' && process.argv.length > 6) {
             tezstermanager.deployContractNonInterativeMode();
             return;
-        } else if(process.argv[3] === '-i' && process.argv.length < 6) {
+        } else if(process.argv[3] === '-i' && process.argv.length < 5) {
             prompt(contractDeployParameters).then(deployParamaterValues => {
                 tezstermanager.deployContractInterativeMode(deployParamaterValues);
             });
@@ -189,7 +189,7 @@ program
     .usage(`\n(This command provides the interactive shell to call deployed smart contract)`)
     .description('Calls a smart contract with given value provided in Michelson format')
     .action(function() {
-        if(process.argv[3] != '-i' && process.argv.length > 5) {
+        if(process.argv[3] !== '-i' && process.argv.length > 5) {
             tezstermanager.callContractNonInterativeMode();
             return;
         } else if(process.argv[3] === '-i' && process.argv.length < 5) {

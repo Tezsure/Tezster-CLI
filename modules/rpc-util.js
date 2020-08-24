@@ -1,6 +1,7 @@
 const request = require('request'),
       docker_machine_ip = require('docker-ip'),
       { Helper } = require('./helper');
+const { NODE_TYPE } = require('./cli-constants');
 
 class RpcRequest {
 
@@ -51,7 +52,7 @@ class RpcRequest {
     }
     
     static fetchBlockDetailsForRemoteNodes(provider) {
-        provider = provider.includes('mainnet') ? 'https://api.tzstats.com' : 'https://api.carthagenet.tzstats.com';
+        provider = provider.includes('mainnet') ? 'https://api.tzstats.com' : `https://api.${NODE_TYPE.TESTNET}.tzstats.com`;
         return Promise.all(
             [ `${provider}/explorer/block/head/op`, `${provider}/explorer/config/head` ].map((url, i)=> {   
                 return new Promise(function(resolve, reject){

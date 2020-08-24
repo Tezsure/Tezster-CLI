@@ -9,7 +9,7 @@ const confFile = `/var/tmp/tezster/config.json`,
       LOG_FOLDER_PATH_INSIDE_DOCKER = `/usr/local/bin/tezster-logs`,
       CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE = require('path').join(__dirname, '/../config.json'),
       
-      IMAGE_TAG = 'tezsureinc/tezster:1.0.3',
+      IMAGE_TAG = 'tezsureinc/tezster:1.0.4-beta',
       CONTAINER_NAME = 'tezster',
       PROGRESS_REFRESH_INTERVAL = 1000,
       Node_Confirmation_Timeout = 40000,
@@ -24,16 +24,16 @@ const confFile = `/var/tmp/tezster/config.json`,
           LOCALHOST: 'localhost',
           WIN_LOCALHOST: '192.168',
           DALPHANET: 'dalphanet',
-          CARTHAGENET: 'carthagenet',
+          TESTNET: 'carthagenet',
           MAINNET: 'mainnet',
       }, 
 
       CONSEIL_SERVER = {
-        Carthagenet: {
+        TESTNET: {
           url: 'https://conseil-dev.cryptonomic-infra.tech',
           apiKey: '60d7bbd0-ad43-4768-9ee3-64c722874f96',
         },
-        Mainnet: {
+        MAINNET: {
           url: 'https://conseil-prod.cryptonomic-infra.tech',
           apiKey: '19f49afb-c33d-4251-8565-e95121df519d',
         },

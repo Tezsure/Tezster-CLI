@@ -14,7 +14,7 @@ const contractCallParameters = [
     },
     {
       type : 'input',
-      name : 'argumentValue',
+      name : 'contractArgs',
       message : 'Enter argument value: ',
       validate: confirmAnswerValidator
     },
