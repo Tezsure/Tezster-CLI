@@ -25,7 +25,8 @@ jobs:
           node-version: 12
           registry-url: https://registry.npmjs.org/
 
-      - name:  'Automated Version Bump'
+      - name:  'Version Bump'
+        if: github.ref == 'refs/heads/master'
         uses:  'phips28/gh-action-bump-version@master'
         with:
           tag-prefix:  ''
@@ -34,15 +35,15 @@ jobs:
         uses: tyankatsu0105/read-package-version-actions@v1
         id: package-version
 
-      - name: Publish latest release
+      - name: Publish Latest Release
+        if: "!contains(steps.package-version.outputs.version, 'beta') && github.ref == 'refs/heads/master'"
         run: npm publish
-        if: "!contains(steps.package-version.outputs.version, 'beta')"
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}  
             
-      - name: Publish beta release
+      - name: Publish Beta Release
+        if: contains(steps.package-version.outputs.version, 'beta') && github.ref == 'refs/heads/tezster-dev'
         run: npm publish --tag beta
-        if: contains(steps.package-version.outputs.version, 'beta')
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
     

@@ -324,7 +324,7 @@ class Contracts {
         } else if(nodeType.includes(NODE_TYPE.MAINNET)) {
             nodeType = NODE_TYPE.MAINNET;
         } else {
-            nodeType = `NODE_TYPE.${NODE_TYPE.TESTNET}`;
+            nodeType = `${NODE_TYPE.TESTNET}`;
         }
         this.config.contracts.push({
             label : label,
