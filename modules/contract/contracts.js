@@ -78,11 +78,9 @@ class Contracts {
         const tezosNode = this.config.provider;  
         const fs = require('fs');
         const conseiljs = require(CONSEIL_JS);
-        let Network_type;
+        let Network_type = 'TESTNET';
 
-        if(!Helper.isTestnetNode(tezosNode)) {
-            Network_type = 'TESTNET';
-        } else if(Helper.isMainnetNode(tezosNode)) {
+        if(Helper.isMainnetNode(tezosNode)) {
             Network_type = 'MAINNET';
         }
 
@@ -98,12 +96,6 @@ class Contracts {
             contractAddress = contract;
         } else {
             contractPath = contract;
-        }
-
-        if(Helper.isTestnetNode(tezosNode)) {
-            Network = NODE_TYPE.TESTNET;
-        } else if(Helper.isMainnetNode(tezosNode)) {
-            Network = MAINNET;
         }
       
         if (!contractAddress && !fs.existsSync(contractPath)) {
@@ -136,11 +128,9 @@ class Contracts {
         const fs = require('fs');
         const conseiljs = require(CONSEIL_JS);
         const tezosNode = this.config.provider;  
-        let Network_type;
+        let Network_type = 'TESTNET';
 
-        if(!Helper.isTestnetNode(tezosNode)) {
-            Network_type = 'TESTNET';
-        } else if(Helper.isMainnetNode(tezosNode)) {
+        if(Helper.isMainnetNode(tezosNode)) {
             Network_type = 'MAINNET';
         }
 
@@ -177,8 +167,8 @@ class Contracts {
                                       tezosNode, keystore, amount*1000000, undefined,
                                       fee, '', storageLimit, gasLimit,
                                       contract, initValue, conseiljs.TezosParameterFormat.Michelson);      
-                                             
-            if(Helper.isTestnetNode(tezosNode)) {
+
+            if(!Helper.isLocalNode(tezosNode)) {
                 try {
                     await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, JSON.parse(result.operationGroupID), 15, 10);
                 } catch(error) {
