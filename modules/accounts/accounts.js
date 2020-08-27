@@ -248,7 +248,7 @@ class Accounts{
 
         const keys = this.getKeys(account);
         if(!keys || !keys.secret) {
-            Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster.`);
+            Logger.error(`Couldn't find keys for given account.\nPlease make sure the account '${account}' exists and added to tezster.`);
             return;
         }
 
@@ -287,7 +287,7 @@ class Accounts{
         const keys = this.getKeys(account);
 
         if(!keys) {
-            Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster. Run 'tezster list-accounts' to get all accounts`);
+            Logger.error(`Couldn't find keys for given account.\nPlease make sure the account '${account}' exists and added to tezster. Run 'tezster list-accounts' to get all accounts.`);
             return;
         }
 

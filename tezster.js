@@ -168,16 +168,14 @@ program
     .usage(`\n(This command provides the interactive shell to deploy a smart contract)`)
     .description('Deploys a smart contract written in Michelson')
     .action(function() {
-        if(process.argv[3] !== '-i' && process.argv.length > 6) {
+        if(process.argv[3] !== '-i') {
             tezstermanager.deployContractNonInterativeMode();
             return;
-        } else if(process.argv[3] === '-i' && process.argv.length < 5) {
+        } else if(process.argv[3] === '-i') {
             prompt(contractDeployParameters).then(deployParamaterValues => {
                 tezstermanager.deployContractInterativeMode(deployParamaterValues);
             });
             return;
-        } else {
-            console.log('Incorrect usage of deploy command. Correct usage:- tezster deploy <contract-label> <contract-file-path> <initial-storage> <account> <--optional amount>\nTo run command in interactive mode:- tezster deploy -i');
         }
 });
 
@@ -189,16 +187,14 @@ program
     .usage(`\n(This command provides the interactive shell to call deployed smart contract)`)
     .description('Calls a smart contract with given value provided in Michelson format')
     .action(function() {
-        if(process.argv[3] !== '-i' && process.argv.length > 5) {
+        if(process.argv[3] !== '-i') {
             tezstermanager.callContractNonInterativeMode();
             return;
-        } else if(process.argv[3] === '-i' && process.argv.length < 5) {
+        } else if(process.argv[3] === '-i') {
             prompt(contractCallParameters).then(callParamaterValues => {
                 tezstermanager.callContractInterativeMode(callParamaterValues);
             });
             return;
-        } else {
-            console.log('Incorrect usage of call command. Correct usage:- tezster call <contract-label> <argument-value> <account> <--optional amount>\nTo run command in interactive mode:- tezster call -i');
         }
 });
 

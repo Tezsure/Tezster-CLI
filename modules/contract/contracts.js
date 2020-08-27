@@ -26,6 +26,10 @@ class Contracts {
     async deployContract(contractLabel, contractAbsolutePath, initStorageValue, account, amount, fee, storageLimit, gasLimit) {
         Logger.verbose(`Command : tezster deploy ${contractLabel}, ${contractAbsolutePath}, ${initStorageValue}, ${account}, ${amount}, ${fee}, ${storageLimit}, ${gasLimit}}`);
     
+        if (!account) {
+            Logger.warn('Incorrect usage - tezster deploy <contract-label> <contract-file-path> <initial-storage> <account> <--optional amount>\nTo use interactive mode - tezster deploy -i');
+            return;
+        }
         await this.deploy(contractLabel, contractAbsolutePath, initStorageValue, account, amount, fee, storageLimit, gasLimit);
         Logger.warn(`If you're using ${NODE_TYPE.TESTNET} or mainnet node, use 'https://${NODE_TYPE.TESTNET}.tzstats.com' or 'https://tzstats.com' respectively to check contract/transactions`);
     }
@@ -33,6 +37,10 @@ class Contracts {
     async callContract(contractLabel, contractArgs, account, amount, fee, storageLimit, gasLimit) {
         Logger.verbose(`Command : tezster call ${contractLabel}, ${contractArgs}, ${account}, ${amount}, ${fee}, ${storageLimit}, ${gasLimit}}`);
 
+        if (!account) {
+            Logger.warn('Incorrect usage - tezster call <contract-label> <argument-value> <account> <--optional amount>\nTo use interactive mode - tezster call -i');
+            return;
+        }
         await this.invokeContract(contractLabel, contractArgs, account, amount, fee, storageLimit, gasLimit);
         Logger.warn(`If you're using ${NODE_TYPE.TESTNET} or mainnet node, use 'https://${NODE_TYPE.TESTNET}.tzstats.com' or 'https://tzstats.com' respectively to check contract/transactions`);
     }
@@ -99,7 +107,7 @@ class Contracts {
         }
       
         if (!contractAddress && !fs.existsSync(contractPath)) {
-            Logger.error(`Couldn't find the contract, please make sure contract-file-path/contract-label/contract-address is correct.`);
+            Logger.error(`Please check if contract exists at '${contractPath}' or contract address is correct.`);
             return;
         }
 
@@ -138,7 +146,7 @@ class Contracts {
 
         const keys = this.getKeys(account);
         if(!keys) {
-            Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster. Run 'tezster list-accounts' to get all accounts`);
+            Logger.error(`Couldn't find keys for given account.\nPlease make sure the account '${account}' exists and added to tezster. Run 'tezster list-accounts' to get all accounts.`);
             return;
         }
         const keystore = {
@@ -202,7 +210,7 @@ class Contracts {
         const tezosNode = this.config.provider;
         const keys = this.getKeys(account);
         if(!keys) {
-            Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster. Run 'tezster list-accounts' to get all accounts`);
+            Logger.error(`Couldn't find keys for given account.\nPlease make sure the account '${account}' exists and added to tezster. Run 'tezster list-accounts' to get all accounts.`);
             return;
         }
         const keystore = {
@@ -220,7 +228,7 @@ class Contracts {
         }
         
         if (!contractAddress) {
-          Logger.error(`Couldn't find the contract, please make sure contract label or address is correct!`);
+          Logger.error(`Couldn't find the contract, please check if contract address/label '${contract}' is correct.`);
           return;
         }
 
@@ -266,7 +274,7 @@ class Contracts {
         }
       
         if (!contractAddress) {
-            Logger.error(`Couldn't find the contract, please make sure contract label or address is correct!`);
+            Logger.error(`Couldn't find the contract, please check if contract address/label '${contract}' is correct.`);
             return;
         }
       
