@@ -1,5 +1,29 @@
 # Tezster-CLI
 
+[![npm version](https://img.shields.io/npm/v/conseiljs.svg)](https://www.npmjs.com/package/tezster)
+[![npm](https://img.shields.io/npm/dm/conseiljs.svg)](https://www.npmjs.com/package/tezster)
+
+<div float="left">
+    <a href="https://circleci.com/gh/stove-labs/granary/tree/develop">
+        <img src="https://img.shields.io/circleci/project/github/stove-labs/granary/develop.svg"/>
+    </a>
+    <a href="https://github.com/stove-labs/granary/blob/develop/LICENSE">
+        <img src="https://img.shields.io/github/license/stove-labs/granary.svg"/>
+    </a>
+    <a href="https://www.npmjs.com/package/tezster">
+        <img src="https://img.shields.io/npm/v/@stove-labs/granary/pre-alpha.svg?label=%40stove-labs%2Fgranary" />
+    </a>
+</div>
+<div float="left">
+    <a href="https://docs.cli.tezster.tech/">
+        <img src="https://img.shields.io/badge/docs-easy--to--read-brightgreen.svg" />
+    </a>
+    <a href="https://t.me/tezster">
+        <img src="https://img.shields.io/badge/community-blue.svg?logo=telegram" />
+    </a>
+</div>
+<br/>
+
 <img src="https://tezster.s3-ap-southeast-1.amazonaws.com/TEZSTER_CLI/1_jDB5enULQVo2UfeiwD32qA.png" alt="Tezster CLI banner" align="center" />
 <div align="center"><strong>A complete toolbox to build, deploy and interact with the applications on Tezos sandbox and Tezos testnets.</strong></div>
 <div align="center">Tezster-CLI comes in an npm package with a set of easy commands to kickstart the development or interaction with Tezos blockchain. It allows you to interact with local nodes as well as remote testnet nodes and deploy or call smart contracts. To get complete understanding of components usage and visual demo follow <a href="https://docs.cli.tezster.tech/"><strong>Tezster-CLI Guide</strong></a>.
