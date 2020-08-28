@@ -3,7 +3,8 @@
 [![npm version](https://img.shields.io/npm/v/tezster.svg)](https://www.npmjs.com/package/tezster)
 [![npm downloads](https://img.shields.io/npm/dm/tezster.svg)](https://www.npmjs.com/package/tezster)
 [![HitCount](http://hits.dwyl.io/tezsure/tezster-cli/tree/tezster-kp.svg)](http://hits.dwyl.io/tezsure/tezster-cli/tree/tezster-kp)
-[![license](https://img.shields.io/github/License/tezsure/tezster-cli.svg)](https://github.com/Tezsure/Tezster-CLI/blob/master/LICENSE)
+[![license](https://img.shields.io/github/license/tezsure/tezster-cli.svg)](https://github.com/Tezsure/Tezster-CLI/blob/master/LICENSE)
+[![GitHub All Releases](https://img.shields.io/github/downloads/Tezsure/Tezster-CLI/total.svg?style=social)]
 [![docs](https://img.shields.io/badge/documentation-easy--to--read-brightgreen.svg)](https://docs.cli.tezster.tech)
 [![telegram](https://img.shields.io/badge/community-blue.svg?logo=telegram)](https://t.me/tezster)
 
