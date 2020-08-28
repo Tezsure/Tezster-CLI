@@ -2,11 +2,13 @@
 
 [![npm version](https://img.shields.io/npm/v/tezster.svg)](https://www.npmjs.com/package/tezster)
 [![npm downloads](https://img.shields.io/npm/dm/tezster.svg)](https://www.npmjs.com/package/tezster)
-[![HitCount](http://hits.dwyl.io/tezsure/tezster-cli/tree/tezster-kp.svg)](http://hits.dwyl.io/tezsure/tezster-cli/tree/tezster-kp)
+[![HitCount](http://hits.dwyl.io/tezsure/tezster-cli/.svg)](http://hits.dwyl.io/tezsure/tezster-cli)
 [![license](https://img.shields.io/github/license/tezsure/tezster-cli.svg)](https://github.com/Tezsure/Tezster-CLI/blob/master/LICENSE)
-[![GitHub All Releases](https://img.shields.io/github/downloads/Tezsure/Tezster-CLI/total.svg?style=social)]
+![GitHub All Releases](https://img.shields.io/github/downloads/Tezsure/Tezster-CLI/total.svg?style=social)
+<br />
 [![docs](https://img.shields.io/badge/documentation-easy--to--read-brightgreen.svg)](https://docs.cli.tezster.tech)
 [![telegram](https://img.shields.io/badge/community-blue.svg?logo=telegram)](https://t.me/tezster)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat-square)](https://github.com/Tezsure/Tezster-CLI/pulls)
 
 
 <img src="https://tezster.s3-ap-southeast-1.amazonaws.com/TEZSTER_CLI/1_jDB5enULQVo2UfeiwD32qA.png" alt="Tezster CLI banner" align="center" />
