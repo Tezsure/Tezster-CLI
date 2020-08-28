@@ -1,7 +1,7 @@
 # Tezster-CLI
 
-[![npm version](https://img.shields.io/npm/v/conseiljs.svg)](https://www.npmjs.com/package/tezster)
-[![npm](https://img.shields.io/npm/dm/conseiljs.svg)](https://www.npmjs.com/package/tezster)
+[![npm version](https://img.shields.io/npm/v/tezster.svg)](https://www.npmjs.com/package/tezster)
+[![npm](https://img.shields.io/npm/dm/tezster.svg)](https://www.npmjs.com/package/tezster)
 
 <div float="left">
     <a href="https://circleci.com/gh/stove-labs/granary/tree/develop">
