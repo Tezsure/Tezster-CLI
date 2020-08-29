@@ -3,10 +3,10 @@
 [![npm version](https://img.shields.io/npm/v/tezster.svg)](https://www.npmjs.com/package/tezster)
 [![npm downloads](https://img.shields.io/npm/dm/tezster.svg)](https://www.npmjs.com/package/tezster)
 [![license](https://img.shields.io/github/license/tezsure/tezster-cli.svg)](https://github.com/Tezsure/Tezster-CLI/blob/master/LICENSE)
+[![docs](https://img.shields.io/badge/docs-easy--to--read-brightgreen.svg)](https://docs.cli.tezster.tech)
+[![telegram](https://img.shields.io/badge/community-blue.svg?logo=telegram)](https://t.me/tezster)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat-square)](https://github.com/Tezsure/Tezster-CLI/pulls)
 ![GitHub All Releases](https://img.shields.io/github/downloads/Tezsure/Tezster-CLI/total.svg?style=social)
-[![docs](https://img.shields.io/badge/documentation-easy--to--read-brightgreen.svg)](https://docs.cli.tezster.tech)
-[![telegram](https://img.shields.io/badge/community-blue.svg?logo=telegram)](https://t.me/tezster)
 
 <img src="https://tezster.s3-ap-southeast-1.amazonaws.com/TEZSTER_CLI/1_jDB5enULQVo2UfeiwD32qA.png" alt="Tezster CLI banner" align="center" />
 <div align="center"><strong>A complete toolbox to build, deploy and interact with the applications on Tezos sandbox and Tezos testnets.</strong></div>
