@@ -1,11 +1,10 @@
 # Tezster-CLI
 
-[![license](https://img.shields.io/github/license/tezsure/tezster-cli.svg)](https://github.com/Tezsure/Tezster-CLI/blob/master/LICENSE)
 [![npm version](https://img.shields.io/npm/v/tezster.svg)](https://www.npmjs.com/package/tezster)
 [![npm downloads](https://img.shields.io/npm/dm/tezster.svg)](https://www.npmjs.com/package/tezster)
-![GitHub All Releases](https://img.shields.io/github/downloads/Tezsure/Tezster-CLI/total.svg?style=social)
+[![license](https://img.shields.io/github/license/tezsure/tezster-cli.svg)](https://github.com/Tezsure/Tezster-CLI/blob/master/LICENSE)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat-square)](https://github.com/Tezsure/Tezster-CLI/pulls)
-<br />
+![GitHub All Releases](https://img.shields.io/github/downloads/Tezsure/Tezster-CLI/total.svg?style=social)
 [![docs](https://img.shields.io/badge/documentation-easy--to--read-brightgreen.svg)](https://docs.cli.tezster.tech)
 [![telegram](https://img.shields.io/badge/community-blue.svg?logo=telegram)](https://t.me/tezster)
 
