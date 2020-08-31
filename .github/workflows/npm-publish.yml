@@ -1,8 +1,10 @@
-name: npm-package
+name: Tezster-CLI
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - master
+      - tezster-dev
 
 jobs:
   build:
@@ -12,7 +14,6 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-      - run: npm ci
 
   publish-npm:
     needs: build
@@ -23,8 +24,26 @@ jobs:
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/
-      - run: npm ci
-      - run: npm publish
+
+      - name:  'Version Bump'
+        if: github.ref == 'refs/heads/master'
+        uses:  'phips28/gh-action-bump-version@master'
+        with:
+          tag-prefix:  ''
+
+      - name: Fetch Package Version
+        uses: tyankatsu0105/read-package-version-actions@v1
+        id: package-version
+
+      - name: Publish Latest Release
+        if: "!contains(steps.package-version.outputs.version, 'beta') && github.ref == 'refs/heads/master'"
+        run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
-          
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}  
+            
+      - name: Publish Beta Release
+        if: contains(steps.package-version.outputs.version, 'beta') && github.ref == 'refs/heads/tezster-dev'
+        run: npm publish --tag beta
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+    

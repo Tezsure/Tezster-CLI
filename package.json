@@ -1,6 +1,6 @@
 {
   "name": "tezster",
-  "version": "0.2.7",
+  "version": "0.2.8-beta.3",
   "description": "A JavaScript-based private Tezos Blockchain Dev Tool that lives entirely on your local machine.",
   "main": "tezster.js",
   "scripts": {
@@ -42,6 +42,7 @@
     "pbkdf2": "^3.0.17",
     "request": "^2.81.0",
     "winston": "^3.2.1",
+    "write-json-file": "^4.3.0",
     "xmlhttprequest": "^1.8.0",
     "zxcvbn": "^4.4.2"
   },

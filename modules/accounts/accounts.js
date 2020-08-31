@@ -1,19 +1,17 @@
-const { confFile, CONSEIL_JS, TESTNET_NAME, CONSEIL_SERVER_APIKEY, CONSEIL_SERVER_URL, NODE_TYPE } = require('../cli-constants');
+const { confFile, CONSEIL_JS, NODE_TYPE, CONSEIL_SERVER } = require('../cli-constants');
 
 const jsonfile = require('jsonfile'),
-      os = require('os'),
+      writeJsonFile = require('write-json-file'),
       Logger = require('../logger'),
       { Helper } = require('../helper'),
       { RpcRequest } = require('../rpc-util'),
       docker_machine_ip = require('docker-ip'),
       { ExceptionHandler } = require('../exceptionHandler');
 
-let config;
-
 class Accounts{
 
     constructor(){
-        config = jsonfile.readFileSync(confFile);
+        this.config = jsonfile.readFileSync(confFile);
     }
 
     async setProvider(args){
@@ -38,8 +36,8 @@ class Accounts{
 
     async listAccounts() {  
         Logger.verbose(`Command : tezster list-accounts`);
-        if(Object.keys(config.accounts).length > 0) {
-            config.accounts.forEach(function (accounts){
+        if(Object.keys(this.config.accounts).length > 0) {
+            this.config.accounts.forEach(function (accounts){
                 Logger.info(accounts.label + ' - ' +accounts.pkh + ' (' + accounts.identity + ')');
             });
         } else {    
@@ -83,7 +81,7 @@ class Accounts{
         }
         
         await this.activateAlphanetAccount(args[0]);
-        Logger.warn(`If this account has already been activated, it may throw 'invalid_activation' error. You can visit https://${TESTNET_NAME}.tzstats.com for more information on this account`);
+        Logger.warn(`If this account has already been activated, it may throw 'invalid_activation' error. You can visit https://${NODE_TYPE.TESTNET}.tzstats.com for more information on this account`);
     }
 
     async removeAccount(args) {
@@ -95,26 +93,26 @@ class Accounts{
         await this.deleteAccount(args[0]);
     }
 
-    setProviderAccounts(new_provider){    
-        config.provider = new_provider;
+    async setProviderAccounts(new_provider){    
+        this.config.provider = new_provider;
 
-        if(Helper.isWindows() && config.provider.includes('localhost')) {
+        if(Helper.isWindows() && this.config.provider.includes('localhost')) {
             let current_docker_machine_ip;
             try { 
                 current_docker_machine_ip = docker_machine_ip();
             } catch(error) {
                 Helper.errorLogHandler(`Error occurred while fetching docker machine ip address: ${error}`, 'Make sure docker-machine is in running state....');
             }
-            config.provider = config.provider.replace('localhost', current_docker_machine_ip);
+            this.config.provider = this.config.provider.replace('localhost', current_docker_machine_ip);
         }
 
-        jsonfile.writeFile(confFile, config);
-        Logger.info('Active RPC node updated to ' + config.provider);
+        await writeJsonFile(confFile, this.config);
+        Logger.info('Active RPC node updated to ' + this.config.provider);
     }
 
     getProviderAccounts(){    
-        if (config.provider) {
-            Logger.info(config.provider);
+        if (this.config.provider) {
+            Logger.info(this.config.provider);
         } else {
             Logger.warn('No rpc node is set');
         } 
@@ -122,19 +120,19 @@ class Accounts{
 
     async getBalanceAccounts(account) {
         let pkh = account, f;
-        const tezosNode = config.provider;
-        if (f = Helper.findKeyObj(config.identities, pkh)) {
+        const tezosNode = this.config.provider;
+        if (f = Helper.findKeyObj(this.config.identities, pkh)) {
             pkh = f.pkh;
-        } else if (f = Helper.findKeyObj(config.accounts, pkh)) {
+        } else if (f = Helper.findKeyObj(this.config.accounts, pkh)) {
             pkh = f.pkh;
-        } else if (f = Helper.findKeyObj(config.contracts, pkh)) {
+        } else if (f = Helper.findKeyObj(this.config.contracts, pkh)) {
             pkh = f.pkh;
         } else {
             pkh = account;
         }
 
         const keys = this.getKeys(account);
-        const contractObj = Helper.findKeyObj(config.contracts, account);
+        const contractObj = Helper.findKeyObj(this.config.contracts, account);
 
         if(!keys && !contractObj.label && !contractObj.pkh && !pkh.includes('tz1')) {
             Logger.error(`Account with label '${account}' doesn't exists.`);
@@ -163,7 +161,7 @@ class Accounts{
             const mnemonic = conseiljs.TezosWalletUtil.generateMnemonic();
             const keystore = await conseiljs.TezosWalletUtil.unlockIdentityWithMnemonic(mnemonic, '');
             this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
-            this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, config.provider);     
+            this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, this.config.provider);     
             Logger.info(`Successfully created wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
             Logger.warn(`We suggest you to store following Mnemonic Pharase which can be used to restore wallet in case you lost wallet:\n'${mnemonic}'`);
         } catch(error) {
@@ -182,7 +180,7 @@ class Accounts{
         try {
             const keystore = await conseiljs.TezosWalletUtil.unlockIdentityWithMnemonic(mnemonic, '');
             this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
-            this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, config.provider);     
+            this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, this.config.provider);     
             Logger.info(`Successfully restored the wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
         } catch(error) {
             Logger.error(`Error occurred while restoring the wallet:\n${error}`);
@@ -200,7 +198,7 @@ class Accounts{
         try {
             const keystore = await conseiljs.TezosWalletUtil.restoreIdentityWithSecretKey(secret);
             this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
-            this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, config.provider);     
+            this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, this.config.provider);     
             Logger.info(`Successfully restored the wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
         } catch(error) {
             Logger.error(`Error occurred while restoring the wallet:\n${error}`);
@@ -236,7 +234,7 @@ class Accounts{
             const alphakeys = await conseiljs.TezosWalletUtil.unlockFundraiserIdentity(mnemonic, email, password, pkh);
 
             this.addIdentity(accountLabel, alphakeys.privateKey, alphakeys.publicKey, alphakeys.publicKeyHash, accountJSON.secret);
-            this.addAccount(accountLabel, alphakeys.publicKeyHash, accountLabel, config.provider);
+            this.addAccount(accountLabel, alphakeys.publicKeyHash, accountLabel, this.config.provider);
             Logger.info(`successfully added testnet faucet account: ${accountLabel}-${alphakeys.publicKeyHash}`);
         } catch(error) {
             Logger.error(`Error occurred while adding testnet faucet account:\n${error}`);
@@ -245,17 +243,17 @@ class Accounts{
 
     async activateAlphanetAccount(account) {
         const conseiljs = require(CONSEIL_JS);
-        const tezosNode = config.provider;
-        let conseilServer = { 'url': CONSEIL_SERVER_URL, 'apiKey': CONSEIL_SERVER_APIKEY, 'network': TESTNET_NAME };
-        const keys = this.getKeys(account);
+        const tezosNode = this.config.provider;
+        let conseilServer = { 'url': `${CONSEIL_SERVER.TESTNET.url}`, 'apiKey': `${CONSEIL_SERVER.TESTNET.apiKey}`, 'network': `${NODE_TYPE.TESTNET}` };
 
+        const keys = this.getKeys(account);
         if(!keys || !keys.secret) {
-            Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster.`);
+            Logger.error(`Couldn't find keys for given account.\nPlease make sure the account '${account}' exists and added to tezster.`);
             return;
         }
 
-        if(Helper.confirmNodeProvider(tezosNode)) {
-            Logger.error('Make sure your current rpc-node is set to remote node.');
+        if(Helper.isTestnetNode(tezosNode)) {
+            Logger.error(`Make sure your current rpc-node is set to ${NODE_TYPE.TESTNET} node.\nYou can activate the account by sending some tezos to the account.`);
             return;
         }
 
@@ -289,7 +287,7 @@ class Accounts{
         const keys = this.getKeys(account);
 
         if(!keys) {
-            Logger.error(`Couldn't find keys for given account.\nPlease make sure the account exists and added to tezster. Run 'tezster list-accounts' to get all accounts`);
+            Logger.error(`Couldn't find keys for given account.\nPlease make sure the account '${account}' exists and added to tezster. Run 'tezster list-accounts' to get all accounts.`);
             return;
         }
 
@@ -299,12 +297,12 @@ class Accounts{
         }
 
         try {
-            for(var accountIndex=0; accountIndex<config.accounts.length; accountIndex++) {
-                if(config.accounts[accountIndex].identity === account  || config.accounts[accountIndex].label === account || config.accounts[accountIndex].pkh === account) {
+            for(var accountIndex=0; accountIndex<this.config.accounts.length; accountIndex++) {
+                if(this.config.accounts[accountIndex].identity === account  || this.config.accounts[accountIndex].label === account || this.config.accounts[accountIndex].pkh === account) {
                     Logger.info(`Account-'${account}' successfully removed`);
-                    config.accounts.splice(accountIndex, 1);
-                    config.identities.splice(accountIndex, 1);
-                    jsonfile.writeFile(confFile, config);
+                    this.config.accounts.splice(accountIndex, 1);
+                    this.config.identities.splice(accountIndex, 1);
+                    await writeJsonFile(confFile, this.config);
                 }
             }
         }
@@ -315,28 +313,28 @@ class Accounts{
 
     getKeys(account) {
         let keys,f;
-        if (f = Helper.findKeyObj(config.identities, account)) {
+        if (f = Helper.findKeyObj(this.config.identities, account)) {
             keys = f;
-        } else if (f = Helper.findKeyObj(config.accounts, account)) {
-            keys = Helper.findKeyObj(config.identities, f.identity);
-        } else if (f = Helper.findKeyObj(config.contracts, account)) {
-            keys = Helper.findKeyObj(config.identities, f.identity);
+        } else if (f = Helper.findKeyObj(this.config.accounts, account)) {
+            keys = Helper.findKeyObj(this.config.identities, f.identity);
+        } else if (f = Helper.findKeyObj(this.config.contracts, account)) {
+            keys = Helper.findKeyObj(this.config.identities, f.identity);
         }
         return keys;
     }
 
-    addIdentity(label, sk, pk, pkh, secret) {
-        config.identities.push({
+    async addIdentity(label, sk, pk, pkh, secret) {
+        this.config.identities.push({
             sk : sk,
             pk: pk,
             pkh : pkh,
             label : label,
             secret: secret || ''
         });
-        jsonfile.writeFile(confFile, config);
+        await writeJsonFile(confFile, this.config);
     }
 
-    addAccount(label, pkh, identity, nodeType) {
+    async addAccount(label, pkh, identity, nodeType) {
         if(nodeType.includes(NODE_TYPE.LOCALHOST) || nodeType.includes(NODE_TYPE.WIN_LOCALHOST)) {
             nodeType = NODE_TYPE.LOCALHOST;
         } else if(nodeType.includes(NODE_TYPE.DALPHANET)) {
@@ -344,14 +342,14 @@ class Accounts{
         } else if(nodeType.includes(NODE_TYPE.MAINNET)) {
             nodeType = NODE_TYPE.MAINNET;
         } else {
-            nodeType = NODE_TYPE.CARTHAGENET;
+            nodeType = `${NODE_TYPE.TESTNET}`;
         }
-        config.accounts.push({
+        this.config.accounts.push({
             label : `${nodeType}_`+label,
             pkh : pkh,
             identity : identity
         });
-        jsonfile.writeFile(confFile, config);
+        await writeJsonFile(confFile, this.config);
     }
 
 }

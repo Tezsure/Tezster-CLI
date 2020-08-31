@@ -36,8 +36,16 @@ class Helper {
         return os.release().includes(WIN_WSL_OS_RELEASE);
     }
 
-    static confirmNodeProvider(tezosNode) {
+    static isLocalNode(tezosNode){
         return tezosNode.includes('localhost');
+    }
+
+    static isTestnetNode(tezosNode) {
+        return tezosNode.includes('localhost') || tezosNode.includes('mainnet') || tezosNode.includes('dalphanet');
+    }
+
+    static isMainnetNode(tezosNode) {
+        return tezosNode.includes('mainnet');
     }
 
     static errorLogHandler(redirctErrorLogsToFile, displayErrorLogsToConsole) {

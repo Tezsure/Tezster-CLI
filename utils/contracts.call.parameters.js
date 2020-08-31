@@ -8,13 +8,13 @@ const confirmAnswerValidator = async (input) => {
 const contractCallParameters = [
     {
       type : 'input',
-      name : 'contractName',
-      message : 'Enter contract name: ',
+      name : 'contractLabel',
+      message : 'Enter contract Label: ',
       validate: confirmAnswerValidator
     },
     {
       type : 'input',
-      name : 'argumentValue',
+      name : 'contractArgs',
       message : 'Enter argument value: ',
       validate: confirmAnswerValidator
     },

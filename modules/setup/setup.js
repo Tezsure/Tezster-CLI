@@ -8,12 +8,10 @@ const jsonfile = require('jsonfile'),
       { Helper } = require('../helper'),
       { RpcRequest } = require('../rpc-util');
 
-let config;
-
 class Setup {
 
     constructor() {
-        config = jsonfile.readFileSync(confFile);
+        this.config = jsonfile.readFileSync(confFile);
     }
 
     setup() {
@@ -108,7 +106,7 @@ class Setup {
     async nodeStatus() {
         Logger.verbose('Command : tezster node-status');
 
-        if(config.provider.includes('localhost') || config.provider.includes('192.168')) {
+        if(this.config.provider.includes('localhost') || this.config.provider.includes('192.168')) {
             try {
                 let response = await RpcRequest.checkNodeStatusForLocalNodes(LOCAL_NODE_URL);
                 if(response.protocol.startsWith('PsCARTHAG')){
@@ -130,7 +128,7 @@ class Setup {
             }
         } else {
             try {
-                let response = await RpcRequest.fetchBlockDetailsForRemoteNodes(config.provider);
+                let response = await RpcRequest.fetchBlockDetailsForRemoteNodes(this.config.provider);
                 Logger.warn(`Name: ${response[1].name}`);
                 Logger.warn(`Network: ${response[1].network}`);
                 Logger.warn(`Protocol: ${response[1].protocol}`);
