@@ -9,23 +9,24 @@ const pathToFile = path.join(CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE),
 
 if(!fs.existsSync(TEMP_PATH)) {
     fs.mkdirSync(TEMP_PATH, {recursive: true});
-    fs.chmodSync(TEMP_PATH, 0777);
 }
 
 if(!fs.existsSync(TEZSTER_FOLDER_PATH)) {
     fs.mkdirSync(TEZSTER_FOLDER_PATH);
-    fs.chmodSync(TEZSTER_FOLDER_PATH, 0777);
 }
 
 if(!fs.existsSync(TEZSTER_LOGS_FOLDER_PATH)) {
     fs.mkdirSync(TEZSTER_LOGS_FOLDER_PATH);
-    fs.chmodSync(TEZSTER_LOGS_FOLDER_PATH, 0777);
 }
 
 if(!fs.existsSync(COMMAND_LOG_FILE)) {
     fs.writeFileSync(COMMAND_LOG_FILE);
-    fs.chmodSync(COMMAND_LOG_FILE, 0777);
 }
+
+fs.chmodSync(TEMP_PATH, 0777);
+fs.chmodSync(TEZSTER_FOLDER_PATH, 0777);
+fs.chmodSync(TEZSTER_LOGS_FOLDER_PATH, 0777);
+fs.chmodSync(COMMAND_LOG_FILE, 0777);
 
 if(fs.existsSync(confFile)) {
     setProviderForWindows();
