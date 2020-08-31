@@ -37,7 +37,7 @@ class Helper {
     }
 
     static isLocalNode(tezosNode){
-        return tezosNode.includes('localhost');
+        return tezosNode.includes('localhost') || tezosNode.includes('192.168');
     }
 
     static isTestnetNode(tezosNode) {

@@ -9,7 +9,7 @@ const confFile = `/var/tmp/tezster/config.json`,
       LOG_FOLDER_PATH_INSIDE_DOCKER = `/usr/local/bin/tezster-logs`,
       CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE = require('path').join(__dirname, '/../config.json'),
       
-      IMAGE_TAG = 'tezsureinc/tezster:1.0.4-beta',
+      IMAGE_TAG = 'tezsureinc/tezster:1.0.4',
       CONTAINER_NAME = 'tezster',
       PROGRESS_REFRESH_INTERVAL = 1000,
       Node_Confirmation_Timeout = 40000,
