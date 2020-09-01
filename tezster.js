@@ -8,8 +8,10 @@ const program = require('commander'),
       { confFile } = require('./modules/cli-constants'),
       { setupStopNodesParameters } = require('./utils/setup.stopNodes.parameters'),
       { accountSetProviderParameters } = require('./utils/account.setProvider.parameters'),
+      { accountRestoreWalletParameters } = require('./utils/account.restoreWallet.parameters'),
       { contractDeployParameters } = require('./utils/contracts.deploy.parameters'),
-      { contractCallParameters } = require('./utils/contracts.call.parameters');
+      { contractCallParameters } = require('./utils/contracts.call.parameters'),
+      { version } = require('./package.json');
 
 if(!fs.existsSync(confFile)) {
     require('./postinstall');
@@ -19,7 +21,7 @@ const tezstermanager = new TezsterManager();
 
 /******* To setup tezos nodes on user system */
 program
-    .version('0.2.7', '-v, --version')
+    .version(version, '-v, --version')
     .command('setup')
     .description('To set up Tezos nodes')
     .action(function(){  
@@ -126,11 +128,21 @@ program
 /******* To restore an existing wallet */
 program
     .command('restore-wallet')
-    .usage(`<wallet-label/identity/hash> <mnemonic-phrase> \n(Note: Mnemonic phrase must be enclose between '')`)
-    .description('To restore an existing wallet using mnemonic')
+    .usage(`<wallet-label>)`)
+    .description('Interactive command to restore an existing wallet using mnemonic-phrase or secret/private key')
     .action(function(){  
-        tezstermanager.restoreWallet(); 
-});
+        if (process.argv.length <=3 || process.argv.length > 4) {
+            console.log('Incorrect usage of restore-wallet command. Correct usage: - tezster restore-wallet <wallet-label>');
+            return;
+        }
+        prompt(accountRestoreWalletParameters).then(accountRestoreWalletParameterValues => {
+            if(Object.values(accountRestoreWalletParameterValues)[0] === 'Mnemonic Phrases') {
+                tezstermanager.restoreWalletUsingMnemonic(process.argv[3], Object.values(accountRestoreWalletParameterValues)[1]);
+            } else {
+                tezstermanager.restoreWalletUsingSecret(process.argv[3], Object.values(accountRestoreWalletParameterValues)[1]);
+            }
+        });
+    });
 
 /******* To remove an account */
 program
@@ -152,32 +164,38 @@ program
 /*******deploy contract written in Michelson*/
 program
     .command('deploy')
-    .usage(`\n(This command provides the interactive shell)`)
+    .option('-i', '--interactive', 'use interactive mode')
+    .usage(`\n(This command provides the interactive shell to deploy a smart contract)`)
     .description('Deploys a smart contract written in Michelson')
     .action(function() {
-        if (process.argv.length > 3) {
-            console.log('Incorrect usage of deploy command. Correct usage: - tezster deploy');
+        if(process.argv[3] !== '-i') {
+            tezstermanager.deployContractNonInterativeMode();
+            return;
+        } else if(process.argv[3] === '-i') {
+            prompt(contractDeployParameters).then(deployParamaterValues => {
+                tezstermanager.deployContractInterativeMode(deployParamaterValues);
+            });
             return;
         }
-        prompt(contractDeployParameters).then(deployParamaterValues => {
-            tezstermanager.deployContract(deployParamaterValues);
-        });
 });
 
 
 /*******calls contract written in Michelson*/
 program
     .command('call')
-    .usage(`\n(This command provides the interactive shell)`)
+    .option('-i', '--interactive', 'use interactive mode')
+    .usage(`\n(This command provides the interactive shell to call deployed smart contract)`)
     .description('Calls a smart contract with given value provided in Michelson format')
     .action(function() {
-        if (process.argv.length > 3) {
-            console.log('Incorrect usage of call command. Correct usage: - tezster call');
+        if(process.argv[3] !== '-i') {
+            tezstermanager.callContractNonInterativeMode();
+            return;
+        } else if(process.argv[3] === '-i') {
+            prompt(contractCallParameters).then(callParamaterValues => {
+                tezstermanager.callContractInterativeMode(callParamaterValues);
+            });
             return;
         }
-        prompt(contractCallParameters).then(callParamaterValues => {
-            tezstermanager.callContract(callParamaterValues);
-        });
 });
 
 /*******gets storage for a contract*/
@@ -210,7 +228,7 @@ program
 /******* To transfer the amount */
 program
     .command('transfer')
-    .usage('<amount> <from> <to>')
+    .usage('<amount(ꜩ)> <from> <to> <--optional gas-fee(muꜩ, default is 3000 muꜩ)>')
     .description('To transfer the funds between accounts')
     .action(function(){
         tezstermanager.transfer();
