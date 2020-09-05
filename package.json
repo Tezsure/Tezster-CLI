@@ -1,7 +1,7 @@
 {
   "name": "tezster",
-  "version": "0.2.8",
-  "description": "A JavaScript-based private Tezos Blockchain Dev Tool that lives entirely on your local machine.",
+  "version": "0.2.9",
+  "description": "A powerful user-friendly CLI which comes with preconfigured private Tezos blockchain for easy and fast development, having deployment support for test and main network as well.",
   "main": "tezster.js",
   "scripts": {
     "postinstall": "node ./postinstall.js",
@@ -64,5 +64,8 @@
     }
   ],
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Tezsure/Tezster-CLI/issues"
+  },
   "homepage": "https://docs.cli.tezster.tech/"
 }
