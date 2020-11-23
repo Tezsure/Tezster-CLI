@@ -23,7 +23,6 @@ if(!fs.existsSync(COMMAND_LOG_FILE)) {
     fs.writeFileSync(COMMAND_LOG_FILE);
 }
 
-fs.chmodSync(TEMP_PATH, 0777);
 fs.chmodSync(TEZSTER_FOLDER_PATH, 0777);
 fs.chmodSync(TEZSTER_LOGS_FOLDER_PATH, 0777);
 fs.chmodSync(COMMAND_LOG_FILE, 0777);

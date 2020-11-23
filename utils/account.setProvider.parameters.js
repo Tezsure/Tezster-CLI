@@ -13,10 +13,8 @@ const accountSetProviderParameters = [
         choices: [
                   'http://localhost:18732', 
                   'https://testnet.tezster.tech', 
-                  'https://tezos-dev.cryptonomic-infra.tech', 
-                  'https://carthagenet.SmartPy.io', 
+                  'https://delphinet.SmartPy.io', 
                   'https://mainnet.smartpy.io', 
-                  'https://dalphanet.smartpy.io', 
                   'Enter Own Custom Url'
                 ]
     }, 

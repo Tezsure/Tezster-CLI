@@ -1,6 +1,12 @@
-const { confFile, CONSEIL_JS, NODE_TYPE, CONSEIL_SERVER } = require('../cli-constants');
+const { confFile, NODE_TYPE, CONSEIL_SERVER } = require('../cli-constants');
 
-const jsonfile = require('jsonfile'),
+const conseiljs = require('conseiljs'),
+      conseiljssoftsigner = require('conseiljs-softsigner'),
+      fetch = require('node-fetch'),
+      log = require('loglevel'),
+      logger = log.getLogger('conseiljs'),
+      
+      jsonfile = require('jsonfile'),
       writeJsonFile = require('write-json-file'),
       Logger = require('../logger'),
       { Helper } = require('../helper'),
@@ -149,7 +155,6 @@ class Accounts{
 
     async createTestnetWallet(args) {
         const accountLabel = args[0];
-        const conseiljs = require(CONSEIL_JS);
 
         const keys = this.getKeys(accountLabel);
         if(keys) {
@@ -158,10 +163,12 @@ class Accounts{
         }
 
         try {
-            const mnemonic = conseiljs.TezosWalletUtil.generateMnemonic();
-            const keystore = await conseiljs.TezosWalletUtil.unlockIdentityWithMnemonic(mnemonic, '');
+            const mnemonic = conseiljssoftsigner.KeyStoreUtils.generateMnemonic();
+            const keystore = await conseiljssoftsigner.KeyStoreUtils.restoreIdentityFromMnemonic(mnemonic, "");
+
             this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, this.config.provider);     
+
             Logger.info(`Successfully created wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
             Logger.warn(`We suggest you to store following Mnemonic Pharase which can be used to restore wallet in case you lost wallet:\n'${mnemonic}'`);
         } catch(error) {
@@ -170,7 +177,6 @@ class Accounts{
     }
 
     async restoreExistingWalletUsingMnemonic(accountLabel, mnemonic) {
-        const conseiljs = require(CONSEIL_JS);
         const keys = this.getKeys(accountLabel);
         if(keys) {
             Logger.error(`Account with this label already exists.`);
@@ -178,7 +184,7 @@ class Accounts{
         }
 
         try {
-            const keystore = await conseiljs.TezosWalletUtil.unlockIdentityWithMnemonic(mnemonic, '');
+            const keystore = await conseiljssoftsigner.KeyStoreUtils.restoreIdentityFromMnemonic(mnemonic, '');
             this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, this.config.provider);     
             Logger.info(`Successfully restored the wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
@@ -188,7 +194,6 @@ class Accounts{
     }
 
     async restoreExistingWalletUsingSecret(accountLabel, secret) {
-        const conseiljs = require(CONSEIL_JS);
         const keys = this.getKeys(accountLabel);
         if(keys) {
             Logger.error(`Account with this label already exists.`);
@@ -196,7 +201,7 @@ class Accounts{
         }
 
         try {
-            const keystore = await conseiljs.TezosWalletUtil.restoreIdentityWithSecretKey(secret);
+            const keystore = await conseiljssoftsigner.KeyStoreUtils.restoreIdentityFromSecretKey(secret);
             this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, this.config.provider);     
             Logger.info(`Successfully restored the wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
@@ -207,7 +212,6 @@ class Accounts{
 
     async addFaucetAccount(accountLabel, accountFilePath) {
         const fs = require('fs');
-        const conseiljs = require(CONSEIL_JS);
         const keys = this.getKeys(accountLabel);
         if(keys) {
             Logger.error(`Account with this label already exists.`);
@@ -231,9 +235,9 @@ class Accounts{
             }
             mnemonic = mnemonic.join(' ');
 
-            const alphakeys = await conseiljs.TezosWalletUtil.unlockFundraiserIdentity(mnemonic, email, password, pkh);
-
-            this.addIdentity(accountLabel, alphakeys.privateKey, alphakeys.publicKey, alphakeys.publicKeyHash, accountJSON.secret);
+            const alphakeys = await conseiljssoftsigner.KeyStoreUtils.restoreIdentityFromFundraiser(mnemonic, email, password, pkh);
+            
+            this.addIdentity(accountLabel, alphakeys.secretKey, alphakeys.publicKey, alphakeys.publicKeyHash, accountJSON.secret);
             this.addAccount(accountLabel, alphakeys.publicKeyHash, accountLabel, this.config.provider);
             Logger.info(`successfully added testnet faucet account: ${accountLabel}-${alphakeys.publicKeyHash}`);
         } catch(error) {
@@ -242,7 +246,9 @@ class Accounts{
     }
 
     async activateAlphanetAccount(account) {
-        const conseiljs = require(CONSEIL_JS);
+        conseiljs.registerLogger(logger);
+        conseiljs.registerFetch(fetch);
+
         const tezosNode = this.config.provider;
         let conseilServer = { 'url': `${CONSEIL_SERVER.TESTNET.url}`, 'apiKey': `${CONSEIL_SERVER.TESTNET.apiKey}`, 'network': `${NODE_TYPE.TESTNET}` };
 
@@ -262,13 +268,14 @@ class Accounts{
             privateKey: keys.sk,
             publicKeyHash: keys.pkh,
             seed: '',
-            storeType: conseiljs.StoreType.Fundraiser
+            storeType: conseiljs.KeyStoreType.Fundraiser
         };
 
         try {
             Logger.warn('Activating the account, this could take a while....');
-            let activationResult = await conseiljs.TezosNodeWriter.sendIdentityActivationOperation(tezosNode, keystore, keys.secret);
-            
+            const signer = await conseiljssoftsigner.SoftSigner.createSigner(conseiljs.TezosMessageUtils.writeKeyWithHint(keystore.privateKey,'edsk'), -1);
+
+            let activationResult = await conseiljs.TezosNodeWriter.sendIdentityActivationOperation(tezosNode, signer, keystore, keys.secret);
             try {
                 await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, JSON.parse(activationResult.operationGroupID), 15, 10);
             } catch(error) {
@@ -276,7 +283,7 @@ class Accounts{
                                        'Account activation operation confirmation failed ....');
             }
 
-            const revealResult = await conseiljs.TezosNodeWriter.sendKeyRevealOperation(tezosNode, keystore);
+            const revealResult = await conseiljs.TezosNodeWriter.sendKeyRevealOperation(tezosNode, signer, keystore);
             Logger.info(`Testnet faucet account successfully activated: ${keys.label} - ${keys.pkh} \nWith tx hash: ${JSON.stringify(revealResult.operationGroupID)}`);
         } catch(error) {
             ExceptionHandler.transactionException('activateAccount', error);

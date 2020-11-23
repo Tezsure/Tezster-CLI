@@ -1,6 +1,6 @@
 {
   "name": "tezster",
-  "version": "0.2.9",
+  "version": "0.3.0",
   "description": "A powerful user-friendly CLI which comes with preconfigured private Tezos blockchain for easy and fast development, having deployment support for test and main network as well.",
   "main": "tezster.js",
   "scripts": {
@@ -24,6 +24,8 @@
     "chalk": "^4.1.0",
     "cli-progress": "^2.1.1",
     "commander": "^2.20.0",
+    "conseiljs": "^5.0.5-beta.5",
+    "conseiljs-softsigner": "^5.0.3",
     "crypto": "^1.0.1",
     "docker-ip": "^2.0.1",
     "docker-modem": "^2.1.0",
@@ -32,7 +34,6 @@
     "get-random-values": "^1.2.0",
     "inquirer": "^7.2.0",
     "jsonfile": "^5.0.0",
-    "jsonpath": "^1.0.2",
     "jsonpath-plus": "^4.0.0",
     "libsodium-wrappers": "^0.7.4",
     "libsodium-wrappers-sumo": "^0.7.6",
