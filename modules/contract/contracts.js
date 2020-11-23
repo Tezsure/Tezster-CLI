@@ -1,6 +1,12 @@
-const { confFile, CONSEIL_SERVER, CONSEIL_JS, NODE_TYPE } = require('../cli-constants');
+const { confFile, CONSEIL_SERVER, NODE_TYPE } = require('../cli-constants');
 
-const jsonfile = require('jsonfile'),
+const conseiljs = require('conseiljs'),
+      conseiljssoftsigner = require('conseiljs-softsigner'),
+      fetch = require('node-fetch'),
+      log = require('loglevel'),
+      logger = log.getLogger('conseiljs'),
+      
+      jsonfile = require('jsonfile'),
       writeJsonFile = require('write-json-file'),
       Logger = require('../logger'),
       { Helper } = require('../helper'),
@@ -83,9 +89,11 @@ class Contracts {
     }
 
     async listEntryPoints(contract) {
+        conseiljs.registerLogger(logger);
+        conseiljs.registerFetch(fetch);
+
         const tezosNode = this.config.provider;  
         const fs = require('fs');
-        const conseiljs = require(CONSEIL_JS);
         let Network_type = 'TESTNET';
 
         if(Helper.isMainnetNode(tezosNode)) {
@@ -133,8 +141,10 @@ class Contracts {
     }
 
     async deploy(contractLabel, contractPath, initValue, account, amount, fee, storageLimit, gasLimit) {
+        conseiljs.registerLogger(logger);
+        conseiljs.registerFetch(fetch);
+
         const fs = require('fs');
-        const conseiljs = require(CONSEIL_JS);
         const tezosNode = this.config.provider;  
         let Network_type = 'TESTNET';
 
@@ -154,7 +164,7 @@ class Contracts {
             privateKey: keys.sk,
             publicKeyHash: keys.pkh,
             seed: '',
-            storeType: conseiljs.StoreType.Fundraiser
+            storeType: conseiljs.KeyStoreType.Fundraiser
         };
       
         let contractObj = Helper.findKeyObj(this.config.contracts, contractLabel);
@@ -171,11 +181,13 @@ class Contracts {
         Logger.warn('Deploying the contract, this could take a while....');
         try {
             const contract = fs.readFileSync(contractPath, 'utf8');
-            const result = await conseiljs.TezosNodeWriter.sendContractOriginationOperation(
-                                      tezosNode, keystore, amount*1000000, undefined,
-                                      fee, '', storageLimit, gasLimit,
-                                      contract, initValue, conseiljs.TezosParameterFormat.Michelson);      
+            const signer = await conseiljssoftsigner.SoftSigner.createSigner(conseiljs.TezosMessageUtils.writeKeyWithHint(keystore.privateKey,'edsk'), -1);
 
+            const result = await conseiljs.TezosNodeWriter.sendContractOriginationOperation(
+                                      tezosNode, signer, keystore, amount*1000000, undefined,
+                                      fee, storageLimit, gasLimit,
+                                      contract, initValue, conseiljs.TezosParameterFormat.Michelson, -1);      
+            
             if(!Helper.isLocalNode(tezosNode)) {
                 try {
                     await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, JSON.parse(result.operationGroupID), 15, 10);
@@ -206,9 +218,12 @@ class Contracts {
     }
 
     async invokeContract(contract, argument, account, amount, fee, storageLimit, gasLimit) {
-        const conseiljs = require(CONSEIL_JS);
+        conseiljs.registerLogger(logger);
+        conseiljs.registerFetch(fetch);
+        
         const tezosNode = this.config.provider;
         const keys = this.getKeys(account);
+
         if(!keys) {
             Logger.error(`Couldn't find keys for given account.\nPlease make sure the account '${account}' exists and added to tezster. Run 'tezster list-accounts' to get all accounts.`);
             return;
@@ -218,7 +233,7 @@ class Contracts {
             privateKey: keys.sk,
             publicKeyHash: keys.pkh,
             seed: '',
-            storeType: conseiljs.StoreType.Fundraiser
+            storeType: conseiljs.KeyStoreType.Fundraiser
         };
       
         let contractAddress = '';
@@ -238,9 +253,11 @@ class Contracts {
         gasLimit = gasLimit ? gasLimit : 500000;
       
         try {
+          const signer = await conseiljssoftsigner.SoftSigner.createSigner(conseiljs.TezosMessageUtils.writeKeyWithHint(keystore.privateKey,'edsk'), -1);
+
           const result = await conseiljs.TezosNodeWriter.sendContractInvocationOperation(
-                                      tezosNode, keystore, contractAddress, amount*1000000, fee, '', storageLimit, gasLimit, undefined, 
-                                      argument, conseiljs.TezosParameterFormat.Michelson);
+                                      tezosNode, signer, keystore, contractAddress, amount*1000000, fee, storageLimit, gasLimit, undefined, 
+                                      argument, conseiljs.TezosParameterFormat.Michelson, -1);
           
           if (result.results) {
             switch(result.results.contents[0].metadata.operation_result.status) {
@@ -265,9 +282,12 @@ class Contracts {
     }
 
     async getContractStorage(contract) {
-        const conseiljs = require(CONSEIL_JS);
+        conseiljs.registerLogger(logger);
+        conseiljs.registerFetch(fetch);
+        
         const tezosNode = this.config.provider;
         let contractAddress = '';
+
         let contractObj = Helper.findKeyObj(this.config.contracts, contract);
         if (contractObj) {
             contractAddress = contractObj.pkh;
