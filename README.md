@@ -66,6 +66,7 @@ cd Tezster-CLI
 npm install
 sudo npm link
 ```
+*Note: If you got error message regarding permission denied, try using ```sudo npm install --unsafe```.*
 
 ## NPM Package
 
