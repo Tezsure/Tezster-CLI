@@ -9,7 +9,7 @@ const confFile = `/var/tmp/tezster/config.json`,
       LOG_FOLDER_PATH_INSIDE_DOCKER = `/usr/local/bin/tezster-logs`,
       CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE = require('path').join(__dirname, '/../config.json'),
       
-      IMAGE_TAG = 'tezsureinc/tezster:1.0.4',
+      IMAGE_TAG = 'tezsureinc/tezster:1.0.5',
       CONTAINER_NAME = 'tezster',
       PROGRESS_REFRESH_INTERVAL = 1000,
       Node_Confirmation_Timeout = 40000,
@@ -20,11 +20,12 @@ const confFile = `/var/tmp/tezster/config.json`,
       WIN_OS_PLATFORM = 'win32',
       WIN_WSL_OS_RELEASE = 'microsoft',
       
+      NETWORK = 'PsDELPH1',
       NODE_TYPE = {
           LOCALHOST: 'localhost',
           WIN_LOCALHOST: '192.168',
           DALPHANET: 'dalphanet',
-          TESTNET: 'carthagenet',
+          TESTNET: 'delphinet',
           MAINNET: 'mainnet',
       }, 
 
@@ -40,7 +41,7 @@ const confFile = `/var/tmp/tezster/config.json`,
       };
 
 module.exports = { confFile, CONSEIL_JS, TEZSTER_LOGS_FOLDER_PATH, IMAGE_TAG, CONTAINER_NAME, LOCAL_NODE_URL, COMMAND_LOG_FILE,
-                   PROGRESS_REFRESH_INTERVAL, TEZSTER_FOLDER_PATH, START_NODES_PROGRESS_BAR_INTERVAL_WIN, 
+                   PROGRESS_REFRESH_INTERVAL, TEZSTER_FOLDER_PATH, START_NODES_PROGRESS_BAR_INTERVAL_WIN, NETWORK,
                    LOGS_ZIPFILE_PATH, LOG_FOLDER_PATH_INSIDE_DOCKER, LOGS_ZIPFILE_NAME, NODE_TYPE, CONSEIL_SERVER,
                    CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE, WIN_OS_PLATFORM, WIN_WSL_OS_RELEASE, TEMP_PATH,
                    NODE_CONFIRMATION_TIMEOUT_WIN, Node_Confirmation_Timeout, Start_Nodes_Progress_Bar_Interval };

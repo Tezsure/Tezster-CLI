@@ -1,6 +1,12 @@
-const { confFile, CONSEIL_JS, NODE_TYPE } = require('../cli-constants');
+const { confFile, NODE_TYPE } = require('../cli-constants');
 
-const jsonfile = require('jsonfile'),      
+const conseiljs = require('conseiljs'),
+      conseiljssoftsigner = require('conseiljs-softsigner'),
+      fetch = require('node-fetch'),
+      log = require('loglevel'),
+      logger = log.getLogger('conseiljs'),
+
+      jsonfile = require('jsonfile'),      
       writeJsonFile = require('write-json-file'),
       Logger = require('../logger'),
       { Helper } = require('../helper'),
@@ -35,8 +41,11 @@ class Transactions {
 
     async transferAmount(args) {
         let amount = parseFloat(args[0]), from = args[1], to = args[2], fees = args[3], f;
+
+        conseiljs.registerLogger(logger);
+        conseiljs.registerFetch(fetch);
+        logger.setLevel('DEBUG',false);
         
-        const conseiljs = require(CONSEIL_JS);
         const tezosNode = this.config.provider;
         let keys = this.getKeys(from), keystore;
 
@@ -51,7 +60,7 @@ class Transactions {
                 privateKey: keys.sk,
                 publicKeyHash: keys.pkh,
                 seed: '',
-                storeType: conseiljs.StoreType.Fundraiser
+                storeType: conseiljs.KeyStoreType.Fundraiser
             };
         } catch(error) {
             Logger.error(`Sender account doesn't exist. Run 'tezster list-accounts' to get all accounts.`);
@@ -82,11 +91,13 @@ class Transactions {
             to = to;
         }
 
-        fees = fees || 3000;
+        fees = fees || 2500;
         amount = amount * 1000000 ;
 
         try {
-            const result = await conseiljs.TezosNodeWriter.sendTransactionOperation(tezosNode, keystore, to, amount, fees, '');
+            const signer = await conseiljssoftsigner.SoftSigner.createSigner(conseiljs.TezosMessageUtils.writeKeyWithHint(keystore.privateKey,'edsk'), -1);
+
+            const result = await conseiljs.TezosNodeWriter.sendTransactionOperation(tezosNode, signer, keystore, to, amount, fees, -1);
             this.addTransaction('transfer', `${result.operationGroupID}`, from, to, amount);
             Logger.info(`Transfer complete - operation hash ${result.operationGroupID}`);
         }

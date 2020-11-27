@@ -27,7 +27,7 @@ jobs:
 
       - name:  'Version Bump'
         if: github.ref == 'refs/heads/master'
-        uses:  'phips28/gh-action-bump-version@master'
+        uses: 'phips28/gh-action-bump-version@master'
         with:
           tag-prefix:  ''
         env:

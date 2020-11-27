@@ -1,7 +1,7 @@
 const Docker = require('dockerode');
 var docker = new Docker({ socketPath: '/var/run/docker.sock', hosts: 'tcp://0.0.0.0:2376' });
 
-const { confFile, IMAGE_TAG, CONTAINER_NAME, LOCAL_NODE_URL, PROGRESS_REFRESH_INTERVAL, LOG_FOLDER_PATH_INSIDE_DOCKER, LOGS_ZIPFILE_PATH, LOGS_ZIPFILE_NAME, START_NODES_PROGRESS_BAR_INTERVAL_WIN, NODE_CONFIRMATION_TIMEOUT_WIN } = require('../cli-constants');
+const { confFile, IMAGE_TAG, CONTAINER_NAME, LOCAL_NODE_URL, PROGRESS_REFRESH_INTERVAL, LOG_FOLDER_PATH_INSIDE_DOCKER, LOGS_ZIPFILE_PATH, LOGS_ZIPFILE_NAME, START_NODES_PROGRESS_BAR_INTERVAL_WIN, NODE_CONFIRMATION_TIMEOUT_WIN, NETWORK } = require('../cli-constants');
 let { Node_Confirmation_Timeout, Start_Nodes_Progress_Bar_Interval } = require('../cli-constants');
 
 const jsonfile = require('jsonfile'),
@@ -110,7 +110,7 @@ class Setup {
         if(this.config.provider.includes('localhost') || this.config.provider.includes('192.168')) {
             try {
                 let response = await RpcRequest.checkNodeStatusForLocalNodes(LOCAL_NODE_URL);
-                if(response.protocol.startsWith('PsCARTHAG')){
+                if(response.protocol.startsWith(NETWORK)){
                     Logger.info('Local nodes are in running state....');
                     Logger.warn(`Name: Tezos`);
                     Logger.warn(`Network: Local`);
@@ -211,7 +211,7 @@ class Setup {
 
                 try {
                     let response = await RpcRequest.checkNodeStatusForLocalNodes(LOCAL_NODE_URL);
-                    if(response.protocol.startsWith('PsCARTHAG')){
+                    if(response.protocol.startsWith(NETWORK)){
                         Logger.info('Nodes are in running state....');
                     } else {
                         Logger.error (`Error occurred in previously started nodes, try restarting the nodes after running 'tezster stop-nodes'.`);
@@ -305,7 +305,7 @@ class Setup {
 
             const interval = setInterval(() => {
                 RpcRequest.checkNodeStatusForLocalNodes(LOCAL_NODE_URL).then(function(statusData) {
-                    if(statusData.protocol.startsWith('PsCARTHAG')){
+                    if(statusData.protocol.startsWith(NETWORK)){
                         progressbar.update(100);
                         progressbar.stop();
                         Logger.info('Nodes have been started successfully....');
