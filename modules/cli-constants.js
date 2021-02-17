@@ -26,13 +26,24 @@ const confFile = `/var/tmp/tezster/config.json`,
           WIN_LOCALHOST: '192.168',
           DALPHANET: 'dalphanet',
           TESTNET: 'delphinet',
+          EDONET: 'edonet',
           MAINNET: 'mainnet',
+      }, 
+
+      TZSTATS_NODE_TYPE = {
+        DALPHANET: 'dalpha',
+        TESTNET: 'delphi',
+        EDONET: 'edo',
       }, 
 
       CONSEIL_SERVER = {
         TESTNET: {
           url: 'https://conseil-dev.cryptonomic-infra.tech',
           apiKey: '60d7bbd0-ad43-4768-9ee3-64c722874f96',
+        },
+        EDONET: {
+          url: 'https://conseil-edo.cryptonomic-infra.tech:443',
+          apiKey: '15e4c75c-af4e-4a62-9aa6-1e0a5b96a2a2',
         },
         MAINNET: {
           url: 'https://conseil-prod.cryptonomic-infra.tech',
@@ -41,7 +52,7 @@ const confFile = `/var/tmp/tezster/config.json`,
       };
 
 module.exports = { confFile, CONSEIL_JS, TEZSTER_LOGS_FOLDER_PATH, IMAGE_TAG, CONTAINER_NAME, LOCAL_NODE_URL, COMMAND_LOG_FILE,
-                   PROGRESS_REFRESH_INTERVAL, TEZSTER_FOLDER_PATH, START_NODES_PROGRESS_BAR_INTERVAL_WIN, NETWORK,
+                   PROGRESS_REFRESH_INTERVAL, TEZSTER_FOLDER_PATH, START_NODES_PROGRESS_BAR_INTERVAL_WIN, NETWORK, TZSTATS_NODE_TYPE,
                    LOGS_ZIPFILE_PATH, LOG_FOLDER_PATH_INSIDE_DOCKER, LOGS_ZIPFILE_NAME, NODE_TYPE, CONSEIL_SERVER,
                    CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE, WIN_OS_PLATFORM, WIN_WSL_OS_RELEASE, TEMP_PATH,
                    NODE_CONFIRMATION_TIMEOUT_WIN, Node_Confirmation_Timeout, Start_Nodes_Progress_Bar_Interval };

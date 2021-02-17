@@ -1,4 +1,4 @@
-const { confFile, NODE_TYPE, CONSEIL_SERVER } = require('../cli-constants');
+const { confFile, NODE_TYPE, TZSTATS_NODE_TYPE, CONSEIL_SERVER } = require('../cli-constants');
 
 const conseiljs = require('conseiljs'),
       conseiljssoftsigner = require('conseiljs-softsigner'),
@@ -87,7 +87,7 @@ class Accounts{
         }
         
         await this.activateAlphanetAccount(args[0]);
-        Logger.warn(`If this account has already been activated, it may throw 'invalid_activation' error. You can visit https://${NODE_TYPE.TESTNET}.tzstats.com for more information on this account`);
+        Logger.warn(`If this account has already been activated, it may throw 'invalid_activation' error. You can visit https://${TZSTATS_NODE_TYPE.TESTNET}.tzstats.com or https://${TZSTATS_NODE_TYPE.EDONET}.tzstats.com accordingly for more information on this account`);
     }
 
     async removeAccount(args) {
@@ -166,7 +166,7 @@ class Accounts{
             const mnemonic = conseiljssoftsigner.KeyStoreUtils.generateMnemonic();
             const keystore = await conseiljssoftsigner.KeyStoreUtils.restoreIdentityFromMnemonic(mnemonic, "");
 
-            this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
+            this.addIdentity(accountLabel, keystore.secretKey, keystore.publicKey, keystore.publicKeyHash, '');
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, this.config.provider);     
 
             Logger.info(`Successfully created wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
@@ -185,7 +185,7 @@ class Accounts{
 
         try {
             const keystore = await conseiljssoftsigner.KeyStoreUtils.restoreIdentityFromMnemonic(mnemonic, '');
-            this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
+            this.addIdentity(accountLabel, keystore.secretKey, keystore.publicKey, keystore.publicKeyHash, '');
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, this.config.provider);     
             Logger.info(`Successfully restored the wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
         } catch(error) {
@@ -202,7 +202,7 @@ class Accounts{
 
         try {
             const keystore = await conseiljssoftsigner.KeyStoreUtils.restoreIdentityFromSecretKey(secret);
-            this.addIdentity(accountLabel, keystore.privateKey, keystore.publicKey, keystore.publicKeyHash, '');
+            this.addIdentity(accountLabel, keystore.secretKey, keystore.publicKey, keystore.publicKeyHash, '');
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, this.config.provider);     
             Logger.info(`Successfully restored the wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
         } catch(error) {
@@ -250,7 +250,16 @@ class Accounts{
         conseiljs.registerFetch(fetch);
 
         const tezosNode = this.config.provider;
-        let conseilServer = { 'url': `${CONSEIL_SERVER.TESTNET.url}`, 'apiKey': `${CONSEIL_SERVER.TESTNET.apiKey}`, 'network': `${NODE_TYPE.TESTNET}` };
+
+        let Network_type = 'TESTNET';
+        if(Helper.isMainnetNode(tezosNode)) {
+            Network_type = 'MAINNET';
+        }
+        else if(Helper.isEdonetNode(tezosNode)) {
+            Network_type = 'EDONET';
+        }
+
+        let conseilServer = { 'url': `${CONSEIL_SERVER[Network_type].url}`, 'apiKey': `${CONSEIL_SERVER[Network_type].apiKey}`, 'network': `${NODE_TYPE[Network_type]}` };
 
         const keys = this.getKeys(account);
         if(!keys || !keys.secret) {
@@ -259,7 +268,7 @@ class Accounts{
         }
 
         if(Helper.isTestnetNode(tezosNode)) {
-            Logger.error(`Make sure your current rpc-node is set to ${NODE_TYPE.TESTNET} node.\nYou can activate the account by sending some tezos to the account.`);
+            Logger.error(`Make sure your current rpc-node is set to ${NODE_TYPE.TESTNET} or ${NODE_TYPE.EDONET} node.\nYou can activate the account by sending some tezos to the account.`);
             return;
         }
 
@@ -346,6 +355,8 @@ class Accounts{
             nodeType = NODE_TYPE.LOCALHOST;
         } else if(nodeType.includes(NODE_TYPE.DALPHANET)) {
             nodeType = NODE_TYPE.DALPHANET;
+        } else if(nodeType.includes(NODE_TYPE.EDONET)) {
+            nodeType = NODE_TYPE.EDONET;
         } else if(nodeType.includes(NODE_TYPE.MAINNET)) {
             nodeType = NODE_TYPE.MAINNET;
         } else {

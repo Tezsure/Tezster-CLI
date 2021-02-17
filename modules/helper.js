@@ -48,6 +48,10 @@ class Helper {
         return tezosNode.includes('mainnet');
     }
 
+    static isEdonetNode(tezosNode) {
+        return tezosNode.includes('edo');
+    }
+
     static errorLogHandler(redirctErrorLogsToFile, displayErrorLogsToConsole) {
         Logger.verbose(`${redirctErrorLogsToFile}`);
         Logger.error(`${displayErrorLogsToConsole}`);

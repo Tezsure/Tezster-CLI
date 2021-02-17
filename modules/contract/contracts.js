@@ -1,4 +1,4 @@
-const { confFile, CONSEIL_SERVER, NODE_TYPE } = require('../cli-constants');
+const { confFile, CONSEIL_SERVER, NODE_TYPE, TZSTATS_NODE_TYPE } = require('../cli-constants');
 
 const conseiljs = require('conseiljs'),
       conseiljssoftsigner = require('conseiljs-softsigner'),
@@ -37,7 +37,7 @@ class Contracts {
             return;
         }
         await this.deploy(contractLabel, contractAbsolutePath, initStorageValue, account, amount, fee, storageLimit, gasLimit);
-        Logger.warn(`If you're using ${NODE_TYPE.TESTNET} or mainnet node, use 'https://${NODE_TYPE.TESTNET}.tzstats.com' or 'https://tzstats.com' respectively to check contract/transactions`);
+        Logger.warn(`If you're using ${NODE_TYPE.TESTNET} or ${NODE_TYPE.EDONET} or mainnet node, use 'https://${TZSTATS_NODE_TYPE.TESTNET}.tzstats.com' or 'https://${TZSTATS_NODE_TYPE.EDONET}.tzstats.com' or 'https://tzstats.com' respectively to check contract/transactions`);
     }
 
     async callContract(contractLabel, contractArgs, account, amount, fee, storageLimit, gasLimit) {
@@ -48,7 +48,7 @@ class Contracts {
             return;
         }
         await this.invokeContract(contractLabel, contractArgs, account, amount, fee, storageLimit, gasLimit);
-        Logger.warn(`If you're using ${NODE_TYPE.TESTNET} or mainnet node, use 'https://${NODE_TYPE.TESTNET}.tzstats.com' or 'https://tzstats.com' respectively to check contract/transactions`);
+        Logger.warn(`If you're using ${NODE_TYPE.TESTNET} or ${NODE_TYPE.EDONET} or mainnet node, use 'https://${TZSTATS_NODE_TYPE.TESTNET}.tzstats.com' or 'https://${TZSTATS_NODE_TYPE.EDONET}.tzstats.com' or 'https://tzstats.com' respectively to check contract/transactions`);
     }
 
     async getStorage(args) {
@@ -151,9 +151,11 @@ class Contracts {
         if(Helper.isMainnetNode(tezosNode)) {
             Network_type = 'MAINNET';
         }
+        else if(Helper.isEdonetNode(tezosNode)) {
+            Network_type = 'EDONET';
+        }
 
         let conseilServer = { 'url': `${CONSEIL_SERVER[Network_type].url}`, 'apiKey': `${CONSEIL_SERVER[Network_type].apiKey}`, 'network': `${NODE_TYPE[Network_type]}` };
-
         const keys = this.getKeys(account);
         if(!keys) {
             Logger.error(`Couldn't find keys for given account.\nPlease make sure the account '${account}' exists and added to tezster. Run 'tezster list-accounts' to get all accounts.`);
@@ -349,6 +351,8 @@ class Contracts {
             nodeType = NODE_TYPE.LOCALHOST;
         } else if(nodeType.includes(NODE_TYPE.DALPHANET)) {
             nodeType = NODE_TYPE.DALPHANET;
+        } else if(nodeType.includes(NODE_TYPE.EDONET)) {
+            nodeType = NODE_TYPE.EDONET;
         } else if(nodeType.includes(NODE_TYPE.MAINNET)) {
             nodeType = NODE_TYPE.MAINNET;
         } else {
