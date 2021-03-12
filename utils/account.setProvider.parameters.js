@@ -12,6 +12,7 @@ const accountSetProviderParameters = [
         message : 'Select new rpc-node: ',
         choices: [
                   'http://localhost:18732', 
+                  'https://edonet.tezster.tech',
                   'https://testnet.tezster.tech', 
                   'https://delphinet.SmartPy.io', 
                   'https://mainnet.smartpy.io', 
