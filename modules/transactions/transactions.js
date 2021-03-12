@@ -1,4 +1,4 @@
-const { confFile, NODE_TYPE } = require('../cli-constants');
+const { confFile, NODE_TYPE, TZSTATS_NODE_TYPE } = require('../cli-constants');
 
 const conseiljs = require('conseiljs'),
       conseiljssoftsigner = require('conseiljs-softsigner'),
@@ -29,7 +29,7 @@ class Transactions {
 
     async listTransactions() {      
         Logger.verbose(`Command : tezster list-transactions`);
-        Logger.warn(`For transactions done on ${NODE_TYPE.TESTNET} node ,you can visit https://${NODE_TYPE.TESTNET}.tzstats.com for more information`);
+        Logger.warn(`For transactions done on ${NODE_TYPE.TESTNET}/${NODE_TYPE.EDONET} node ,you can visit https://${TZSTATS_NODE_TYPE.TESTNET}.tzstats.com or https://${TZSTATS_NODE_TYPE.EDONET}.tzstats.com accordingly for more information`);
         if(Object.keys(this.config.transactions).length > 0) {        
             for(var i in this.config.transactions) {
                 Logger.info(JSON.stringify(this.config.transactions[i]));
