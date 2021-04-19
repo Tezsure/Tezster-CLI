@@ -41,15 +41,11 @@ class Helper {
     }
 
     static isTestnetNode(tezosNode) {
-        return tezosNode.includes('localhost') || tezosNode.includes('mainnet') || tezosNode.includes('dalphanet');
+        return tezosNode.includes('localhost') || tezosNode.includes('mainnet');
     }
 
     static isMainnetNode(tezosNode) {
         return tezosNode.includes('mainnet');
-    }
-
-    static isEdonetNode(tezosNode) {
-        return tezosNode.includes('edo');
     }
 
     static errorLogHandler(redirctErrorLogsToFile, displayErrorLogsToConsole) {

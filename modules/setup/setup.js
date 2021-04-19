@@ -95,7 +95,7 @@ class Setup {
                         writeStream.end();
                         writeStream.close();
                         Logger.info(`Log files has been stored at following folder location as archive format: \n'${LOGS_ZIPFILE_PATH}'`);
-                        Logger.warn(`To unzip file, run 'tar -xf ${LOGS_ZIPFILE_NAME}'.`);
+                        Logger.warn(`To unzip file, run 'tar -xf ${LOGS_ZIPFILE_NAME}'`);
                     });
                 });
             }
@@ -166,7 +166,7 @@ class Setup {
                 Logger.info('Setting up tezos node, this could take a while....');      
                 progressInterval = setInterval(() => {
                     progressbar.start(100, progress);
-                    progress = progress + 0.45;
+                    progress = progress + 2;
                     clearInterval(progress);
                     if (progress >= 100) {
                         clearInterval(progressInterval);
@@ -230,17 +230,14 @@ class Setup {
     }
 
     runContainer(){
-        this.startNodesProgressBar();
         docker.run ( 
             `${IMAGE_TAG}`, 
             [
-                '/bin/bash', 
-                '-c', 
-                ` cd /usr/local/bin && start_nodes.sh && tail -f /dev/null`
             ], 
             [process.stdout],
             {
                 name: `${CONTAINER_NAME}`,
+                Entrypoint: '/bin/sh',
                 ExposedPorts: {
                     '18731/tcp': {}
                 },
@@ -257,8 +254,28 @@ class Setup {
                     Helper.errorLogHandler(`Error occurred while starting nodes: ${err}`,
                                            'Error occurred while starting the nodes....');
                 }
-            })
+            });
 
+            var self = this;
+            setTimeout(function() {
+                self.runNodeScript();
+            }, 2000);
+    }
+
+    runNodeScript() {
+        this.startNodesProgressBar();
+        const container = docker.getContainer(CONTAINER_NAME);
+        const exec = container.exec({
+            Cmd: ['/bin/bash', 
+                '-c', 
+                `cd /home/tezos && ./start_nodes.sh && tail -f /dev/null`
+            ], 
+            AttachStdin: true, 
+            AttachStdout: true
+        }, function(err, exec) {
+            exec.start({hijack: true, stdin: true}, function(err, stream) {
+            });
+        });
     }
 
     startNodesProgressBar() {

@@ -1,5 +1,5 @@
 const confirmAnswerValidator = async (input) => {
-    if (!input.includes('http')) {
+    if (!input.includes('http') || input.includes('delph')) {
         return 'Incorrect URL';
     }
     return true;
@@ -12,9 +12,7 @@ const accountSetProviderParameters = [
         message : 'Select new rpc-node: ',
         choices: [
                   'http://localhost:18732', 
-                  'https://edonet.tezster.tech',
                   'https://testnet.tezster.tech', 
-                  'https://delphinet.SmartPy.io', 
                   'https://mainnet.smartpy.io', 
                   'Enter Own Custom Url'
                 ]

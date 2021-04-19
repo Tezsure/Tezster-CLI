@@ -87,7 +87,7 @@ class Accounts{
         }
         
         await this.activateAlphanetAccount(args[0]);
-        Logger.warn(`If this account has already been activated, it may throw 'invalid_activation' error. You can visit https://${TZSTATS_NODE_TYPE.TESTNET}.tzstats.com or https://${TZSTATS_NODE_TYPE.EDONET}.tzstats.com accordingly for more information on this account`);
+        Logger.warn(`If this account has already been activated, it may throw 'invalid_activation' error. You can visit 'https://${TZSTATS_NODE_TYPE.TESTNET}.tzstats.com' or 'https://tzstats.com' accordingly for more information on this account`);
     }
 
     async removeAccount(args) {
@@ -255,12 +255,8 @@ class Accounts{
         if(Helper.isMainnetNode(tezosNode)) {
             Network_type = 'MAINNET';
         }
-        else if(Helper.isEdonetNode(tezosNode)) {
-            Network_type = 'EDONET';
-        }
 
         let conseilServer = { 'url': `${CONSEIL_SERVER[Network_type].url}`, 'apiKey': `${CONSEIL_SERVER[Network_type].apiKey}`, 'network': `${NODE_TYPE[Network_type]}` };
-
         const keys = this.getKeys(account);
         if(!keys || !keys.secret) {
             Logger.error(`Couldn't find keys for given account.\nPlease make sure the account '${account}' exists and added to tezster.`);
@@ -268,7 +264,7 @@ class Accounts{
         }
 
         if(Helper.isTestnetNode(tezosNode)) {
-            Logger.error(`Make sure your current rpc-node is set to ${NODE_TYPE.TESTNET} or ${NODE_TYPE.EDONET} node.\nYou can activate the account by sending some tezos to the account.`);
+            Logger.error(`Make sure your current rpc-node is set to ${NODE_TYPE.TESTNET} node.\nYou can activate the account by sending some tezos to the account.`);
             return;
         }
 
@@ -353,10 +349,6 @@ class Accounts{
     async addAccount(label, pkh, identity, nodeType) {
         if(nodeType.includes(NODE_TYPE.LOCALHOST) || nodeType.includes(NODE_TYPE.WIN_LOCALHOST)) {
             nodeType = NODE_TYPE.LOCALHOST;
-        } else if(nodeType.includes(NODE_TYPE.DALPHANET)) {
-            nodeType = NODE_TYPE.DALPHANET;
-        } else if(nodeType.includes(NODE_TYPE.EDONET)) {
-            nodeType = NODE_TYPE.EDONET;
         } else if(nodeType.includes(NODE_TYPE.MAINNET)) {
             nodeType = NODE_TYPE.MAINNET;
         } else {
