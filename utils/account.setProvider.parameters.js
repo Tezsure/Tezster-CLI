@@ -13,7 +13,7 @@ const accountSetProviderParameters = [
         choices: [
                   'http://localhost:18732', 
                   'https://testnet.tezster.tech', 
-                  'https://mainnet.smartpy.io', 
+                  'https://mainnet.tezster.tech', 
                   'Enter Own Custom Url'
                 ]
     }, 

@@ -158,9 +158,11 @@ class Contracts {
             Logger.error(`Couldn't find keys for given account.\nPlease make sure the account '${account}' exists and added to tezster. Run 'tezster list-accounts' to get all accounts.`);
             return;
         }
+        const decryptedSecretKey = account.match(/bootstrap.*[1-5]$/gm) ? keys.sk : Helper.decrypt(keys.sk);
+
         const keystore = {
             publicKey: keys.pk,
-            privateKey: keys.sk,
+            privateKey: decryptedSecretKey,
             publicKeyHash: keys.pkh,
             seed: '',
             storeType: conseiljs.KeyStoreType.Fundraiser
@@ -227,9 +229,11 @@ class Contracts {
             Logger.error(`Couldn't find keys for given account.\nPlease make sure the account '${account}' exists and added to tezster. Run 'tezster list-accounts' to get all accounts.`);
             return;
         }
+        const decryptedSecretKey = account.match(/bootstrap.*[1-5]$/gm) ? keys.sk : Helper.decrypt(keys.sk);
+
         const keystore = {
             publicKey: keys.pk,
-            privateKey: keys.sk,
+            privateKey: decryptedSecretKey,
             publicKeyHash: keys.pkh,
             seed: '',
             storeType: conseiljs.KeyStoreType.Fundraiser
@@ -348,6 +352,8 @@ class Contracts {
             nodeType = NODE_TYPE.LOCALHOST;
         } else if(nodeType.includes(NODE_TYPE.MAINNET)) {
             nodeType = NODE_TYPE.MAINNET;
+        } else if(nodeType.includes(NODE_TYPE.FLORENCENET)) {
+            nodeType = NODE_TYPE.FLORENCENET;
         } else {
             nodeType = `${NODE_TYPE.TESTNET}`;
         }

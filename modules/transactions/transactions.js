@@ -55,9 +55,10 @@ class Transactions {
         }
 
         try {
+            const decryptedSecretKey = from.match(/bootstrap.*[1-5]$/gm) ? keys.sk : Helper.decrypt(keys.sk);
             keystore = {
                 publicKey: keys.pk,
-                privateKey: keys.sk,
+                privateKey: decryptedSecretKey,
                 publicKeyHash: keys.pkh,
                 seed: '',
                 storeType: conseiljs.KeyStoreType.Fundraiser

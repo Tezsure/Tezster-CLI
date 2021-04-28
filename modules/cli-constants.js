@@ -9,7 +9,7 @@ const confFile = `/var/tmp/tezster/config.json`,
       LOG_FOLDER_PATH_INSIDE_DOCKER = `/home/tezos/tezster-logs`,
       CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE = require('path').join(__dirname, '/../config.json'),
       
-      IMAGE_TAG = 'tezsureinc/tezster:1.0.6-beta',
+      IMAGE_TAG = 'tezsureinc/tezster:1.0.6-beta.1',
       CONTAINER_NAME = 'tezster',
       PROGRESS_REFRESH_INTERVAL = 1000,
       Node_Confirmation_Timeout = 55000,
@@ -20,12 +20,13 @@ const confFile = `/var/tmp/tezster/config.json`,
       WIN_OS_PLATFORM = 'win32',
       WIN_WSL_OS_RELEASE = 'microsoft',
       
-      NETWORK = 'PtEdo2Zk',
+      NETWORK = 'PsFLor',
       NODE_TYPE = {
           LOCALHOST: 'localhost',
           WIN_LOCALHOST: '192.168',
           TESTNET: 'edonet',
           MAINNET: 'mainnet',
+          FLORENCENET: 'florence'
       }, 
 
       TZSTATS_NODE_TYPE = {

@@ -1,7 +1,10 @@
 const { confFile, WIN_OS_PLATFORM, WIN_WSL_OS_RELEASE } = require('./cli-constants'),
       os = require('os'),
       Logger = require('./logger'),
-      jsonfile = require('jsonfile');
+      jsonfile = require('jsonfile'),
+      crypto = require('crypto'),
+      iv = crypto.randomBytes(16);
+      require('dotenv').config(process.env.NODE_ENV);
 
 class Helper {
     
@@ -72,6 +75,30 @@ class Helper {
             }
         }
         jsonfile.writeFile(confFile, config);
+    }
+
+    static encrypt(data) {
+        const iv = Buffer.from(process.env.IV);
+
+        const cipher = crypto.createCipheriv(
+          process.env.ENCRYPTION_ALGORITHM,
+          process.env.SECRET_KEY,
+          Buffer.from(process.env.IV, 'hex')
+        );
+        let crypted = cipher.update(data, 'utf8', 'hex');
+        crypted += cipher.final('hex');
+        return crypted;
+    }
+
+    static decrypt(encryptedData) {
+        const decipher = crypto.createDecipheriv(
+            process.env.ENCRYPTION_ALGORITHM,
+            process.env.SECRET_KEY,
+            Buffer.from(process.env.IV, 'hex')
+        );
+        let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
+        decrypted += decipher.final('utf8');
+        return decrypted;
     }
 
 }

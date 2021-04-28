@@ -166,7 +166,8 @@ class Accounts{
             const mnemonic = conseiljssoftsigner.KeyStoreUtils.generateMnemonic();
             const keystore = await conseiljssoftsigner.KeyStoreUtils.restoreIdentityFromMnemonic(mnemonic, "");
 
-            this.addIdentity(accountLabel, keystore.secretKey, keystore.publicKey, keystore.publicKeyHash, '');
+            const encyptedSecretKey = Helper.encrypt(keystore.secretKey);
+            this.addIdentity(accountLabel, encyptedSecretKey, keystore.publicKey, keystore.publicKeyHash, '');
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, this.config.provider);     
 
             Logger.info(`Successfully created wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
@@ -185,7 +186,9 @@ class Accounts{
 
         try {
             const keystore = await conseiljssoftsigner.KeyStoreUtils.restoreIdentityFromMnemonic(mnemonic, '');
-            this.addIdentity(accountLabel, keystore.secretKey, keystore.publicKey, keystore.publicKeyHash, '');
+            const encyptedSecretKey = Helper.encrypt(keystore.secretKey);
+
+            this.addIdentity(accountLabel, encyptedSecretKey, keystore.publicKey, keystore.publicKeyHash, '');
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, this.config.provider);     
             Logger.info(`Successfully restored the wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
         } catch(error) {
@@ -202,7 +205,9 @@ class Accounts{
 
         try {
             const keystore = await conseiljssoftsigner.KeyStoreUtils.restoreIdentityFromSecretKey(secret);
-            this.addIdentity(accountLabel, keystore.secretKey, keystore.publicKey, keystore.publicKeyHash, '');
+            const encyptedSecretKey = Helper.encrypt(keystore.secretKey);
+
+            this.addIdentity(accountLabel, encyptedSecretKey, keystore.publicKey, keystore.publicKeyHash, '');
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, this.config.provider);     
             Logger.info(`Successfully restored the wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
         } catch(error) {
@@ -236,8 +241,9 @@ class Accounts{
             mnemonic = mnemonic.join(' ');
 
             const alphakeys = await conseiljssoftsigner.KeyStoreUtils.restoreIdentityFromFundraiser(mnemonic, email, password, pkh);
+            const encyptedSecretKey = Helper.encrypt(alphakeys.secretKey);
             
-            this.addIdentity(accountLabel, alphakeys.secretKey, alphakeys.publicKey, alphakeys.publicKeyHash, accountJSON.secret);
+            this.addIdentity(accountLabel, encyptedSecretKey, alphakeys.publicKey, alphakeys.publicKeyHash, accountJSON.secret);
             this.addAccount(accountLabel, alphakeys.publicKeyHash, accountLabel, this.config.provider);
             Logger.info(`successfully added testnet faucet account: ${accountLabel}-${alphakeys.publicKeyHash}`);
         } catch(error) {
@@ -267,10 +273,11 @@ class Accounts{
             Logger.error(`Make sure your current rpc-node is set to ${NODE_TYPE.TESTNET} node.\nYou can activate the account by sending some tezos to the account.`);
             return;
         }
+        const decryptedSecretKey = Helper.decrypt(keys.sk);
 
         const keystore = {
             publicKey: keys.pk,
-            privateKey: keys.sk,
+            privateKey: decryptedSecretKey,
             publicKeyHash: keys.pkh,
             seed: '',
             storeType: conseiljs.KeyStoreType.Fundraiser
@@ -351,6 +358,8 @@ class Accounts{
             nodeType = NODE_TYPE.LOCALHOST;
         } else if(nodeType.includes(NODE_TYPE.MAINNET)) {
             nodeType = NODE_TYPE.MAINNET;
+        } else if(nodeType.includes(NODE_TYPE.FLORENCENET)) {
+            nodeType = NODE_TYPE.FLORENCENET;
         } else {
             nodeType = `${NODE_TYPE.TESTNET}`;
         }
