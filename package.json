@@ -1,6 +1,6 @@
 {
   "name": "tezster",
-  "version": "0.3.2-beta",
+  "version": "0.3.2-beta.1",
   "description": "A powerful user-friendly CLI which comes with preconfigured private Tezos blockchain for easy and fast development, having deployment support for test and main network as well.",
   "main": "tezster.js",
   "scripts": {
