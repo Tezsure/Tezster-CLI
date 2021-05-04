@@ -98,6 +98,8 @@ class Contracts {
 
         if(Helper.isMainnetNode(tezosNode)) {
             Network_type = 'MAINNET';
+        } else if(Helper.isFlorenceNode(tezosNode)) {
+            Network_type = 'FLORENCENET';
         }
 
         let conseilServer = { 'url': `${CONSEIL_SERVER[Network_type].url}`, 'apiKey': `${CONSEIL_SERVER[Network_type].apiKey}`, 'network': `${NODE_TYPE[Network_type]}` };
@@ -150,6 +152,8 @@ class Contracts {
 
         if(Helper.isMainnetNode(tezosNode)) {
             Network_type = 'MAINNET';
+        } else if(Helper.isFlorenceNode(tezosNode)) {
+            Network_type = 'FLORENCENET';
         }
 
         let conseilServer = { 'url': `${CONSEIL_SERVER[Network_type].url}`, 'apiKey': `${CONSEIL_SERVER[Network_type].apiKey}`, 'network': `${NODE_TYPE[Network_type]}` };

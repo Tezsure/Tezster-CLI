@@ -47,6 +47,10 @@ class Helper {
         return tezosNode.includes('localhost') || tezosNode.includes('mainnet');
     }
 
+    static isFlorenceNode(tezosNode) {
+        return tezosNode.includes('flor');
+    }
+
     static isMainnetNode(tezosNode) {
         return tezosNode.includes('mainnet');
     }
