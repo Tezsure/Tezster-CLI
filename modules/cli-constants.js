@@ -10,7 +10,7 @@ const confFile = `/var/tmp/tezster/config.json`,
       CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE = require('path').join(__dirname, '/../config.json'),
       TEZSTER_FOLDER_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE = require('path').join(__dirname, '/../tezster'),
       
-      IMAGE_TAG = 'tezsureinc/tezster:1.0.6-beta.2',
+      IMAGE_TAG = 'tezsureinc/tezster:1.0.6-beta.3',
       CONTAINER_NAME = 'tezster',
       PROGRESS_REFRESH_INTERVAL = 1000,
       Node_Confirmation_Timeout = 55000,
