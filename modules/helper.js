@@ -82,8 +82,6 @@ class Helper {
     }
 
     static encrypt(data) {
-        console.log(process.env.ENCRYPTION_ALGORITHM);
-        
         const cipher = crypto.createCipheriv(
           process.env.ENCRYPTION_ALGORITHM,
           process.env.SECRET_KEY,
