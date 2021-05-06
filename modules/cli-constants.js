@@ -1,5 +1,6 @@
 const confFile = `/var/tmp/tezster/config.json`,
       CONSEIL_JS = '../../lib/conseiljs',
+      VAR_PATH = '/var',
       TEMP_PATH = '/var/tmp',
       TEZSTER_FOLDER_PATH  = `/var/tmp/tezster`,
       TEZSTER_LOGS_FOLDER_PATH  = `/var/tmp/tezster/tezster-logs`,
@@ -52,5 +53,5 @@ const confFile = `/var/tmp/tezster/config.json`,
 module.exports = { confFile, CONSEIL_JS, TEZSTER_LOGS_FOLDER_PATH, IMAGE_TAG, CONTAINER_NAME, LOCAL_NODE_URL, COMMAND_LOG_FILE,
                    PROGRESS_REFRESH_INTERVAL, TEZSTER_FOLDER_PATH, START_NODES_PROGRESS_BAR_INTERVAL_WIN, NETWORK, TZSTATS_NODE_TYPE,
                    LOGS_ZIPFILE_PATH, LOG_FOLDER_PATH_INSIDE_DOCKER, LOGS_ZIPFILE_NAME, NODE_TYPE, CONSEIL_SERVER,
-                   CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE, WIN_OS_PLATFORM, WIN_WSL_OS_RELEASE, TEMP_PATH,
+                   CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE, WIN_OS_PLATFORM, WIN_WSL_OS_RELEASE, TEMP_PATH, VAR_PATH,
                    NODE_CONFIRMATION_TIMEOUT_WIN, Node_Confirmation_Timeout, Start_Nodes_Progress_Bar_Interval, TEZSTER_FOLDER_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE };

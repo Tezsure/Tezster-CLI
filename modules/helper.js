@@ -4,7 +4,7 @@ const { confFile, WIN_OS_PLATFORM, WIN_WSL_OS_RELEASE } = require('./cli-constan
       jsonfile = require('jsonfile'),
       crypto = require('crypto'),
       iv = crypto.randomBytes(16);
-      require('dotenv').config(process.env.NODE_ENV);
+      require('dotenv').config({path: __dirname + '/../.env'});
 
 class Helper {
     
@@ -82,8 +82,8 @@ class Helper {
     }
 
     static encrypt(data) {
-        const iv = Buffer.from(process.env.IV);
-
+        console.log(process.env.ENCRYPTION_ALGORITHM);
+        
         const cipher = crypto.createCipheriv(
           process.env.ENCRYPTION_ALGORITHM,
           process.env.SECRET_KEY,

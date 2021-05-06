@@ -1,5 +1,5 @@
 try {
-    const {confFile, CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE, TEZSTER_FOLDER_PATH, TEZSTER_LOGS_FOLDER_PATH, COMMAND_LOG_FILE, TEMP_PATH,} = require('./modules/cli-constants');
+    const { confFile, CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE } = require('./modules/cli-constants');
     const fs = require('fs'),
           path = require('path'),
           { Helper } = require('./modules/helper');
@@ -37,23 +37,6 @@ try {
             jsonfile.writeFile(confFile, config);
         }
     };
-
-    if (!fs.existsSync(TEMP_PATH)) {
-        fs.mkdirSync(TEMP_PATH, { recursive: true });
-    }
-    if (!fs.existsSync(TEZSTER_FOLDER_PATH)) {
-        fs.mkdirSync(TEZSTER_FOLDER_PATH);
-    }
-    if (!fs.existsSync(TEZSTER_LOGS_FOLDER_PATH)) {
-        fs.mkdirSync(TEZSTER_LOGS_FOLDER_PATH);
-    }
-    if (!fs.existsSync(COMMAND_LOG_FILE)) {
-        fs.writeFileSync(COMMAND_LOG_FILE);
-    }
-
-    fs.chmodSync(TEZSTER_FOLDER_PATH, 0777);
-    fs.chmodSync(TEZSTER_LOGS_FOLDER_PATH, 0777);
-    fs.chmodSync(COMMAND_LOG_FILE, 0777);
 
     if (fs.existsSync(confFile) && version >= ('0.3.2')) {
         setProviderForWindows();
