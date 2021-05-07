@@ -12,12 +12,19 @@ const conseiljs = require('conseiljs'),
       { Helper } = require('../helper'),
       { RpcRequest } = require('../rpc-util'),
       docker_machine_ip = require('docker-ip'),
-      { ExceptionHandler } = require('../exceptionHandler');
+      { ExceptionHandler } = require('../exceptionHandler'),
+      crypto = require('crypto'),
+      IV = crypto.randomBytes(16);
 
 class Accounts{
 
     constructor(){
         this.config = jsonfile.readFileSync(confFile);
+
+        if(this.config.EncryptionIv == ""){
+            this.config.EncryptionIv = IV;
+            writeJsonFile(confFile, this.config);
+        }
     }
 
     async setProvider(args){

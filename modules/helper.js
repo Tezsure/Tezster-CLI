@@ -2,9 +2,7 @@ const { confFile, WIN_OS_PLATFORM, WIN_WSL_OS_RELEASE } = require('./cli-constan
       os = require('os'),
       Logger = require('./logger'),
       jsonfile = require('jsonfile'),
-      crypto = require('crypto'),
-      iv = crypto.randomBytes(16);
-      require('dotenv').config({path: __dirname + '/../.env'});
+      crypto = require('crypto');
 
 class Helper {
     
@@ -82,10 +80,13 @@ class Helper {
     }
 
     static encrypt(data) {
+        const config = jsonfile.readFileSync(confFile);
+        const IV = config.EncryptionIv;
+
         const cipher = crypto.createCipheriv(
-          process.env.ENCRYPTION_ALGORITHM,
-          process.env.SECRET_KEY,
-          Buffer.from(process.env.IV, 'hex')
+          'aes-256-ctr',
+          'vOVH6sdmpNWjRRIqCc7rdxs01lwHzfr3',
+          Buffer.from(IV, 'hex')
         );
         let crypted = cipher.update(data, 'utf8', 'hex');
         crypted += cipher.final('hex');
@@ -93,10 +94,13 @@ class Helper {
     }
 
     static decrypt(encryptedData) {
+        const config = jsonfile.readFileSync(confFile);
+        const IV = config.EncryptionIv;
+
         const decipher = crypto.createDecipheriv(
-            process.env.ENCRYPTION_ALGORITHM,
-            process.env.SECRET_KEY,
-            Buffer.from(process.env.IV, 'hex')
+            'aes-256-ctr',
+            'vOVH6sdmpNWjRRIqCc7rdxs01lwHzfr3',
+            Buffer.from(IV, 'hex')
         );
         let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
         decrypted += decipher.final('utf8');
