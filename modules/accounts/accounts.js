@@ -121,6 +121,10 @@ class Accounts{
 
         await writeJsonFile(confFile, this.config);
         Logger.info('Active RPC node updated to ' + this.config.provider);
+
+        if(new_provider.includes('main')){
+            Logger.warn(`Caution: We are storing your private keys in encryped form on your system at "/var/tmp/tezster/config.json"`);
+        }
     }
 
     getProviderAccounts(){    
