@@ -28,11 +28,12 @@ const confFile = `/var/tmp/tezster/config.json`,
           WIN_LOCALHOST: '192.168',
           TESTNET: 'edonet',
           MAINNET: 'mainnet',
-          FLORENCENET: 'florencenet'
+          FLORENCENET: 'florence'
       }, 
 
       TZSTATS_NODE_TYPE = {
         TESTNET: 'edo',
+        FLORENCENET: 'florence',
       }, 
 
       CONSEIL_SERVER = {

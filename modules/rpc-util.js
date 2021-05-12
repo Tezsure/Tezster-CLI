@@ -52,7 +52,7 @@ class RpcRequest {
     }
     
     static fetchBlockDetailsForRemoteNodes(provider) {
-        provider = provider.includes('mainnet') ? 'https://api.tzstats.com' : provider.includes('edo') ? `https://api.${TZSTATS_NODE_TYPE.TESTNET}.tzstats.com`: provider.includes('florence') ? `https://api.${TZSTATS_NODE_TYPE.FLORENCENET}.tzstats.com`: `https://api.${TZSTATS_NODE_TYPE.TESTNET}.tzstats.com`;
+        provider = provider.includes('mainnet') ? 'https://api.tzstats.com' : provider.includes('edo') ? `https://api.${TZSTATS_NODE_TYPE.TESTNET}.tzstats.com`: `https://api.${TZSTATS_NODE_TYPE.FLORENCENET}.tzstats.com`;
         return Promise.all(
             [ `${provider}/explorer/block/head/op`, `${provider}/explorer/config/head` ].map((url, i)=> {   
                 return new Promise(function(resolve, reject){

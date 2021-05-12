@@ -177,8 +177,7 @@ class Accounts{
             const mnemonic = conseiljssoftsigner.KeyStoreUtils.generateMnemonic();
             const keystore = await conseiljssoftsigner.KeyStoreUtils.restoreIdentityFromMnemonic(mnemonic, "");
 
-            const encyptedSecretKey = Helper.encrypt(keystore.secretKey);
-            this.addIdentity(accountLabel, encyptedSecretKey, keystore.publicKey, keystore.publicKeyHash, '');
+            this.encryptAndStoreKeys(accountLabel, keystore, '');
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, this.config.provider);     
 
             Logger.info(`Successfully created wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
@@ -197,9 +196,8 @@ class Accounts{
 
         try {
             const keystore = await conseiljssoftsigner.KeyStoreUtils.restoreIdentityFromMnemonic(mnemonic, '');
-            const encyptedSecretKey = Helper.encrypt(keystore.secretKey);
-
-            this.addIdentity(accountLabel, encyptedSecretKey, keystore.publicKey, keystore.publicKeyHash, '');
+            this.encryptAndStoreKeys(accountLabel, keystore, '');
+            
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, this.config.provider);     
             Logger.info(`Successfully restored the wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
         } catch(error) {
@@ -216,9 +214,8 @@ class Accounts{
 
         try {
             const keystore = await conseiljssoftsigner.KeyStoreUtils.restoreIdentityFromSecretKey(secret);
-            const encyptedSecretKey = Helper.encrypt(keystore.secretKey);
-
-            this.addIdentity(accountLabel, encyptedSecretKey, keystore.publicKey, keystore.publicKeyHash, '');
+            this.encryptAndStoreKeys(accountLabel, keystore, '')
+            
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, this.config.provider);     
             Logger.info(`Successfully restored the wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
         } catch(error) {
@@ -252,9 +249,8 @@ class Accounts{
             mnemonic = mnemonic.join(' ');
 
             const alphakeys = await conseiljssoftsigner.KeyStoreUtils.restoreIdentityFromFundraiser(mnemonic, email, password, pkh);
-            const encyptedSecretKey = Helper.encrypt(alphakeys.secretKey);
-            
-            this.addIdentity(accountLabel, encyptedSecretKey, alphakeys.publicKey, alphakeys.publicKeyHash, accountJSON.secret);
+            this.encryptAndStoreKeys(accountLabel, alphakeys, accountJSON)
+
             this.addAccount(accountLabel, alphakeys.publicKeyHash, accountLabel, this.config.provider);
             Logger.info(`successfully added testnet faucet account: ${accountLabel}-${alphakeys.publicKeyHash}`);
         } catch(error) {
@@ -341,6 +337,11 @@ class Accounts{
         catch(error) {
             Logger.error(`Error occurred while removing account:\n${error}`);
         }
+    }
+
+    encryptAndStoreKeys(accountLabel, keystore, accountJSON) {
+        const encyptedSecretKey = Helper.encrypt(keystore.secretKey);
+        this.addIdentity(accountLabel, encyptedSecretKey, keystore.publicKey, keystore.publicKeyHash, accountJSON.secret);
     }
 
     getKeys(account) {
