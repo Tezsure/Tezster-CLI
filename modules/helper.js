@@ -1,7 +1,8 @@
 const { confFile, WIN_OS_PLATFORM, WIN_WSL_OS_RELEASE } = require('./cli-constants'),
       os = require('os'),
       Logger = require('./logger'),
-      jsonfile = require('jsonfile');
+      jsonfile = require('jsonfile'),
+      crypto = require('crypto');
 
 class Helper {
     
@@ -41,15 +42,15 @@ class Helper {
     }
 
     static isTestnetNode(tezosNode) {
-        return tezosNode.includes('localhost') || tezosNode.includes('mainnet') || tezosNode.includes('dalphanet');
+        return tezosNode.includes('localhost') || tezosNode.includes('mainnet');
+    }
+
+    static isEdoNode(tezosNode) {
+        return tezosNode.includes('edo');
     }
 
     static isMainnetNode(tezosNode) {
         return tezosNode.includes('mainnet');
-    }
-
-    static isEdonetNode(tezosNode) {
-        return tezosNode.includes('edo');
     }
 
     static errorLogHandler(redirctErrorLogsToFile, displayErrorLogsToConsole) {
@@ -76,6 +77,34 @@ class Helper {
             }
         }
         jsonfile.writeFile(confFile, config);
+    }
+
+    static encrypt(data) {
+        const config = jsonfile.readFileSync(confFile);
+        const IV = config.EncryptionIv;
+
+        const cipher = crypto.createCipheriv(
+          'aes-256-ctr',
+          'vOVH6sdmpNWjRRIqCc7rdxs01lwHzfr3',
+          Buffer.from(IV, 'hex')
+        );
+        let crypted = cipher.update(data, 'utf8', 'hex');
+        crypted += cipher.final('hex');
+        return crypted;
+    }
+
+    static decrypt(encryptedData) {
+        const config = jsonfile.readFileSync(confFile);
+        const IV = config.EncryptionIv;
+
+        const decipher = crypto.createDecipheriv(
+            'aes-256-ctr',
+            'vOVH6sdmpNWjRRIqCc7rdxs01lwHzfr3',
+            Buffer.from(IV, 'hex')
+        );
+        let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
+        decrypted += decipher.final('utf8');
+        return decrypted;
     }
 
 }

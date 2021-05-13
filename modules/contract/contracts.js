@@ -37,7 +37,7 @@ class Contracts {
             return;
         }
         await this.deploy(contractLabel, contractAbsolutePath, initStorageValue, account, amount, fee, storageLimit, gasLimit);
-        Logger.warn(`If you're using ${NODE_TYPE.TESTNET} or ${NODE_TYPE.EDONET} or mainnet node, use 'https://${TZSTATS_NODE_TYPE.TESTNET}.tzstats.com' or 'https://${TZSTATS_NODE_TYPE.EDONET}.tzstats.com' or 'https://tzstats.com' respectively to check contract/transactions`);
+        Logger.warn(`If you're using '${NODE_TYPE.TESTNET}' or 'mainnet' node, use 'https://${TZSTATS_NODE_TYPE.TESTNET}.tzstats.com' or 'https://tzstats.com' respectively to check contract/transactions`);
     }
 
     async callContract(contractLabel, contractArgs, account, amount, fee, storageLimit, gasLimit) {
@@ -48,7 +48,7 @@ class Contracts {
             return;
         }
         await this.invokeContract(contractLabel, contractArgs, account, amount, fee, storageLimit, gasLimit);
-        Logger.warn(`If you're using ${NODE_TYPE.TESTNET} or ${NODE_TYPE.EDONET} or mainnet node, use 'https://${TZSTATS_NODE_TYPE.TESTNET}.tzstats.com' or 'https://${TZSTATS_NODE_TYPE.EDONET}.tzstats.com' or 'https://tzstats.com' respectively to check contract/transactions`);
+        Logger.warn(`If you're using '${NODE_TYPE.TESTNET}' or 'mainnet' node, use 'https://${TZSTATS_NODE_TYPE.TESTNET}.tzstats.com' or 'https://tzstats.com' respectively to check contract/transactions`);
     }
 
     async getStorage(args) {
@@ -98,6 +98,8 @@ class Contracts {
 
         if(Helper.isMainnetNode(tezosNode)) {
             Network_type = 'MAINNET';
+        } else if(Helper.isEdoNode(tezosNode)) {
+            Network_type = 'EDONET';
         }
 
         let conseilServer = { 'url': `${CONSEIL_SERVER[Network_type].url}`, 'apiKey': `${CONSEIL_SERVER[Network_type].apiKey}`, 'network': `${NODE_TYPE[Network_type]}` };
@@ -146,24 +148,17 @@ class Contracts {
 
         const fs = require('fs');
         const tezosNode = this.config.provider;  
-        let Network_type = 'TESTNET';
 
-        if(Helper.isMainnetNode(tezosNode)) {
-            Network_type = 'MAINNET';
-        }
-        else if(Helper.isEdonetNode(tezosNode)) {
-            Network_type = 'EDONET';
-        }
-
-        let conseilServer = { 'url': `${CONSEIL_SERVER[Network_type].url}`, 'apiKey': `${CONSEIL_SERVER[Network_type].apiKey}`, 'network': `${NODE_TYPE[Network_type]}` };
         const keys = this.getKeys(account);
         if(!keys) {
             Logger.error(`Couldn't find keys for given account.\nPlease make sure the account '${account}' exists and added to tezster. Run 'tezster list-accounts' to get all accounts.`);
             return;
         }
+        const decryptedSecretKey = account.match(/bootstrap.*[1-5]$/gm) ? keys.sk : Helper.decrypt(keys.sk);
+
         const keystore = {
             publicKey: keys.pk,
-            privateKey: keys.sk,
+            privateKey: decryptedSecretKey,
             publicKeyHash: keys.pkh,
             seed: '',
             storeType: conseiljs.KeyStoreType.Fundraiser
@@ -189,15 +184,6 @@ class Contracts {
                                       tezosNode, signer, keystore, amount*1000000, undefined,
                                       fee, storageLimit, gasLimit,
                                       contract, initValue, conseiljs.TezosParameterFormat.Michelson, -1);      
-            
-            if(!Helper.isLocalNode(tezosNode)) {
-                try {
-                    await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, JSON.parse(result.operationGroupID), 15, 10);
-                } catch(error) {
-                    Helper.errorLogHandler(`Error occurred in operation confirmation: ${error}`,
-                                           'Contract deployment operation confirmation failed ....');
-                }
-            }
             
             if (result.results) {
                 switch(result.results.contents[0].metadata.operation_result.status) {
@@ -230,9 +216,11 @@ class Contracts {
             Logger.error(`Couldn't find keys for given account.\nPlease make sure the account '${account}' exists and added to tezster. Run 'tezster list-accounts' to get all accounts.`);
             return;
         }
+        const decryptedSecretKey = account.match(/bootstrap.*[1-5]$/gm) ? keys.sk : Helper.decrypt(keys.sk);
+
         const keystore = {
             publicKey: keys.pk,
-            privateKey: keys.sk,
+            privateKey: decryptedSecretKey,
             publicKeyHash: keys.pkh,
             seed: '',
             storeType: conseiljs.KeyStoreType.Fundraiser
@@ -349,12 +337,10 @@ class Contracts {
     async addNewContract(label, opHash, pkh, nodeType) {
         if(nodeType.includes(NODE_TYPE.LOCALHOST) || nodeType.includes(NODE_TYPE.WIN_LOCALHOST)) {
             nodeType = NODE_TYPE.LOCALHOST;
-        } else if(nodeType.includes(NODE_TYPE.DALPHANET)) {
-            nodeType = NODE_TYPE.DALPHANET;
-        } else if(nodeType.includes(NODE_TYPE.EDONET)) {
-            nodeType = NODE_TYPE.EDONET;
         } else if(nodeType.includes(NODE_TYPE.MAINNET)) {
             nodeType = NODE_TYPE.MAINNET;
+        } else if(nodeType.includes(NODE_TYPE.EDONET)) {
+            nodeType = NODE_TYPE.EDONET;
         } else {
             nodeType = `${NODE_TYPE.TESTNET}`;
         }

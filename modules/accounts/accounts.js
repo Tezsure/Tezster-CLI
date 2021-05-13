@@ -12,12 +12,19 @@ const conseiljs = require('conseiljs'),
       { Helper } = require('../helper'),
       { RpcRequest } = require('../rpc-util'),
       docker_machine_ip = require('docker-ip'),
-      { ExceptionHandler } = require('../exceptionHandler');
+      { ExceptionHandler } = require('../exceptionHandler'),
+      crypto = require('crypto'),
+      IV = crypto.randomBytes(16);
 
 class Accounts{
 
     constructor(){
         this.config = jsonfile.readFileSync(confFile);
+
+        if(this.config.EncryptionIv == ""){
+            this.config.EncryptionIv = IV;
+            writeJsonFile(confFile, this.config);
+        }
     }
 
     async setProvider(args){
@@ -87,7 +94,7 @@ class Accounts{
         }
         
         await this.activateAlphanetAccount(args[0]);
-        Logger.warn(`If this account has already been activated, it may throw 'invalid_activation' error. You can visit https://${TZSTATS_NODE_TYPE.TESTNET}.tzstats.com or https://${TZSTATS_NODE_TYPE.EDONET}.tzstats.com accordingly for more information on this account`);
+        Logger.warn(`If this account has already been activated, it may throw 'invalid_activation' error. You can visit 'https://${TZSTATS_NODE_TYPE.TESTNET}.tzstats.com' or 'https://tzstats.com' accordingly for more information on this account`);
     }
 
     async removeAccount(args) {
@@ -114,6 +121,10 @@ class Accounts{
 
         await writeJsonFile(confFile, this.config);
         Logger.info('Active RPC node updated to ' + this.config.provider);
+
+        if(new_provider.includes('main')){
+            Logger.warn(`Caution: We are storing your private keys in encryped form on your system at "/var/tmp/tezster/config.json"`);
+        }
     }
 
     getProviderAccounts(){    
@@ -166,7 +177,7 @@ class Accounts{
             const mnemonic = conseiljssoftsigner.KeyStoreUtils.generateMnemonic();
             const keystore = await conseiljssoftsigner.KeyStoreUtils.restoreIdentityFromMnemonic(mnemonic, "");
 
-            this.addIdentity(accountLabel, keystore.secretKey, keystore.publicKey, keystore.publicKeyHash, '');
+            this.encryptAndStoreKeys(accountLabel, keystore, '');
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, this.config.provider);     
 
             Logger.info(`Successfully created wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
@@ -185,7 +196,8 @@ class Accounts{
 
         try {
             const keystore = await conseiljssoftsigner.KeyStoreUtils.restoreIdentityFromMnemonic(mnemonic, '');
-            this.addIdentity(accountLabel, keystore.secretKey, keystore.publicKey, keystore.publicKeyHash, '');
+            this.encryptAndStoreKeys(accountLabel, keystore, '');
+            
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, this.config.provider);     
             Logger.info(`Successfully restored the wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
         } catch(error) {
@@ -202,7 +214,8 @@ class Accounts{
 
         try {
             const keystore = await conseiljssoftsigner.KeyStoreUtils.restoreIdentityFromSecretKey(secret);
-            this.addIdentity(accountLabel, keystore.secretKey, keystore.publicKey, keystore.publicKeyHash, '');
+            this.encryptAndStoreKeys(accountLabel, keystore, '')
+            
             this.addAccount(accountLabel, keystore.publicKeyHash, accountLabel, this.config.provider);     
             Logger.info(`Successfully restored the wallet with label: '${accountLabel}' and public key hash: '${keystore.publicKeyHash}'`);
         } catch(error) {
@@ -236,8 +249,8 @@ class Accounts{
             mnemonic = mnemonic.join(' ');
 
             const alphakeys = await conseiljssoftsigner.KeyStoreUtils.restoreIdentityFromFundraiser(mnemonic, email, password, pkh);
-            
-            this.addIdentity(accountLabel, alphakeys.secretKey, alphakeys.publicKey, alphakeys.publicKeyHash, accountJSON.secret);
+            this.encryptAndStoreKeys(accountLabel, alphakeys, accountJSON)
+
             this.addAccount(accountLabel, alphakeys.publicKeyHash, accountLabel, this.config.provider);
             Logger.info(`successfully added testnet faucet account: ${accountLabel}-${alphakeys.publicKeyHash}`);
         } catch(error) {
@@ -254,27 +267,26 @@ class Accounts{
         let Network_type = 'TESTNET';
         if(Helper.isMainnetNode(tezosNode)) {
             Network_type = 'MAINNET';
-        }
-        else if(Helper.isEdonetNode(tezosNode)) {
+        } else if(Helper.isEdoNode(tezosNode)) {
             Network_type = 'EDONET';
         }
 
         let conseilServer = { 'url': `${CONSEIL_SERVER[Network_type].url}`, 'apiKey': `${CONSEIL_SERVER[Network_type].apiKey}`, 'network': `${NODE_TYPE[Network_type]}` };
-
         const keys = this.getKeys(account);
         if(!keys || !keys.secret) {
             Logger.error(`Couldn't find keys for given account.\nPlease make sure the account '${account}' exists and added to tezster.`);
             return;
         }
 
-        if(Helper.isTestnetNode(tezosNode)) {
-            Logger.error(`Make sure your current rpc-node is set to ${NODE_TYPE.TESTNET} or ${NODE_TYPE.EDONET} node.\nYou can activate the account by sending some tezos to the account.`);
+        if(Helper.isTestnetNode(tezosNode) || Helper.isEdoNode(tezosNode)) {
+            Logger.error(`Make sure your current rpc-node is set to ${NODE_TYPE.TESTNET} node.\nYou can activate the account by sending some tezos to the account.`);
             return;
         }
+        const decryptedSecretKey = Helper.decrypt(keys.sk);
 
         const keystore = {
             publicKey: keys.pk,
-            privateKey: keys.sk,
+            privateKey: decryptedSecretKey,
             publicKeyHash: keys.pkh,
             seed: '',
             storeType: conseiljs.KeyStoreType.Fundraiser
@@ -327,6 +339,11 @@ class Accounts{
         }
     }
 
+    encryptAndStoreKeys(accountLabel, keystore, accountJSON) {
+        const encyptedSecretKey = Helper.encrypt(keystore.secretKey);
+        this.addIdentity(accountLabel, encyptedSecretKey, keystore.publicKey, keystore.publicKeyHash, accountJSON.secret);
+    }
+
     getKeys(account) {
         let keys,f;
         if (f = Helper.findKeyObj(this.config.identities, account)) {
@@ -353,12 +370,10 @@ class Accounts{
     async addAccount(label, pkh, identity, nodeType) {
         if(nodeType.includes(NODE_TYPE.LOCALHOST) || nodeType.includes(NODE_TYPE.WIN_LOCALHOST)) {
             nodeType = NODE_TYPE.LOCALHOST;
-        } else if(nodeType.includes(NODE_TYPE.DALPHANET)) {
-            nodeType = NODE_TYPE.DALPHANET;
-        } else if(nodeType.includes(NODE_TYPE.EDONET)) {
-            nodeType = NODE_TYPE.EDONET;
         } else if(nodeType.includes(NODE_TYPE.MAINNET)) {
             nodeType = NODE_TYPE.MAINNET;
+        } else if(nodeType.includes(NODE_TYPE.EDONET)) {
+            nodeType = NODE_TYPE.EDONET;
         } else {
             nodeType = `${NODE_TYPE.TESTNET}`;
         }
