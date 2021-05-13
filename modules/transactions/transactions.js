@@ -29,7 +29,7 @@ class Transactions {
 
     async listTransactions() {      
         Logger.verbose(`Command : tezster list-transactions`);
-        Logger.warn(`For transactions done on ${NODE_TYPE.TESTNET}/${NODE_TYPE.EDONET} node ,you can visit https://${TZSTATS_NODE_TYPE.TESTNET}.tzstats.com or https://${TZSTATS_NODE_TYPE.EDONET}.tzstats.com accordingly for more information`);
+        Logger.warn(`For transactions done on '${NODE_TYPE.TESTNET}' or 'mainnet' node ,you can visit 'https://${TZSTATS_NODE_TYPE.TESTNET}.tzstats.com' or 'https://tzstats.com' respectively for more information...`);
         if(Object.keys(this.config.transactions).length > 0) {        
             for(var i in this.config.transactions) {
                 Logger.info(JSON.stringify(this.config.transactions[i]));
@@ -55,9 +55,10 @@ class Transactions {
         }
 
         try {
+            const decryptedSecretKey = from.match(/bootstrap.*[1-5]$/gm) ? keys.sk : Helper.decrypt(keys.sk);
             keystore = {
                 publicKey: keys.pk,
-                privateKey: keys.sk,
+                privateKey: decryptedSecretKey,
                 publicKeyHash: keys.pkh,
                 seed: '',
                 storeType: conseiljs.KeyStoreType.Fundraiser

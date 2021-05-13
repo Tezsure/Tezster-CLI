@@ -14,6 +14,7 @@ const program = require('commander'),
       { version } = require('./package.json');
 
 if(!fs.existsSync(confFile)) {
+    require('./preinstall');
     require('./postinstall');
 }
 

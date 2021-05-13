@@ -1,5 +1,6 @@
 {
     "provider": "http://localhost:18732",
+    "EncryptionIv": "",
     "identities": [
       {
         "sk": "edskRuR1azSfboG86YPTyxrQgosh5zChf5bVDmptqLTb5EuXAm9rsnDYfTKhq7rDQujdn5WWzwUMeV3agaZ6J2vPQT58jJAJPi",
