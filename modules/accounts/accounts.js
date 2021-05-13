@@ -267,8 +267,8 @@ class Accounts{
         let Network_type = 'TESTNET';
         if(Helper.isMainnetNode(tezosNode)) {
             Network_type = 'MAINNET';
-        } else if(Helper.isFlorenceNode(tezosNode)) {
-            Network_type = 'FLORENCENET';
+        } else if(Helper.isEdoNode(tezosNode)) {
+            Network_type = 'EDONET';
         }
 
         let conseilServer = { 'url': `${CONSEIL_SERVER[Network_type].url}`, 'apiKey': `${CONSEIL_SERVER[Network_type].apiKey}`, 'network': `${NODE_TYPE[Network_type]}` };
@@ -278,7 +278,7 @@ class Accounts{
             return;
         }
 
-        if(Helper.isTestnetNode(tezosNode)) {
+        if(Helper.isTestnetNode(tezosNode) || Helper.isEdoNode(tezosNode)) {
             Logger.error(`Make sure your current rpc-node is set to ${NODE_TYPE.TESTNET} node.\nYou can activate the account by sending some tezos to the account.`);
             return;
         }
@@ -372,8 +372,8 @@ class Accounts{
             nodeType = NODE_TYPE.LOCALHOST;
         } else if(nodeType.includes(NODE_TYPE.MAINNET)) {
             nodeType = NODE_TYPE.MAINNET;
-        } else if(nodeType.includes(NODE_TYPE.FLORENCENET)) {
-            nodeType = NODE_TYPE.FLORENCENET;
+        } else if(nodeType.includes(NODE_TYPE.EDONET)) {
+            nodeType = NODE_TYPE.EDONET;
         } else {
             nodeType = `${NODE_TYPE.TESTNET}`;
         }

@@ -98,8 +98,8 @@ class Contracts {
 
         if(Helper.isMainnetNode(tezosNode)) {
             Network_type = 'MAINNET';
-        } else if(Helper.isFlorenceNode(tezosNode)) {
-            Network_type = 'FLORENCENET';
+        } else if(Helper.isEdoNode(tezosNode)) {
+            Network_type = 'EDONET';
         }
 
         let conseilServer = { 'url': `${CONSEIL_SERVER[Network_type].url}`, 'apiKey': `${CONSEIL_SERVER[Network_type].apiKey}`, 'network': `${NODE_TYPE[Network_type]}` };
@@ -148,15 +148,7 @@ class Contracts {
 
         const fs = require('fs');
         const tezosNode = this.config.provider;  
-        let Network_type = 'TESTNET';
 
-        if(Helper.isMainnetNode(tezosNode)) {
-            Network_type = 'MAINNET';
-        } else if(Helper.isFlorenceNode(tezosNode)) {
-            Network_type = 'FLORENCENET';
-        }
-
-        let conseilServer = { 'url': `${CONSEIL_SERVER[Network_type].url}`, 'apiKey': `${CONSEIL_SERVER[Network_type].apiKey}`, 'network': `${NODE_TYPE[Network_type]}` };
         const keys = this.getKeys(account);
         if(!keys) {
             Logger.error(`Couldn't find keys for given account.\nPlease make sure the account '${account}' exists and added to tezster. Run 'tezster list-accounts' to get all accounts.`);
@@ -192,15 +184,6 @@ class Contracts {
                                       tezosNode, signer, keystore, amount*1000000, undefined,
                                       fee, storageLimit, gasLimit,
                                       contract, initValue, conseiljs.TezosParameterFormat.Michelson, -1);      
-            
-            if(!Helper.isLocalNode(tezosNode)) {
-                try {
-                    await conseiljs.TezosConseilClient.awaitOperationConfirmation(conseilServer, conseilServer.network, JSON.parse(result.operationGroupID), 15, 10);
-                } catch(error) {
-                    Helper.errorLogHandler(`Error occurred in operation confirmation: ${error}`,
-                                           'Contract deployment operation confirmation failed ....');
-                }
-            }
             
             if (result.results) {
                 switch(result.results.contents[0].metadata.operation_result.status) {
@@ -356,8 +339,8 @@ class Contracts {
             nodeType = NODE_TYPE.LOCALHOST;
         } else if(nodeType.includes(NODE_TYPE.MAINNET)) {
             nodeType = NODE_TYPE.MAINNET;
-        } else if(nodeType.includes(NODE_TYPE.FLORENCENET)) {
-            nodeType = NODE_TYPE.FLORENCENET;
+        } else if(nodeType.includes(NODE_TYPE.EDONET)) {
+            nodeType = NODE_TYPE.EDONET;
         } else {
             nodeType = `${NODE_TYPE.TESTNET}`;
         }

@@ -11,7 +11,7 @@ const confFile = `/var/tmp/tezster/config.json`,
       CONFIG_FILE_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE = require('path').join(__dirname, '/../config.json'),
       TEZSTER_FOLDER_ABSOLUTE_PATH_INSIDE_NPM_PACKAGE = require('path').join(__dirname, '/../tezster'),
       
-      IMAGE_TAG = 'tezsureinc/tezster:1.0.6-beta.3',
+      IMAGE_TAG = 'tezsureinc/tezster:1.0.6',
       CONTAINER_NAME = 'tezster',
       PROGRESS_REFRESH_INTERVAL = 1000,
       Node_Confirmation_Timeout = 55000,
@@ -26,22 +26,22 @@ const confFile = `/var/tmp/tezster/config.json`,
       NODE_TYPE = {
           LOCALHOST: 'localhost',
           WIN_LOCALHOST: '192.168',
-          TESTNET: 'edonet',
+          TESTNET: 'florencenet',
           MAINNET: 'mainnet',
-          FLORENCENET: 'florence'
+          EDONET: 'edonet'
       }, 
 
       TZSTATS_NODE_TYPE = {
-        TESTNET: 'edo',
-        FLORENCENET: 'florence',
+        TESTNET: 'florence',
+        EDONET: 'edo'
       }, 
 
       CONSEIL_SERVER = {
-        TESTNET: {
+        EDONET: {
           url: 'https://conseil-edo.cryptonomic-infra.tech:443',
           apiKey: '15e4c75c-af4e-4a62-9aa6-1e0a5b96a2a2',
         },
-        FLORENCENET: {
+        TESTNET: {
           url: 'https://conseil-florence.cryptonomic-infra.tech:443',
           apiKey: '6f81a18d-3643-4633-b5d8-028cf2687fed',
         },

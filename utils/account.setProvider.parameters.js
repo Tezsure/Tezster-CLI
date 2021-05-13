@@ -13,7 +13,7 @@ const accountSetProviderParameters = [
         choices: [
                   'http://localhost:18732', 
                   'https://testnet.tezster.tech', 
-                  'https://florence.tezster.tech',
+                  'https://edonet.tezster.tech',
                   'https://mainnet.tezster.tech', 
                   'Enter Own Custom Url'
                 ]
